@@ -81,11 +81,13 @@ class excelObj extends Class
                     nuvCelle := String(Floor(nuvCelle))
                 if nuvKolonne = "Undtagne transporttyper"
                     this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                if nuvKolonne = "Ugedage"
+                else if nuvKolonne = "Ugedage"
+                {
                     for index, ugedag in ["ma", "ti", "on", "to", "fr", "lø", "sø"]
                         if nuvCelle = ugedag
                             this.excel_data[row_index][nuvKolonne][index] := ugedag
-                if nuvKolonne != "Undtagne transporttyper" and nuvKolonne != "Ugedage"
+                }
+                else
                     this.excel_data[row_index][nuvKolonne] := nuvCelle
             }
         }
