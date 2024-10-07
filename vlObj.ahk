@@ -23,32 +23,19 @@ class vlObj extends Class
         "Ugedage", [0, 0, 0, 0, 0, 0, 0]
     )
 
-    ; fjern kobling til datagui
+    vl_array := []
+
     IndhentData(p_excel_array)
     {
         this.vl_data := p_excel_array
         return
     }
+
+    IndhentDataArray(p_excel_data)
+    {
+        for exceldata in p_excel_data
+            this.vl_array.Push(exceldata)
+
+        return
+    }
 }
-
-    ; DataGUI.totalExcelRække := p_data_array.Length - 1
-    ; DataGUI.nuværendeExcelRække := p_række_nummer - 1
-    ; DataGUI.excelRækkeTekst := "Excelrække " DataGUI.nuværendeExcelRække "/" DataGUI.totalExcelRække
-    ; overskriftExcelRækker.Text := DataGUI.excelRækkeTekst
-
-    ; PlanskemaEditboxForventet.text := p_data_array[p_række_nummer][DataGUI.kolonnePlanSkema]
-    ; økonomiskemaEditboxForventet.text := p_data_array[p_række_nummer][DataGUI.kolonneØkonomiSkema]
-    ; vognløbskategoriEditboxForventet.text := p_data_array[p_række_nummer][DataGUI.kolonneVognløbsKategori]
-
-    ; overskriftVognløb.text := "Vognløb " this.vlVognløbsNummer ", " this.vlKørselsAftale "_" this.vlStyreSystem}
-; ???
-; p6_indhent_data()
-; {
-
-; }
-; p6IndlæsData()
-; {
-;     MsgBox this.vlBudnummer " - " this.vlVognløbsNummer
-;     MsgBox this.vlVognløbsKategori
-
-; }

@@ -50,9 +50,6 @@ class excelObj extends Class
     ; lav optional parameter til excel-fil
     indlæsfil()
     {
-
-        ; undtagneTrKolStart := 13
-        ; undtagneTrKolSlut := 22
         if !this.excel_fil_long
             throw Error("Ingen fil indlæst!")
 
@@ -67,13 +64,14 @@ class excelObj extends Class
         EndCol := workbook_sheet.usedrange.columns.count
         usedrangeArr := workbook_sheet.usedrange.value
 
-
         loop EndRow
         {
             row_index := A_Index
             this.excel_data.Push(Map())
-            this.excel_data[row_index] := this.kolonner.Clone()
-
+            for key, value in this.kolonner
+                this.excel_data[row_index][key] := value
+            this.excel_data[row_index]["Ugedage"] := [0, 0, 0, 0, 0, 0, 0]
+            this.excel_data[row_index]["Undtagne transporttyper"] := []
             loop EndCol
             {
                 col_index := A_Index
@@ -81,101 +79,23 @@ class excelObj extends Class
                 nuvCelle := usedrangeArr[row_index, col_index]
                 if Type(nuvCelle) = "Float"
                     nuvCelle := String(Floor(nuvCelle))
-                if nuvKolonne = "Ugedage" or nuvKolonne = "Undtagne transporttyper"
-                {
-                    if nuvKolonne = "Ugedage"
-                    {
-                        if nuvCelle = "ma"
-                            this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                        if nuvCelle = "ti"
-                            this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                        if nuvCelle = "on"
-                            this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                        if nuvCelle = "to"
-                            this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                        if nuvCelle = "fr"
-                            this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                        if nuvCelle = "lø"
-                            this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                        if nuvCelle = "sø"
-                            this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                    }
-                    if nuvKolonne = "Undtagne transporttyper"
-                        this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                }
-                else
+                if nuvKolonne = "Undtagne transporttyper"
+                    this.excel_data[row_index][nuvKolonne].push(nuvCelle)
+                if nuvKolonne = "Ugedage"
+                    for index, ugedag in ["ma", "ti", "on", "to", "fr", "lø", "sø"]
+                        if nuvCelle = ugedag
+                            this.excel_data[row_index][nuvKolonne][index] := ugedag
+                if nuvKolonne != "Undtagne transporttyper" and nuvKolonne != "Ugedage"
                     this.excel_data[row_index][nuvKolonne] := nuvCelle
-
-
-                ; if nuvKolonne := "Ugedage"
-                ; {
-                ;     if nuvCelle = "ma"
-                ;         this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                ;     if nuvCelle = "ti"
-                ;         this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                ;     if nuvCelle = "on"
-                ;         this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                ;     if nuvCelle = "to"
-                ;         this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                ;     if nuvCelle = "fr"
-                ;         this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                ;     if nuvCelle = "lø"
-                ;         this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                ;     if nuvCelle = "sø"
-                ;         this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                ; }
-                ; if nuvKolonne := "Undtagne transporttyper"
-                ;     this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-
-                ; this.excel_data[row_index][nuvKolonne] := nuvCelle
             }
-
         }
-
-
         excel.quit()
         return
     }
-
-    ; hentKolonneNummer()
-    ; {
-    ;     for kolonneNummerExcel, kolonneNavnExcel in this.excel_data[1]
-    ;         for kolonneNavnIntern, kolonneNummerIntern in this.kolonne_nummer
-    ;         {
-    ;             if kolonneNavnExcel = "Ugedage"
-    ;             {
-    ;                 this.kolonne_nummer["Ugedage"].push(kolonneNummerExcel)
-    ;                 break
-    ;             }
-    ;             if kolonneNavnExcel = "Undtagne transporttyper"
-    ;             {
-    ;                 this.kolonne_nummer["Undtagne transporttyper"].push(kolonneNummerExcel)
-    ;                 break
-    ;             }
-    ;             if kolonneNavnExcel = kolonneNavnIntern
-    ;             {
-    ;                 this.kolonne_nummer[kolonneNavnIntern] := kolonneNummerExcel
-    ;                 break
-    ;             }
-    ;         }
-    ;     return
-    ; }
 
     indlæsfilFunk()
     {
         this.vælgfil()
         this.indlæsfil()
-        ; this.hentKolonneNummer()
     }
 }
-
-; test := excelObj()
-; test.indlæsfilFunk()
-
-; MsgBox test.excel_fil_long
-; MsgBox test.kolonne_nummer["Vognløbsnummer"]
-; MsgBox test.kolonne_nummer["Undtagne transporttyper"][3]
-;     MsgBox "Data indlæst!"
-;     ; DataGUI.opt("-Disabled")
-;     ; WinActivate(DataguiNavn)
-; }

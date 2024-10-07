@@ -6,7 +6,7 @@ p6_clipwait(p_valg, p_type?)
 {
     clipwaitTid := 0.3
     clipwaitTid2 := 0.5
-    clipwaitTidMsgbox := 1
+    clipwaitTidMsgbox := 0.5
     input := Map("shift", "+{F10}c", "ctrl", "^c")
     if IsSet(p_type)
     {
@@ -98,10 +98,13 @@ P6_nav_vognløbsbillede()
 ; TODO hvordan håndteres dato-array?
 p6_åben_vognløb(p_vl_obj)
 {
+    vognløbsnummer := p_vl_obj["Vognløbsnummer"]
+    vognløbsdato := Format("{:U}", p_vl_obj["Dato"])
+
     P6_aktiver()
-    SendInput(p_vl_obj.vl_data["Vognløbsnummer"])
+    SendInput(vognløbsnummer)
     SendInput "{tab}"
-    SendInput(p_vl_obj.vl_data["Dato"])
+    SendInput(vognløbsdato)
     SendInput("{enter}")
     sleep 20
     p6_clipwait("ctrl", 1)
@@ -112,36 +115,38 @@ p6_åben_vognløb(p_vl_obj)
     SendInput("{tab}")
     indlæst_dato := p6_clipwait("ctrl")
     ; lav fornuftigt system
-    if !(p_vl_obj.vl_data["Vognløbsnummer"] = indlæst_vognløbsnummer and p_vl_obj.vl_data["Dato"] = indlæst_dato)
+    if !(vognløbsnummer = indlæst_vognløbsnummer and vognløbsdato = indlæst_dato)
         throw (Error("Fejl i indlæsning, ikke det forventede vognløbsnummer på forventet dato"))
     return
 }
 ; TODO beslut hvordan hele vognløb-funktion skal struktureres
 p6_åben_vognløb_kørselsaftale(p_vl_obj)
 {
+    kørselsaftale := p_vl_obj["Kørselsaftale"]
+    styresystem := p_vl_obj["Styresystem"]
+
     P6_aktiver()
     SendInput("^æ")
     oprindelig_kørselsaftale := p6_clipwait("shift")
     SendInput("{tab}")
     oprindelig_styresystem := p6_clipwait("shift")
     SendInput("{tab}")
-    if (p_vl_obj.vl_data["Kørselsaftale"] != oprindelig_kørselsaftale or p_vl_obj.vl_data["Styresystem"] != oprindelig_styresystem)
+    if (kørselsaftale != oprindelig_kørselsaftale or styresystem != oprindelig_styresystem)
         throw (Error("Fejl i indlæsning, åben kørselsaftale er ikke den forventede"))
-    ; SendInput(p_vl_obj.vl_data["Kørselsaftale"])
+    SendInput(kørselsaftale)
     SendInput "{tab}"
-    SendInput(p_vl_obj.vl_data["Styresystem"])
+    SendInput(styresystem)
     SendInput("{tab}")
     ; tjek af korrekt vognløb, omskriv
     indlæst_kørselsaftale := p6_clipwait("shift")
     SendInput("{tab}")
     indlæst_styresystem := p6_clipwait("shift")
-    if (p_vl_obj.vl_data["Kørselsaftale"] = indlæst_kørselsaftale and p_vl_obj.vl_data["Styresystem"] = indlæst_styresystem)
+    if (kørselsaftale = indlæst_kørselsaftale and styresystem = indlæst_styresystem)
         korrekt := 1
-    ; MsgBox "korrekt"
     SendInput("{enter}")
-    ; p6_msgbox := p6_clipwait("ctrl", 1)
-    ; if InStr(p6_msgbox, "ikke registreret")
-        ; throw (Error("Kørselsaftalen findes ikke i P6"))
+    p6_msgbox := p6_clipwait("ctrl", 1)
+    if InStr(p6_msgbox, "ikke registreret")
+        throw (Error("Kørselsaftalen findes ikke i P6"))
 
     return
 }
@@ -149,19 +154,24 @@ p6_åben_vognløb_kørselsaftale(p_vl_obj)
 ; lav modulær opbygning
 p6_åben_vognløb_åbningstider(p_vl_obj)
 {
-    ; hvorfor breaker den script her?
-    ; P6_aktiver()
-    ; p6_clipwait("ctrl")
-    ; P6_aktiver()
-    SendInput(p_vl_obj.vl_data["Dato"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Starttid"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Dato"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Sluttid"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Dato"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Sluttid"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Startzone"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Slutzone"] "{tab}")
-    SendInput(p_vl_obj.vl_data["Hjemzone"] "{tab}")
+    vognløbsdato := Format("{:U}", p_vl_obj["Dato"])
+    starttid := p_vl_obj["Starttid"]
+    sluttid := p_vl_obj["Sluttid"]
+    startzone := p_vl_obj["Startzone"]
+    slutzone := p_vl_obj["Slutzone"]
+    hjemzone := p_vl_obj["Hjemzone"]
+
+    P6_aktiver()
+    p6_clipwait("ctrl")
+    SendInput(vognløbsdato "{tab}")
+    SendInput(starttid "{tab}")
+    SendInput(vognløbsdato "{tab}")
+    SendInput(sluttid "{tab}")
+    SendInput(vognløbsdato "{tab}")
+    SendInput(sluttid "{tab}")
+    SendInput(startzone "{tab}")
+    SendInput(slutzone "{tab}")
+    SendInput(hjemzone "{tab}")
     SendInput("{enter}")
     p6_msgbox := p6_clipwait("ctrl", 1)
     if InStr(p6_msgbox, "Zone ikke registreret")
@@ -173,24 +183,33 @@ p6_åben_vognløb_åbningstider(p_vl_obj)
 ; modulær opbygning
 p6_åben_vognløb_resten(p_vl_obj)
 {
-    P6_aktiver()
-    if (p_vl_obj.vl_data["Vognløbsnotering"])
-        SendInput("!p{tab 11}+{Up}" p_vl_obj.vl_data["Vognløbsnotering"])
-    if (p_vl_obj.vl_data["MobilnrChf"])
-        SendInput("!ø{tab 2}" p_vl_obj.vl_data["MobilnrChf"])
-    if (p_vl_obj.vl_data["Vognløbskategori"])
-        SendInput("!ø{tab 3}" p_vl_obj.vl_data["Vognløbskategori"])
-    if (p_vl_obj.vl_data["Planskema"])
-        SendInput("!ø{tab 6}" p_vl_obj.vl_data["Planskema"])
-    if (p_vl_obj.vl_data["Økonomiskema"])
-        SendInput("!ø{tab 8}" p_vl_obj.vl_data["Økonomiskema"])
-    if (p_vl_obj.vl_data["Statistikgruppe"])
-        SendInput("!ø{tab 9}" p_vl_obj.vl_data["Statistikgruppe"])
 
-    if (p_vl_obj.vl_data["Undtagne transporttyper"])
+    vognløbsnotering := p_vl_obj["Vognløbsnotering"]
+    MobilnrChf := p_vl_obj["MobilnrChf"]
+    Vognløbskategori := p_vl_obj["Vognløbskategori"]
+    Planskema := p_vl_obj["Planskema"]
+    Økonomiskema := p_vl_obj["Økonomiskema"]
+    Statistikgruppe := p_vl_obj["Statistikgruppe"]
+    UndtagneTransporttyper := p_vl_obj["Undtagne transporttyper"]
+
+    P6_aktiver()
+    if Vognløbsnotering
+        SendInput("!p{tab 11}+{Up}" Vognløbsnotering)
+    if MobilnrChf
+        SendInput("!ø{tab 2}" MobilnrChf)
+    if Vognløbskategori
+        SendInput("!ø{tab 3}" Vognløbskategori)
+    if Planskema
+        SendInput("!ø{tab 6}" Planskema)
+    if Økonomiskema
+        SendInput("!ø{tab 8}" Økonomiskema)
+    if Statistikgruppe
+        SendInput("!ø{tab 9}" Statistikgruppe)
+
+    if UndtagneTransporttyper
     {
         SendInput("!ø{tab 10}")
-        for trtype in p_vl_obj.vl_data["Undtagne transporttyper"]
+        for trtype in UndtagneTransporttyper
             SendInput("{tab}" trtype)
     }
     SendInput("{enter}")
@@ -202,17 +221,19 @@ p6_afslut_indlæsning_vognløb(p_vl_obj)
     p6_msgbox := p6_clipwait("ctrl", 1)
     if InStr(p6_msgbox, "Transporttypen")
         throw (Error("Transporttype findes ikke i P6"))
+    if InStr(p6_msgbox, "Vløbsklasen")
+        throw (Error("Vognløbskategorien findes ikke i P6"))
     ; p6_clipwait("shift")
-    return A_Clipboard
+    return 
 }
 
 p6_åben_kørselsaftale(p_vl_obj)
 {
     P6_nav_kørselsaftale()
     sleep 100
-    SendInput(p_vl_obj.vl_data["Kørselsaftale"])
+    SendInput(p_vl_obj["Kørselsaftale"])
     SendInput "{tab}"
-    SendInput(p_vl_obj.vl_data["Styresystem"])
+    SendInput(p_vl_obj["Styresystem"])
     SendInput("{enter}")
     p6_msgbox := p6_clipwait("ctrl", 1)
     if (InStr(p6_msgbox, "ikke registreret"))
@@ -225,7 +246,7 @@ p6_åben_kørselsaftale(p_vl_obj)
     SendInput("{tab}")
     ; SendInput("^{F4}")
     indlæst_styresystem := A_Clipboard
-    if (p_vl_obj.vl_data["Kørselsaftale"] = indlæst_kørselaftale and p_vl_obj.vl_data["Styresystem"] = indlæst_styresystem)
+    if (p_vl_obj["Kørselsaftale"] = indlæst_kørselaftale and p_vl_obj["Styresystem"] = indlæst_styresystem)
     ; MsgBox "korrekt"
         return
 }
@@ -242,9 +263,9 @@ p6_indlæs_data_kørselsaftale_planskema(p_vl_obj)
     SendInput("!p")
     A_Clipboard := ""
     tidligere_planskema := p6_clipwait("ctrl")
-    SendInput(p_vl_obj.vl_data["Planskema"] "{tab}!p")
+    SendInput(p_vl_obj["Planskema"] "{tab}!p")
     indlæst_planskema := p6_clipwait("ctrl")
-    if (p_vl_obj.vl_data["Planskema"] = indlæst_planskema)
+    if (p_vl_obj["Planskema"] = indlæst_planskema)
         korrekt := 1
     return
 }
@@ -252,16 +273,11 @@ p6_indlæs_data_kørselsaftale_planskema(p_vl_obj)
 ; p6_indlæs_data_kørselsaftale_økonomiskema(p_vl_obj)
 ; {
 ;     SendInput("!p{tab 4}")
-;     A_Clipboard := ""
-;     SendInput("^c")
-;     clipwait clipwaitTid
-;     tidligere_planskema := A_Clipboard
-;     SendInput(p_vl_obj.vl_data["Planskema"] "{tab}!p{tab 4}")
-;     A_Clipboard := ""
-;     SendInput("^c")
-;     clipwait clipwaitTid
-;     indlæst_planskema := A_Clipboard
-;     if (p_vl_obj.vl_data["Planskema"] = indlæst_planskema)
+;     tidligere_planskema := p6_clipwait("ctrl")
+;     SendInput(p_vl_obj["Planskema"] "{tab}!p{tab 4}")
+;     tidligere_økonomiskema := p6_clipwait("ctrl")
+
+;     if (p_vl_obj["Planskema"] = indlæst_planskema)
 ;         korrekt := 1
 ;     return
 ; }

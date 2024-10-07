@@ -65,7 +65,7 @@ DataGUINavn := "P6-Data"
 DataGUI := Gui(, DataGUINavn)
 ; objects
 DataGUI.xlObj := ""
-DataGUI.vlObjArray := []
+DataGUI.vlObj := ""
 
 ; controls
 datagui.overskrift := Map()
@@ -154,7 +154,7 @@ DataGUI.flueben.vognløbsnotat := DataGUI.Add("Text", " X" vognløbsnotatX + 100
 knapX := xUdgangspunkt + 200
 knapY := yUdgangspunkt + 400
 DataGUI.knap.sætIgang := DataGUI.Add("Button", "X" knapX " Y" knapY, "Sæt igang")
-DataGUI.knap.sætIgang.OnEvent("Click", (*) => testudrul(DataGUI.vl_data[1]))
+DataGUI.knap.sætIgang.OnEvent("Click", (*) => testudrul(DataGUI.vl_array[2]))
 ; DataGUI.Add("Text", "XP" , "Skema")
 ; PlanskemaEditboxNy := DataGUI.Add("Edit",EditboxPos , "AB232")
 ; PlanskemaCheckbox := DataGUI.Add("Checkbox", "XS Section", "Planskema")
@@ -177,21 +177,16 @@ indlæsExcelFil()
     xl := excelObj()
     xl.indlæsfilFunk()
     DataGUI.xlObj := xl
-    ; vl := vlObj()
-    ; vl.vlIndhentData(DataGUI.xl.excel_data, 2)
     indlæsListeVl()
     DataGUI.overskrift.Excelfil.text := DataGUI.xlObj.excel_fil_tekst
     DataGUI.overskrift.ExcelRækker.text := "Excelrække: sadasd" (DataGUI.xlObj.excel_data.Length - 1)
-    DataGUI.vlObjArray := []
-    for index, element in Datagui.xlObj.excel_data
-    {
-        vl := vlObj()
-        vl.IndhentData(element)
-        DataGUI.vlObjArray.push(vl)
-    }
 
-    tjekGyldigeExcelKolonner()
-    opdaterGUI(DataGUI.vlObjArray[1])
+    ; tjekGyldigeExcelKolonner()
+    
+    DataGUI.vlObj := vlObj()
+    DataGUI.vlObj.IndhentDataArray(DataGUI.xlObj.excel_data)
+    
+    opdaterGUI(2)
     MsgBox "Data indlæst!"
 }
 
@@ -232,7 +227,6 @@ indlæsListeVl()
                 temp_array.Push(value)
         ; +1 for at indsætte fra bunden
         dataListview.Insert(DataGUI.xlObj.excel_data.Length 1, , temp_array*)
-        ;dataListview.Insert(i, , DataGUI.excelData[i])
     }
     dataListview.ModifyCol()
     ; lav bedre løsning
@@ -253,14 +247,14 @@ tjekGyldigeExcelKolonner()
 
 }
 
-opdaterGUI(p_vl_obj)
+opdaterGUI(p_index)
 {
 
-    DataGUI.overskrift.Vognløb.text := p_vl_obj.vl_data["Vognløbsnummer"] ", " p_vl_obj.vl_data["Kørselsaftale"] "_" p_vl_obj.vl_data["Styresystem"]
+    DataGUI.overskrift.Vognløb.text := dataGUI.vlObj.vl_array[p_index]["Vognløbsnummer"] ", " dataGUI.vlObj.vl_array[p_index]["Kørselsaftale"] "_" dataGUI.vlObj.vl_array[p_index]["Styresystem"]
 
-    DataGUI.editbox.ØkonomiskemaForventet.text := p_vl_obj.vl_data["Økonomiskema"]
-    DataGUI.editbox.PlanskemaForventet.text := p_vl_obj.vl_data["Planskema"]
-    DataGUI.editbox.vognløbskategoriForventet.text := p_vl_obj.vl_data["Vognløbskategori"]
+    DataGUI.editbox.ØkonomiskemaForventet.text := dataGUI.vlObj.vl_array[p_index]["Økonomiskema"]
+    DataGUI.editbox.PlanskemaForventet.text := dataGUI.vlObj.vl_array[p_index]["Planskema"]
+    DataGUI.editbox.vognløbskategoriForventet.text := dataGUI.vlObj.vl_array[p_index]["Vognløbskategori"]
 }
 
 testfunk()
@@ -268,7 +262,7 @@ testfunk()
     for element in DataGUI.vlObjArray
     {
         opdaterGUI(element)
-        MsgBox element.vl_data["Vognløbsnummer"]
+        MsgBox element.vl_array["Vognløbsnummer"]
     }
 
     return
