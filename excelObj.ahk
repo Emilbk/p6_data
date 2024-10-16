@@ -1,87 +1,83 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
-Persistent
-class excelObj extends Class
-{
 
-    excelFil := Object()
-    
-    vælgExcelFil(pExcelFilPathLong)
-    {
-        this.excelFil.NavnLong := pExcelFilPathLong
-        SplitPath(this.excelFil.NavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
-        this.excelFil.Navn := varFilNavn
-        this.excelFil.Dir := varFilDir
-        this.excelFil.NavnUdenExtension := varFilNavnUdenExtension
-        
-        
-        return
-    }
-
-    vælgExcelFilMenu()
-    {
-        this.excelFil.NavnLong := FileSelect()
-        SplitPath(this.excelFil.NavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
-        this.excelFil.Navn := varFilNavn
-        this.excelFil.Dir := varFilDir
-        this.excelFil.NavnUdenExtension := varFilNavnUdenExtension
-        
-        
-        return
-    }
-
-    aktiverExcelWorkbookReadonly()
-    {
-
+/**
+ * @param pExcelFil valgt excel-fil-path
+ *   @property excelObj ComObject
+ *   @property aktivWorkbook 
+ *   @property aktivWorkbookSheet 
+ *   @property aktivWorkbookSheetRækkerEnd 
+ *   @property aktivWorkbookSheetKolonnerEnd 
+ *   @property aktivWorksheetArray ComArray, [kolonne, række] - int.
+ */
+class excelObj extends Class {
+    __New(pExcelFil) {
         this.excelObj := ComObject("Excel.Application")
-        this.aktivWorkbook := this.excelObj.Workbooks.open(this.excelFil.NavnLong, , "ReadOnly" = true)
+
+        this.excelFilNavnLong := pExcelFil
+
+        SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
+        this.excelFilNavn := varFilNavn
+        this.excelFilDir := varFilDir
+        this.excelFilNavnUdenExtension := varFilNavnUdenExtension
+    }
+
+    ; Properties
+    excelObj := ""
+    aktivWorkbook := ""
+    aktivWorkbookSheet := ""
+    aktivWorkbookSheetRækkerEnd := ""
+    aktivWorkbookSheetKolonnerEnd := ""
+    aktivWorksheetArray := Array()
+
+    /**
+     * Aktiver excel-dokument
+     * @property this.aktivWorkbook resultat
+     */
+    aktiverExcelWorkbookReadonly() {
+
+        this.aktivWorkbook := this.excelObj.Workbooks.open(this.excelFilNavnLong, , "ReadOnly" = true)
 
         return
     }
 
-    vælgAktivWorkbookSheet(pSheetNummerEllerNavn)
-    {
-        this.aktivWorkbookSheet:= this.aktivWorkbook.Sheets(pSheetNummerEllerNavn)
-    
+    /**
+     * Aktiver sheet i aktiv workbook
+     * @param pSheetNummerEllerNavn det valgte ark, string eller int
+     * @property aktivWorkbookSheet resultat
+     */
+    vælgAktivWorkbookSheet(pSheetNummerEllerNavn) {
+        this.aktivWorkbookSheet := this.aktivWorkbook.Sheets(pSheetNummerEllerNavn)
+
         return
     }
 
-    findBrugtExcelRangeIAktivWorkbookSheet()
-    {
+    /**
+     * Definer de fyldte celler i aktivt ark
+     * @property this.aktivWorkbookSheetRækkerEnd Sidste række, int
+     * @property this.aktivWorkbookSheetKolonnerEnd Sidste Kolonne, int
+     */
+    findBrugtExcelRangeIAktivWorkbookSheet() {
 
         this.aktivWorkbookSheetRækkerEnd := this.aktivWorkbookSheet.usedrange.rows.count
         this.aktivWorkbookSheetKolonnerEnd := this.aktivWorkbookSheet.usedrange.columns.count
 
         return
     }
-    
-    excelAktivRangetilArray()
-    {
-        this.aktivWorksheetArray := Array()
+
+    /**
+     * Hent range af udfyldte celler til comObj-array
+     * @property this.aktivWorksheetArray array, [kolonne-nr, række-nr]
+     */
+    excelAktivRangetilArray() {
         this.aktivWorksheetArray := this.aktivWorkbookSheet.usedrange.value
-        
+
         return
     }
 
-    excelQuit()
-    {
+    quit() {
         this.excelObj.quit()
         return
     }
 
 }
-
-test := excelObj()
-
-test.vælgExcelFilMenu()
-test.aktiverExcelWorkbookReadonly()
-test.vælgAktivWorkbookSheet(1)
-test.findBrugtExcelRangeIAktivWorkbookSheet()
-test.excelAktivRangetilArray()
-
-msgbox test.excelFil.navn
-MsgBox test.aktivWorksheetArray[1, 3]
-
-test.excelQuit()
-
-return
