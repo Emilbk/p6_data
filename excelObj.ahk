@@ -1,103 +1,87 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 Persistent
-
-; var
-
-; MsgBox test[1, 2].value
 class excelObj extends Class
 {
 
-    excel_fil_long := ""
-    excel_fil_tekst := ""
-    excel_data := []
-
-    ; mulige kolonneindlæsninger
-    kolonner := Map(
-        "Budnummer", 0,
-        "Vognløbsnummer", 0,
-        "Kørselsaftale", 0,
-        "Styresystem", 0,
-        "Startzone", 0,
-        "Slutzone", 0,
-        "Hjemzone", 0,
-        "MobilnrChf", 0,
-        "Vognløbskategori", 0,
-        "Planskema", 0,
-        "Økonomiskema", 0,
-        "Statistikgruppe", 0,
-        "Vognløbsnotering", 0,
-        "Starttid", 0,
-        "Sluttid", 0,
-        "Vognløbskategori", 0,
-        "Undtagne transporttyper", [],
-        "Ugedage", [0, 0, 0, 0, 0, 0, 0]
-    )
-
-    vælgfil()
+    excelFil := Object()
+    
+    vælgExcelFil(pExcelFilPathLong)
     {
-        valgtExcelFilLong := FileSelect()
-        if !valgtExcelFilLong
-            return
-        SplitPath(valgtExcelFilLong, &valgtExcelFil)
-        this.excel_fil_long := valgtExcelFilLong
+        this.excelFil.NavnLong := pExcelFilPathLong
+        SplitPath(this.excelFil.NavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
+        this.excelFil.Navn := varFilNavn
+        this.excelFil.Dir := varFilDir
+        this.excelFil.NavnUdenExtension := varFilNavnUdenExtension
+        
+        
+        return
+    }
 
-        this.excel_fil_tekst := "Indlæst excel-fil: " . valgtExcelFil
+    vælgExcelFilMenu()
+    {
+        this.excelFil.NavnLong := FileSelect()
+        SplitPath(this.excelFil.NavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
+        this.excelFil.Navn := varFilNavn
+        this.excelFil.Dir := varFilDir
+        this.excelFil.NavnUdenExtension := varFilNavnUdenExtension
+        
+        
+        return
+    }
+
+    aktiverExcelWorkbookReadonly()
+    {
+
+        this.excelObj := ComObject("Excel.Application")
+        this.aktivWorkbook := this.excelObj.Workbooks.open(this.excelFil.NavnLong, , "ReadOnly" = true)
 
         return
     }
 
-    ; lav optional parameter til excel-fil
-    indlæsfil()
+    vælgAktivWorkbookSheet(pSheetNummerEllerNavn)
     {
-        if !this.excel_fil_long
-            throw Error("Ingen fil indlæst!")
-
-        excel := ComObject("Excel.Application")
-        excel.Visible := 0
-        excel_fil := this.excel_fil_long
-        workbook := excel.Workbooks.open(excel_fil, , "ReadOnly" = true)
-        workbook_sheet := workbook.Sheets(1)
-
-
-        EndRow := workbook_sheet.usedrange.rows.count
-        EndCol := workbook_sheet.usedrange.columns.count
-        usedrangeArr := workbook_sheet.usedrange.value
-
-        loop EndRow
-        {
-            row_index := A_Index
-            this.excel_data.Push(Map())
-            for key, value in this.kolonner
-                this.excel_data[row_index][key] := value
-            this.excel_data[row_index]["Ugedage"] := [0, 0, 0, 0, 0, 0, 0]
-            this.excel_data[row_index]["Undtagne transporttyper"] := []
-            loop EndCol
-            {
-                col_index := A_Index
-                nuvKolonne := usedrangeArr[1, col_index]
-                nuvCelle := usedrangeArr[row_index, col_index]
-                if Type(nuvCelle) = "Float"
-                    nuvCelle := String(Floor(nuvCelle))
-                if nuvKolonne = "Undtagne transporttyper"
-                    this.excel_data[row_index][nuvKolonne].push(nuvCelle)
-                else if nuvKolonne = "Ugedage"
-                {
-                    for index, ugedag in ["ma", "ti", "on", "to", "fr", "lø", "sø"]
-                        if nuvCelle = ugedag
-                            this.excel_data[row_index][nuvKolonne][index] := ugedag
-                }
-                else
-                    this.excel_data[row_index][nuvKolonne] := nuvCelle
-            }
-        }
-        excel.quit()
+        this.aktivWorkbookSheet:= this.aktivWorkbook.Sheets(pSheetNummerEllerNavn)
+    
         return
     }
 
-    indlæsfilFunk()
+    findBrugtExcelRangeIAktivWorkbookSheet()
     {
-        this.vælgfil()
-        this.indlæsfil()
+
+        this.aktivWorkbookSheetRækkerEnd := this.aktivWorkbookSheet.usedrange.rows.count
+        this.aktivWorkbookSheetKolonnerEnd := this.aktivWorkbookSheet.usedrange.columns.count
+
+        return
     }
+    
+    excelAktivRangetilArray()
+    {
+        this.aktivWorksheetArray := Array()
+        this.aktivWorksheetArray := this.aktivWorkbookSheet.usedrange.value
+        
+        return
+    }
+
+    excelQuit()
+    {
+        this.excelObj.quit()
+        return
+    }
+
 }
+
+test := excelObj()
+
+test.vælgExcelFilMenu()
+test.aktiverExcelWorkbookReadonly()
+test.vælgAktivWorkbookSheet(1)
+test.findBrugtExcelRangeIAktivWorkbookSheet()
+test.excelAktivRangetilArray()
+
+msgbox test.excelFil.navn
+MsgBox test.aktivWorksheetArray[1, 3]
+
+test.excelQuit()
+
+return
