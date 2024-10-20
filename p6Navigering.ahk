@@ -323,7 +323,7 @@ class P6 extends class {
         if HjemzoneIndlæst != hjemzoneExcel
             throw Error("sdf")
 
-        MsgBox "Alt i orden"
+        ; MsgBox "Alt i orden"
 
         return
 
