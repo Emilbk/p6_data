@@ -36,6 +36,8 @@ udrulÆndringer()
             testp6.funkTjekVognløb()
         }
 
+        MsgBox "Færdig " vognløb["Vognløbsnummer"]
+        testvl.IndlæsteVognløb.push(vognløb["Vognløbsnummer"])
     }
     MsgBox "Done!"
 

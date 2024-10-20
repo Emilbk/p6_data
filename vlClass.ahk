@@ -21,7 +21,7 @@ class VognløbObj
     ; }
 
     Vognløb := Array()
-
+    IndlæsteVognløb := Array()
     indhentVognløbsdata(pVlArray)
     {
         this.vlData := pVlArray
