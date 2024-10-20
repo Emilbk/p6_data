@@ -1,3 +1,17 @@
+/************************************************************************
+ * @description Excel-Class
+ * @author ebk
+ * @date 2024/10/18
+ * @version 0.1.0
+ * 
+ * Indlæser excelark
+ * Datastruktur:
+ * Hver række defineres separat i array aktivWorksheetArrayRække
+ * Herunder defineres hver celle i en map, med kolonnenavn som key og celleværdi som value
+ * Hvis flere kolonner har samme navn oprettes i stedet for celleværdien et array med de samlede celleværdier
+ * worksheetArrayRække(alle rækker)[en specifik række]{en specific celle knyttet til kolonnenavn}([array hvis flere af den samme kolonne])
+ ***********************************************************************/
+
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
@@ -12,21 +26,19 @@
  * @property aktivWorksheetKolonneNavnOgNummer Map, Kolonnenavn: kolonnerække
  * @property aktivWorksheetArrayRække array med map for hver række, kolonnenavn: kolonneindhold
  */
-class excelObj extends Class {
-    __New(pExcelFil := "") {
+class excelClass extends Class {
+    __New(pExcelFilConstructor := "") {
         this.excelObj := ComObject("Excel.Application")
 
-        this.excelFilNavnLong := pExcelFil
+        this.excelFilNavnLong := pExcelFilConstructor
 
         SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
         this.excelFilNavn := varFilNavn
         this.excelFilDir := varFilDir
         this.excelFilNavnUdenExtension := varFilNavnUdenExtension
 
-        return
     }
 
-    ; Properties
     excelObj := ""
     aktivWorkbook := ""
     aktivWorksheet := ""
@@ -34,14 +46,15 @@ class excelObj extends Class {
     aktivWorksheetKolonnerEnd := ""
     aktivWorksheetArrayAlt := Array()
     aktivWorksheetKolonneNavnOgNummer := Map()
-
+    /** @type {Array} */
+    aktivWorksheetArrayRække := Array()
     /**
      * Vælg excel-fil hvis ikke indlæst gennem constructor
      * @param pExcelFil 
      */
-    filVælgExcelFil(pExcelFil) {
+    filVælgExcelFil(pExcelFilFunc) {
 
-        this.excelFilNavnLong := pExcelFil
+        this.excelFilNavnLong := pExcelFilFunc
 
         SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
         this.excelFilNavn := varFilNavn
@@ -161,18 +174,23 @@ class excelObj extends Class {
         this.aktivWorksheetArrayRække.RemoveAt(1)
         return
     }
+        
     /**
      * 
-     * @param pArkNavnEllerNummer 
+     * @param pArkNavnEllerNummer
      */
     helperIndlæsAlt(pArkNavnEllerNummer) {
         this.filAktiverExcelWorkbookReadonly()
         this.filVælgAktivWorksheet(pArkNavnEllerNummer)
         this.dataFindBrugtExcelRangeIAktivWorksheet()
         this.dataIndlæsAktivRangetilArray()
-        this.dataIndlæsKolonneNavnOgNummerTilMap()
         this.dataIndlæsRækkeArrayMinusKolonneNavne()
         return
+    }
+
+    getData()
+    {
+        return this.aktivWorksheetArrayRække
     }
 
     quit() {
@@ -181,11 +199,3 @@ class excelObj extends Class {
     }
 
 }
-
-excelpath := "C:\Users\ebk\makro\p6_data\VL.xlsx"
-test := excelObj()
-test.filVælgExcelFil(excelpath)
-
-test.helperIndlæsAlt(2)
-test.quit()
-return
