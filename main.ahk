@@ -1,23 +1,56 @@
 #Requires AutoHotkey v2.0
 Persistent
 ; omskriv til bedre organisering
-#Include excelObj.ahk
-#Include dataGUI.ahk
-#Include vlObj.ahk
+#Include excelClassP6Data.ahk
+; #Include dataGUI.ahk
+#Include vlClass.ahk
 #Include p6Navigering.ahk
-#Include test.ahk
+; #Include test.ahk
+
++escape:: ExitApp()
+
+udrulÆndringer()
+{
+
+    excelpath := "C:\Users\ebk\makro\p6_data\VL.xlsx"
+    excel := excelObjP6Data()
+    excel.filVælgExcelFil(excelpath)
+    excel.helperIndlæsAlt(1)
+    excel.quit()
+
+    vldata := excel.getData()
+
+    testp6 := P6()
+    testvl := VognløbObj()
+    testp6.navAktiverP6Vindue()
+    testp6.navLukVinduer()
+    for vognløb in vldata
+    {
+        testvl.indhentVognløbsdata(vognløb)
+        testvl.opretVognløbForHverDato()
+
+        for vognløbsdag, vognløb in testvl.Vognløb
+        {
+            testp6.dataIndhentVlObj(vognløb)
+            testp6.funkÆndrVognløb()
+            testp6.funkTjekVognløb()
+        }
+
+    }
+    MsgBox "Done!"
 
 
-test := vlObj()
+}
 
-excel_fil := "C:\Users\ebk\Trafikstyring V2\P6data\VL.xlsx"
+udrulÆndringer()
+
 ; DataGUI.excelData := excelIndlæsArr(excel_fil)
 
 
 ; vælgExcelFilTest()
 
 ; test.vlIndhentData(DataGUI.excelData, 2)
-DataGUI.Show("AutoSize")
+; DataGUI.Show("AutoSize")
 
 ; vælgExcelFilTest()
 ; {
