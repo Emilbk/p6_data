@@ -17,7 +17,7 @@
 
 /**
  * @param pExcelFil valgt excel-fil-path
- * @property excelObj ComObject
+ * @property app ComObject
  * @property aktivWorkbook 
  * @property aktivWorksheet 
  * @property aktivWorksheetRækkerEnd 
@@ -28,7 +28,7 @@
  */
 class excelClass extends Class {
     __New(pExcelFilConstructor := "") {
-        this.excelObj := ComObject("Excel.Application")
+        this.app := ComObject("Excel.Application")
 
         this.excelFilNavnLong := pExcelFilConstructor
 
@@ -39,7 +39,7 @@ class excelClass extends Class {
 
     }
 
-    excelObj := ""
+    app := ""
     aktivWorkbook := ""
     aktivWorksheet := ""
     aktivWorksheetRækkerEnd := ""
@@ -64,13 +64,23 @@ class excelClass extends Class {
         return
     }
 
+    filLavNyWorkbook(pWorkbookFil){
+
+        this.aktivWorkbook := this.app.Workbooks.add()
+        this.aktivWorkbook.Title := "Ny workbook"
+        this.aktivWorkbook.Subject := "Ny subject"
+        ; this.aktivWorkbook.Saveas := "Ny subject"
+
+        return this.aktivWorkbook
+    }
+
     /**
      * Aktiver excel-dokument
      * @property this.aktivWorkbook resultat
      */
     filAktiverExcelWorkbookReadonly() {
 
-        this.aktivWorkbook := this.excelObj.Workbooks.open(this.excelFilNavnLong, , "ReadOnly" = true)
+        this.aktivWorkbook := this.app.Workbooks.open(this.excelFilNavnLong, , "ReadOnly" = true)
 
         return
     }
@@ -194,7 +204,7 @@ class excelClass extends Class {
     }
 
     quit() {
-        this.excelObj.quit()
+        this.app.quit()
         return
     }
 
