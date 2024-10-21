@@ -3,6 +3,7 @@
 
 
 kolonneNavne := ["asd", "asd1", "asd2", "asd3", "asd4", "asd5"]
+rakker := [["31400", "3400", "1"], ["31400", "3400", "1"], ["31401", "3401", "2"]]
 
 xl := excelObjP6Data()
 ; xl2 := excelObjP6Data()
@@ -13,7 +14,7 @@ xl.app.Workbooks.Add()
 
 ; MsgBox xl.app.activeWorkbook.Name
 workbook := xl.app.activeWorkbook
-savePath := A_ScriptDir "\exceltest\test-" FormatTime(,"dd-HH-mm-ss") ".xlsx" ; Saves in the same folder as the script
+savePath := A_ScriptDir "\exceltest\test-" FormatTime(, "dd-HH-mm-ss") ".xlsx" ; Saves in the same folder as the script
 workbook.Saveas(savepath)
 ; MsgBox xl.app.activeWorkbook.Name
 ; MsgBox xl2.app.activeWorkbook.Name
@@ -28,8 +29,8 @@ kolonneRække := 1
 colorindex := 36
 for kolonne in kolonneNavne
 {
-    
-    aktivCelle := activeSheet.cells(kolonneRække, A_Index) 
+
+    aktivCelle := activeSheet.cells(kolonneRække, A_Index)
     aktivCelle.Value := StrTitle(kolonne)
     aktivCelle.Interior.Colorindex := colorindex
     ; aktivCelle.addcomment()
@@ -39,9 +40,26 @@ for kolonne in kolonneNavne
 
 }
 
+rakkenummer := 2
+for Rakke in rakker
+{
+    for kolonneNummer, rakkeIndhold in Rakke
+    {
+        aktivCelle := activeSheet.cells(rakkenummer, kolonneNummer)
+        aktivCelle.Value := StrTitle(rakkeIndhold)
+        aktivCelle.Interior.Colorindex := 4
+    }
+    rakkenummer += 1
 
+}
+
+aktivCelle := activeSheet.cells(2, 3)
+aktivCelle.Interior.Colorindex := 3
+aktivCelle.addcomment()
+aktivCelle.comment.text("Fejl: Blablalba")
+; aktivCelle.comment.Visible := True
 ; workbook.
 
 workbook.save()
 xl.quit()
-return 
+return
