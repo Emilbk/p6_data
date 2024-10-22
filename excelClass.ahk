@@ -25,6 +25,7 @@
  * @property aktivWorksheetArrayAlt ComArray, [kolonne, række] - int.
  * @property aktivWorksheetKolonneNavnOgNummer Map, Kolonnenavn: kolonnerække
  * @property aktivWorksheetArrayRække array med map for hver række, kolonnenavn: kolonneindhold
+ * @property færdigbehandletData
  */
 class excelClass extends Class {
     __New(pExcelFilConstructor := "") {
@@ -48,22 +49,11 @@ class excelClass extends Class {
     aktivWorksheetKolonneNavnOgNummer := Map()
     /** @type {Array} */
     aktivWorksheetArrayRække := Array()
+    færdigbehandletData := {KolonnenavneOgNummer: "", rækkerSomMapIArray: ""}
     /**
      * Vælg excel-fil hvis ikke indlæst gennem constructor
      * @param pExcelFil 
      */
-    filVælgExcelFil(pExcelFilFunc) {
-
-        this.excelFilNavnLong := pExcelFilFunc
-
-        SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
-        this.excelFilNavn := varFilNavn
-        this.excelFilDir := varFilDir
-        this.excelFilNavnUdenExtension := varFilNavnUdenExtension
-
-        return
-    }
-
     filLavNyWorkbook(pWorkbookFil){
 
         this.aktivWorkbook := this.app.Workbooks.add()
@@ -198,9 +188,27 @@ class excelClass extends Class {
         return
     }
 
-    getData()
+    getKolonneNavnOgNummer()
     {
-        return this.aktivWorksheetArrayRække
+        this.færdigbehandletData.KolonnenavnOgNummer := this.aktivWorksheetKolonneNavnOgNummer
+        return this.færdigbehandletData.KolonnenavneOgNummer
+    }
+    getRækkeData()
+    {
+        this.færdigbehandletData.rækkerSomMapIArray := this.aktivWorksheetArrayRække
+        return this.færdigbehandletData.rækkerSomMapIArray
+    }
+
+    setExcelFil(pExcelFilFunc) {
+
+        this.excelFilNavnLong := pExcelFilFunc
+
+        SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
+        this.excelFilNavn := varFilNavn
+        this.excelFilDir := varFilDir
+        this.excelFilNavnUdenExtension := varFilNavnUdenExtension
+
+        return
     }
 
     quit() {
