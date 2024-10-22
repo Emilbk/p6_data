@@ -26,6 +26,7 @@ class mockExcelP6Data extends Class {
             "Undtagne transporttyper", 1,
             "Ugedage", 1
         )
+        this.kolonneNavnOgNummer := Map("Budnummer", 1, "Vognløbsnummer", 2)
 
         this.aktivWorksheetArrayRække := Array()
 
@@ -47,6 +48,7 @@ class mockExcelP6Data extends Class {
             "Sluttid", "23",
             "Sluttid", "23",
             "Undtagne transporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
+            "Vognløbsdato", "",
             "Ugedage", Array("ma", "mA", "Ma")
         ))
         this.aktivWorksheetArrayRække.Push(Map(
@@ -67,16 +69,23 @@ class mockExcelP6Data extends Class {
             "Sluttid", "22",
             "Sluttid", "22",
             "Undtagne transporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
+            "Vognløbsdato", "",
             "Ugedage", Array("ma")
         ))
 
+        this.færdigbehandletData := {kolonneNavnOgNummer: this.kolonneNavnOgNummer, rækkerSomMapIArray: this.aktivWorksheetArrayRække}
+
     }
 
-    getData()
+    getKolonneNavnOgNummer()
     {
-        return this.aktivWorksheetArrayRække
+        return this.færdigbehandletData.kolonneNavnOgNummer
     }
 
+    getRækkeData()
+    {
+        return this.færdigbehandletData.rækkerSomMapIArray
+    }
 }
 
 udrulÆndringerMock()
@@ -84,7 +93,8 @@ udrulÆndringerMock()
 
     mockExcel := mockExcelP6Data()
 
-    vldata := mockExcel.getData()
+    vlData := mockExcel.getRækkeData()
+    kolonneNavne := mockExcel.getKolonneNavnOgNummer()
 
     testvl := VognløbObj()
     testvlArray := Array()
@@ -105,6 +115,13 @@ udrulÆndringerMock()
 
 
 }
+
+excel := mockExcelP6Data()
+vlObj := VognløbConstructor()
+vlArray := excel.getRækkeData()
+vlObj.setVognløbsdata(vlArray)
+test := vlObj.vognløbArrayPrVognløb()
+test2 := vlObj.vognløbArrayPrUgedag()
 
 ; for vl in vldata
 ; {
