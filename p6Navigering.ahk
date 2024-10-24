@@ -106,13 +106,15 @@ class P6 extends class {
     }
 
     /** Lukker alle vinduer i P6 */
-    navLukVinduer()
+    navLukAlleVinduer()
     {
         SendInput "{esc}{alt}"
         sleep 20
         Sendinput "{v 2}{Down 2}{Enter}"
+    }
 
-        return
+    navLukAktivtVindue(){
+        SendInput("^{F4}")
     }
 
     navVindueKørselsaftale()
