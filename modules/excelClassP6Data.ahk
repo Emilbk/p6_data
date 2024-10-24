@@ -8,7 +8,6 @@
 
 
 #Include excelClass.ahk
-#Include vlClass.ahk
 
 /**
  * @parameter gyldigeKolonner Map,
