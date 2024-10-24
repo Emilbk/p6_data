@@ -1,3 +1,5 @@
+ListLines 1
+
 #Include modules
 #Include vlClass.ahk
 #Include p6.ahk
@@ -99,57 +101,30 @@ class mockExcelP6Data extends Class {
         return this.færdigbehandletData.rækkerSomMapIArray
     }
 }
-
-udrulÆndringerExcel()
-{
-
-    ; excelobj := mockExcelP6Data()
-    ; excel := mockExcelP6Data()
-    
+udrulÆndringerExcel(){
+    excelobj := mockExcelP6Data()
     excelfil := "C:\Users\ebk\makro\p6_data\assets\VL.xlsx"
     excelobj := excelObjP6Data()
     excelobj.setExcelFil(excelfil)
     excelobj.helperIndlæsAlt(1)
     excelobj.quit()
-    rækkeArray := excelobj.getRækkeData()
-    vlObj := VognløbConstructor()
-    vlObj.setVognløbsdata(rækkeArray)
-    vlArray := vlObj.getVognløbsdata()
-    p6nav := p6()
-    p6nav.navAktiverP6Vindue()
-    p6nav.navLukAlleVinduer()
-    tlf := 7011000
-    for vognløbssamling in vlArray
-    {
-        samlingsNummer := A_Index
-        for vognløb in vognløbssamling
-        {
-            tlf += 1
-            p6Obj := p6()
-            p6Obj.setVognløb(vognløb)
-            if konfigurering.getBreakLoopStatus()
-            {
-                MsgBox "Break=loop"
-                ; TODO save-state json
-                konfigurering.removeBreakLoop()
-                break 2
-            }
-            p6Obj.vognløb.tilIndlæsning.MobilnrChf := tlf
-            p6Obj.funkÆndrVognløb()
-        }
-    }
+    udrulÆndringer(excelobj)
 
-
-    MsgBox "Done!"
-
-
+    return
 }
-udrulÆndringerMock()
-{
 
+udrulÆndringermock(){
     excelobj := mockExcelP6Data()
+    udrulÆndringer(excelobj)
+
+    return
+}
+
+udrulÆndringer(pExcelobj)
+{
+    excelobj := pExcelobj
     rækkeArray := excelobj.getRækkeData()
-    
+
     vlObj := VognløbConstructor()
     vlObj.setVognløbsdata(rækkeArray)
     vlArray := vlObj.getVognløbsdata()
@@ -174,7 +149,12 @@ udrulÆndringerMock()
                 break 2
             }
             p6Obj.vognløb.tilIndlæsning.MobilnrChf := tlf
-            p6Obj.funkÆndrVognløb()
+            try {
+                p6Obj.funkÆndrVognløb()
+            } catch Error as fejl {
+                SendInput("{enter}")
+                ; MsgBox fejl.Message
+            }
         }
     }
 
@@ -230,6 +210,6 @@ konfigurering := config()
 
 ; testvl.eksempelDatastruktur()
 
-udrulÆndringerMock()
+udrulÆndringerExcel()
 
 return
