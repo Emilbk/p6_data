@@ -1,5 +1,6 @@
 #Include vlClass.ahk
 #Include p6Navigering.ahk
+#Include config.ahk
 
 
 class mockExcelP6Data extends Class {
@@ -108,6 +109,11 @@ udrulÆndringerMock()
         {
             testp6.dataIndhentVlObj(vognløb)
             testp6.funkÆndrVognløb()
+            if konfiguring.getBreakLoopStatus()
+            {
+                MsgBox "Break=loop"
+                break 2
+            }
         }
 
     }
