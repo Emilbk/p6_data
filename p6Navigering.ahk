@@ -378,8 +378,6 @@ class P6 extends class {
         this.navAktiverP6Vindue()
         ; this.navLukAlleVinduer()
         this.navVindueVognløb()
-        this.navLukAktivtVindue()
-        this.navVindueVognløb()
         this.ændrVognløbsbilledeIndtastVognløbOgDato()
         this.ændrVognløbsbilledeÆndreVognløb()
         this.ændrVognløbsbilledeTjekKørselsaftaleOgStyresystem()
