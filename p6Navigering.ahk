@@ -5,7 +5,20 @@
  */
 class P6 extends class {
 
-    vognløb := Map()
+    vognløb := Array()
+
+    setVognløb(pVognløb) {
+
+        this.vognløb := pVognløb
+
+        return
+    }
+
+    testVl() {
+
+        MsgBox this.vognløb.tilIndlæsning.vognløbsnummer " - " this.vognløb.tilIndlæsning.vognløbsdato
+        return
+    }
 
     /** Metafunktioner */
 
@@ -78,12 +91,6 @@ class P6 extends class {
         }
     }
 
-    ;; VL-data
-    dataIndhentVlObj(pVlMap)
-    {
-        this.vognløb := pVlMap
-        return
-    }
 
     ;; P6-navigering
     navAktiverP6Vindue()
@@ -138,7 +145,6 @@ class P6 extends class {
     {
         ; this.navAktiverP6Vindue()
         this.navAltMenu("t", "k")
-        return
     }
 
     navVindueVognløb()
@@ -160,14 +166,17 @@ class P6 extends class {
     ændrVognløbsbilledeIndtastVognløbOgDato()
     {
 
-        vognløbsnummer := this.vognløb["Vognløbsnummer"]
-        vognløbsdato := this.vognløb["Vognløbsdato"]
+        vognløbsnummer := this.vognløb.tilIndlæsning.Vognløbsnummer
+        vognløbsdato := this.vognløb.tilIndlæsning.Vognløbsdato
 
         this.navAktiverP6Vindue()
 
         SendInput("^a")
+        ; this.kopierVærdi("appsKey", 0, "!l")
+        this.navVindueVognløbvognløbsnummer()
         SendInput(vognløbsnummer)
-        SendInput "{tab}"
+        ; this.kopierVærdi("ctrl", 0, "!l{tab}")
+        this.navVindueVognløbvognløbsdato()
         SendInput(vognløbsdato)
         SendInput("{enter}")
         sleep 20
@@ -176,9 +185,8 @@ class P6 extends class {
         if (InStr(A_Clipboard, "eksistere ikke"))
             throw Error("Vognløb ikke registreret - TODO")
 
-        tjekAfIndtastningVognløbsnummer := this.kopierVærdi("appsKey")
-        SendInput("{tab}")
-        tjekAfIndtastningVognløbsdato := this.kopierVærdi("ctrl")
+        tjekAfIndtastningVognløbsnummer := this.kopierVærdi("appsKey", 0, "!l")
+        tjekAfIndtastningVognløbsdato := this.kopierVærdi("ctrl", 0, "!l{tab}")
 
         if (tjekAfIndtastningVognløbsnummer != vognløbsnummer or tjekAfIndtastningVognløbsdato != vognløbsdato)
             throw (Error("Fejl i indtastning, vognløbsnummer eller dato er ikke korrekt"))
@@ -195,13 +203,12 @@ class P6 extends class {
 
     ændrVognløbsbilledeTjekKørselsaftaleOgStyresystem()
     {
-        kørselsaftale := this.vognløb["Kørselsaftale"]
-        styresystem := this.vognløb["Styresystem"]
+        kørselsaftale := this.vognløb.tilIndlæsning.Kørselsaftale
+        styresystem := this.vognløb.tilIndlæsning.Styresystem
 
-        tjekEksisterendeKørselsaftale := this.kopierVærdi("appsKey")
-        SendInput("{tab}")
-        tjekEksisterendeStyresystem := this.kopierVærdi("appsKey")
-        if (tjekEksisterendeKørselsaftale != this.vognløb["Kørselsaftale"] or tjekEksisterendeStyresystem != this.vognløb["Styresystem"])
+        tjekEksisterendeKørselsaftale := this.kopierVærdi("appsKey", 0, "!k")
+        tjekEksisterendeStyresystem := this.kopierVærdi("appsKey", 0, "!k{tab}")
+        if (tjekEksisterendeKørselsaftale != kørselsaftale or tjekEksisterendeStyresystem != styresystem)
             throw (Error("Fejl i indlæsning, kørselsaftale eller styresystem er ikke det forventede"))
 
         SendInput("{enter}")
@@ -216,14 +223,14 @@ class P6 extends class {
     {
 
         ; vognløbsdato := Format("{:U}", p_vl_obj["Dato"])
-        vognløbsdato := this.vognløb["Vognløbsdato"]
-        starttid := this.vognløb["Starttid"]
-        sluttid := this.vognløb["Sluttid"]
-        startzone := this.vognløb["Startzone"]
-        slutzone := this.vognløb["Slutzone"]
-        hjemzone := this.vognløb["Hjemzone"]
+        vognløbsdato := this.vognløb.tilIndlæsning.Vognløbsdato
+        starttid := this.vognløb.tilIndlæsning.Starttid
+        sluttid := this.vognløb.tilIndlæsning.Sluttid
+        startzone := this.vognløb.tilIndlæsning.Startzone
+        slutzone := this.vognløb.tilIndlæsning.Slutzone
+        hjemzone := this.vognløb.tilIndlæsning.Hjemzone
 
-        this.navAktiverP6Vindue()
+        ; this.navAktiverP6Vindue()
         this.kopierVærdi("ctrl")
         SendInput(vognløbsdato "{tab}")
         SendInput(starttid "{tab}")
@@ -246,15 +253,16 @@ class P6 extends class {
 
     ændrVognløbsbilledIndtastØvrige()
     {
-        vognløbsnotering := this.vognløb["Vognløbsnotering"]
-        MobilnrChf := this.vognløb["MobilnrChf"]
-        Vognløbskategori := this.vognløb["Vognløbskategori"]
-        Planskema := this.vognløb["Planskema"]
-        Økonomiskema := this.vognløb["Økonomiskema"]
-        Statistikgruppe := this.vognløb["Statistikgruppe"]
-        UndtagneTransporttyper := this.vognløb["Undtagne transporttyper"]
+        vognløbsnotering := this.vognløb.tilIndlæsning.Vognløbsnotering
+        MobilnrChf := this.vognløb.tilIndlæsning.MobilnrChf
+        Vognløbskategori := this.vognløb.tilIndlæsning.Vognløbskategori
+        Planskema := this.vognløb.tilIndlæsning.Planskema
+        Økonomiskema := this.vognløb.tilIndlæsning.Økonomiskema
+        Statistikgruppe := this.vognløb.tilIndlæsning.Statistikgruppe
+        UndtagneTransporttyper := this.vognløb.tilIndlæsning.UndtagneTransporttyper
 
         this.navAktiverP6Vindue()
+        ; indlæsningstidstjek?
         if Vognløbsnotering
             SendInput("!p{tab 11}+{Up}" Vognløbsnotering)
         if MobilnrChf
@@ -268,23 +276,31 @@ class P6 extends class {
         if Statistikgruppe
             SendInput("!ø{tab 9}" Statistikgruppe)
 
+        return
+    }
+
+    ændrVognløbsbilledeIndtastTransporttyper() {
+
+        UndtagneTransporttyper := this.vognløb.tilIndlæsning.UndtagneTransporttyper
+
         if UndtagneTransporttyper
         {
             SendInput("!u}")
             sleep 20
-            loop 20
+            loop 19
             {
                 SendInput("{delete}")
-                sleep 10
+                sleep 25
                 SendInput("{tab}")
+                sleep 25
 
             }
 
+            SendInput("{delete}")
             SendInput("!u}")
             for trtype in UndtagneTransporttyper
                 SendInput("{tab}" trtype)
         }
-        return
     }
 
     ændrVognløbsbilledeAfslut()
@@ -302,13 +318,13 @@ class P6 extends class {
 
     tjekVognløbsbiledeÅbningstiderogZone()
     {
-        
-        vognløbsdatoExcel := this.vognløb["Vognløbsdato"]
-        starttidExcel := this.vognløb["Starttid"]
-        sluttidExcel := this.vognløb["Sluttid"]
-        startzoneExcel := this.vognløb["Startzone"]
-        slutzoneExcel := this.vognløb["Slutzone"]
-        hjemzoneExcel := this.vognløb["Hjemzone"]
+
+        vognløbsdatoExcel := this.vognløb.tilIndlæsning.Vognløbsdato
+        starttidExcel := this.vognløb.tilIndlæsning.Starttid
+        sluttidExcel := this.vognløb.tilIndlæsning.Sluttid
+        startzoneExcel := this.vognløb.tilIndlæsning.Startzone
+        slutzoneExcel := this.vognløb.tilIndlæsning.Slutzone
+        hjemzoneExcel := this.vognløb.tilIndlæsning.Hjemzone
 
         this.navAktiverP6Vindue()
         datoStartindlæst := this.kopierVærdi("ctrl")
@@ -355,21 +371,21 @@ class P6 extends class {
         return
 
 
-
-
-
-
     }
 
     funkÆndrVognløb()
     {
         this.navAktiverP6Vindue()
+        ; this.navLukAlleVinduer()
+        this.navVindueVognløb()
+        this.navLukAktivtVindue()
         this.navVindueVognløb()
         this.ændrVognløbsbilledeIndtastVognløbOgDato()
         this.ændrVognløbsbilledeÆndreVognløb()
         this.ændrVognløbsbilledeTjekKørselsaftaleOgStyresystem()
         this.ændrVognløbsbilledeIndtastÅbningstiderOgZone()
         this.ændrVognløbsbilledIndtastØvrige()
+        this.ændrVognløbsbilledeIndtastTransporttyper()
         this.ændrVognløbsbilledeAfslut()
         return
     }
