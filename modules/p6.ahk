@@ -22,6 +22,7 @@ class P6 extends class {
 
     /** Metafunktioner */
 
+    ; clipboard-bug fikset af 2.0.18?
     /** henter værdi fra P6-celle, eventuelt fra p6-msgbox hvis pHentMsgbox er sat
      * @param pKlipGenvej "appsKey" eller "ctrl", varierer fra felt til felt i P6
      * @param pHentMsgbox valgfri, hvis sat indhenter msgbox-besked 
@@ -137,7 +138,7 @@ class P6 extends class {
         Sendinput "{v 2}{Down 2}{Enter}"
     }
 
-    navLukAktivtVindue(){
+    navLukAktivtVindue() {
         SendInput("^{F4}")
     }
 
@@ -154,70 +155,66 @@ class P6 extends class {
         return
     }
 
-    navVindueVognløbvognløbsnummer(){
+    navVindueVognløbvognløbsnummer() {
         SendInput("!l")
     }
 
-    navVindueVognløbvognløbsdato(){
+    navVindueVognløbvognløbsdato() {
         SendInput("!l{tab}")
     }
 
     ;; Data
-    kørselsaftaleTjekKørselsaftaleOgStyresystem(){
-        
-    }
-
-    kørselsaftaleÆndr(){
+    kørselsaftaleTjekKørselsaftaleOgStyresystem() {
 
     }
 
-
-    kørselsaftaleAfbryd(){
+    kørselsaftaleÆndr() {
 
     }
 
-    kørselsaftaleIndtastPlansskemaOgØkonomiskema(){
+
+    kørselsaftaleAfbryd() {
+
+    }
+
+    kørselsaftaleIndtastPlansskemaOgØkonomiskema() {
         ;planskema !p
         ;økonomi !p{tab 4}
-    
+
     }
 
-    kørselsaftaleIndtastStatistikgruppe(){
+    kørselsaftaleIndtastStatistikgruppe() {
         ;stat !p{tab 6}
     }
 
-    kørselsaftaleIndtastNormalHjemzone(){
+    kørselsaftaleIndtastNormalHjemzone() {
         ;normHjemzone !m{tab 6}
     }
-    kørselsaftaleIndtastVognmandNavn(){
+    kørselsaftaleIndtastVognmandNavn() {
         ;vmnavn !a
     }
 
-    kørselsaftaleIndtastVognmanCO(){
+    kørselsaftaleIndtastVognmanCO() {
         ;vmCo !a{tab}
     }
 
-    kørselsaftaleIndtastHjemzoneAdresse(){
+    kørselsaftaleIndtastHjemzoneAdresse() {
         ;vmAdr !a{tab 2}
     }
 
-    kørselsaftaleIndtastHjemzonePostnr(){
+    kørselsaftaleIndtastHjemzonePostnr() {
 
         ;  !a{tab 3}
     }
 
-    kørselsaftaleIndtastVMKontaktnummer(){
+    kørselsaftaleIndtastVMKontaktnummer() {
         ; !a{tab 4}
     }
 
 
-
-
-    kørselsaftaleIndtastKørerIkkeTransporttyper(){
+    kørselsaftaleIndtastKørerIkkeTransporttyper() {
         ;!k
     }
-
-
 
 
     vognløbsbilledeIndtastVognløbOgDato()
@@ -238,8 +235,8 @@ class P6 extends class {
         SendInput("{enter}")
         sleep 20
 
-        this.kopierVærdi("ctrl", 1)
-        if (InStr(A_Clipboard, "eksistere ikke"))
+        mBoxFejl := this.kopierVærdi("ctrl", 1)
+        if (InStr(mBoxFejl, "eksistere ikke"))
             throw Error("Vognløb ikke registreret - TODO")
 
         tjekAfIndtastningVognløbsnummer := this.kopierVærdi("appsKey", 0, "!l")
