@@ -1,5 +1,5 @@
 #Requires AutoHotkey v2.0
-#Include deepCopy.ahk
+#Include ../Lib/deepCopy.ahk
 
 class VognløbConstructor {
 
