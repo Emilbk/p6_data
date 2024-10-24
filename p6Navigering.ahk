@@ -14,50 +14,67 @@ class P6 extends class {
      * @param pHentMsgbox valgfri, hvis sat indhenter msgbox-besked 
      * @returns celleværdi eller msgbox-besked
      */
-    kopierVærdi(pKlipGenvej, pHentMsgbox?)
+    kopierVærdi(pKlipGenvej, pHentMsgbox?, pNavigeringsSekvens?)
     {
         if (pKlipGenvej != "appsKey" and pKlipGenvej != "ctrl")
             throw Error("forkert genvejsinput")
         /** @var {Integer} clipwaitTid waittid ved første forsøg  */
         clipwaitTid := 0.4
         /** @var {Integer} clipwaitTidLoop waittid ved loop, når første mislykkes  */
-        clipwaitTidLoop := 0.5
+        clipwaitTidLoop := 1.2
         clipwaitTidMsgbox := 0.5
         muligeKlipGenveje := Map("appsKey", "{appsKey}c", "ctrl", "^c")
-        if IsSet(pHentMsgbox)
+        if (isset(pHentMsgbox) and pHentMsgbox != 0)
         {
             A_Clipboard := ""
             SendInput muligeKlipGenveje[pKlipGenvej]
+            sleep 100
             clipwait clipwaitTidMsgbox
-            sleep 20
-            while A_Clipboard = ""
+            sleep 100
+            while a_clipboard = ""
             {
                 if a_index > 1
                     return
                 else
                 {
                     SendInput muligeKlipGenveje[pKlipGenvej]
+                    sleep 200
                     ClipWait clipwaitTidMsgbox
+                    sleep 300
                 }
             }
-            return A_Clipboard
+            return a_clipboard
         }
-        if !IsSet(pHentMsgbox)
+        else
         {
+            if IsSet(pNavigeringsSekvens)
+            {
+                Sendinput(pNavigeringsSekvens)
+                sleep 20
+            }
             A_Clipboard := ""
             SendInput muligeKlipGenveje[pKlipGenvej]
+            sleep 100
             clipwait clipwaitTid
-            while A_Clipboard = ""
+            sleep 100
+            while a_clipboard = ""
             {
                 if a_index > 10
                     throw (Error("Clipboardtimeout efter 10 forsøg"))
                 else
                 {
+                    if IsSet(pNavigeringsSekvens)
+                    {
+                        Sendinput(pNavigeringsSekvens)
+                        sleep 20
+                    }
                     SendInput muligeKlipGenveje[pKlipGenvej]
+                    sleep 200
                     ClipWait clipwaitTidLoop
+                    sleep 300
                 }
             }
-            return A_Clipboard
+            return a_clipboard
         }
     }
 
