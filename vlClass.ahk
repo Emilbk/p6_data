@@ -9,7 +9,16 @@ class VognløbConstructor {
     setVognløbsdata(pVognløbsData) {
 
         this.vognløbInput := pVognløbsData
+        this.vognløbArrayPrVognløb()
+        this.vognløbArrayPrUgedag()
+        return
     }
+
+    getVognløbsdata()
+    {
+        return this.vognløbOutput
+    }
+
 
     vognløbArrayPrVognløb() {
         vognløbsarray := this.vognløbInput
@@ -38,70 +47,19 @@ class VognløbConstructor {
                 ugedag := Format("{:U}", ugedag)
                 vognløb["Vognløbsdato"] := ugedag
                 vognløbOutput[outerIndex].push(Array)
-                vognløbOutput[outerIndex][A_Index] := vognløb
+                vognløbOutput[outerIndex][ugedagArrayCount] := VognløbObj()
+                vognløbOutput[outerIndex][ugedagArrayCount].setVognløb(vognløb)
+                vognløbOutput[outerIndex][ugedagArrayCount].tilIndlæsning.Vognløbsdato := ugedag
+                vognløbOutput[outerIndex][ugedagArrayCount].tilIndlæsning.Ugedage := ""
             }
         }
 
         return vognløbOutput
     }
-    getVognløbArray() {
+    ; static setKolonneNavnOgNummer(pKolonneNavnOgNummer){
 
-        if !this.vognløbInput
-            throw UnsetError("Vognløbsdata er ikke indlæst")
-
-        vognløbInput := this.vognløbInput
-        vognløbOutput := this.vognløbOutput
-        midlVognløbArray := Array()
-        ugedagArrayCount := 0
-
-        for vognløbUdgangspunkt in vognløbInput
-        {
-            vognløbOutput.Push(Array())
-            vognløbOutputIndex := A_Index
-            for ugedag in vognløbUdgangspunkt["Ugedage"]
-            {
-                if ugedag := ""
-                    continue
-                ugedagArrayCount += 1
-                ugedag := Format("{:U}", ugedag)
-                dp := DeepCopy(vognløbUdgangspunkt)
-                midlObj := dp()
-                vognløbOutput[vognløbOutputIndex].Push(array(vognløbUdgangspunkt))
-                vognløbOutput[vognløbOutputIndex][ugedagArrayCount]["Vognløbsdato"] := ugedag
-            }
-        }
-        return vognløbOutput
-    }
-    opretVognløbForHverDato()
-    {
-        this.Vognløb := array()
-        arrayCount := 0
-        for ugedag in this.vlData["Ugedage"]
-        {
-            if ugedag = ""
-                continue
-            ugedag := Format("{:U}", ugedag)
-            dp := DeepCopy(this.vlData)
-            midlObj := dp()
-            arrayCount += 1
-            this.Vognløb.Push(midlObj)
-            this.Vognløb[arrayCount]["Vognløbsdato"] := ugedag
-            ; this.Vognløb.Set(ugedag, midlObj)
-            ; this.Vognløb[ugedag]["Vognløbsdato"] := ugedag
-
-            ; this.Vognløb[ugedag] := midlObj()
-
-            ; this.Vognløb[a_index].Set(ugedag, midlObj)
-            ; this.Vognløb[a_index].Set("Vognløbsdato", ugedag)
-
-
-        }
-        return
-        ; static setKolonneNavnOgNummer(pKolonneNavnOgNummer){
-
-        ;     VognløbConstructor.kolonneNavnOgNummer := pKolonneNavnOgNummer
-        ; }
-    }
+    ;     VognløbConstructor.kolonneNavnOgNummer := pKolonneNavnOgNummer
+    ; }
 }
 
 /** Repræsenterer et specifikt vognløb på en specifik dato (eller fast ugedag) */
