@@ -2,10 +2,15 @@ class config {
     
     breakLoop := 0
 
-    setBreakLopp(){
+    setBreakLoop(){
         
         this.breakLoop := 1
     
+    }
+
+    removeBreakLoop(){
+
+        this.breakLoop := 0
     }
 
     getBreakLoopStatus(){

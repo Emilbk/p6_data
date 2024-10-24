@@ -2,6 +2,7 @@
 #Include p6Navigering.ahk
 #Include config.ahk
 
++F1:: konfiguring.setBreakLoop()
 
 class mockExcelP6Data extends Class {
 
@@ -112,6 +113,8 @@ udrulÆndringerMock()
             if konfiguring.getBreakLoopStatus()
             {
                 MsgBox "Break=loop"
+                ; save-state json
+                konfiguring.removeBreakLoop()
                 break 2
             }
         }
