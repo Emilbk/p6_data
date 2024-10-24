@@ -286,6 +286,7 @@ class P6 extends class {
         if UndtagneTransporttyper
         {
             SendInput("!u}")
+            ; TODO #3 konsistens i antal slettede felter i transporttype
             sleep 20
             loop 19
             {

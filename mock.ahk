@@ -1,11 +1,12 @@
+#Include modules
 #Include vlClass.ahk
-#Include p6Navigering.ahk
+#Include p6.ahk
 #Include excelClass.ahk
 #Include excelClassP6Data.ahk
 #Include config.ahk
 
 F12:: Pause
-+F1:: konfiguring.setBreakLoop()
++F1:: konfigurering.setBreakLoop()
 +Escape:: ExitApp()
 +F2:: udrulÆndringerMock()
 
@@ -117,11 +118,11 @@ udrulÆndringerMock()
             tlf += 1
             p6Obj := p6()
             p6Obj.setVognløb(vognløb)
-            if konfiguring.getBreakLoopStatus()
+            if konfigurering.getBreakLoopStatus()
             {
                 MsgBox "Break=loop"
                 ; TODO save-state json
-                konfiguring.removeBreakLoop()
+                konfigurering.removeBreakLoop()
                 break 2
             }
             p6Obj.vognløb.tilIndlæsning.MobilnrChf := tlf
@@ -135,7 +136,7 @@ udrulÆndringerMock()
 
 }
 
-konfiguring := config()
+konfigurering := config()
 
 
 ; excelfil := "C:\Users\ebk\makro\p6_data\VL.xlsx"
