@@ -251,14 +251,14 @@ class P6 extends class {
         return
     }
 
-    ændrVognløbsbilledeÆndreVognløb()
+    vognløbsbilledeÆndrVognløb()
     {
         SendInput ("^æ")
         sleep 20
         return
     }
 
-    ændrVognløbsbilledeTjekKørselsaftaleOgStyresystem()
+    vognløbsbilledeTjekKørselsaftaleOgStyresystem()
     {
         kørselsaftale := this.vognløb.tilIndlæsning.Kørselsaftale
         styresystem := this.vognløb.tilIndlæsning.Styresystem
@@ -276,7 +276,7 @@ class P6 extends class {
         return
     }
 
-    ændrVognløbsbilledeIndtastÅbningstiderOgZone()
+    vognløbsbilledeIndtastÅbningstiderOgZone()
     {
 
         ; vognløbsdato := Format("{:U}", p_vl_obj["Dato"])
@@ -308,7 +308,7 @@ class P6 extends class {
         return
     }
 
-    ændrVognløbsbilledIndtastØvrige()
+    vognløbsbilledeIndtastØvrige()
     {
         vognløbsnotering := this.vognløb.tilIndlæsning.Vognløbsnotering
         MobilnrChf := this.vognløb.tilIndlæsning.MobilnrChf
@@ -336,7 +336,7 @@ class P6 extends class {
         return
     }
 
-    ændrVognløbsbilledeIndtastTransporttyper() {
+    vognløbsbilledeIndtastTransporttyper() {
 
         UndtagneTransporttyper := this.vognløb.tilIndlæsning.UndtagneTransporttyper
 
@@ -355,9 +355,10 @@ class P6 extends class {
             }
 
             SendInput("{delete}")
+            sleep 400
             SendInput("!u}")
             for trtype in UndtagneTransporttyper
-                SendInput("{tab}" trtype)
+                SendInput(trtype "{tab}")
         }
     }
 
@@ -374,7 +375,7 @@ class P6 extends class {
         return
     }
 
-    tjekVognløbsbiledeÅbningstiderogZone()
+    vognløbsbilledeTjekÅbningstiderOgZone()
     {
 
         vognløbsdatoExcel := this.vognløb.tilIndlæsning.Vognløbsdato
@@ -436,12 +437,12 @@ class P6 extends class {
         this.navAktiverP6Vindue()
         ; this.navLukAlleVinduer()
         this.navVindueVognløb()
-        this.ændrVognløbsbilledeIndtastVognløbOgDato()
-        this.ændrVognløbsbilledeÆndreVognløb()
-        this.ændrVognløbsbilledeTjekKørselsaftaleOgStyresystem()
-        this.ændrVognløbsbilledeIndtastÅbningstiderOgZone()
-        this.ændrVognløbsbilledIndtastØvrige()
-        this.ændrVognløbsbilledeIndtastTransporttyper()
+        this.vognløbsbilledeIndtastVognløbOgDato()
+        this.vognløbsbilledeÆndrVognløb()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        this.vognløbsbilledeIndtastÅbningstiderOgZone()
+        this.vognløbsbilledeIndtastØvrige()
+        this.vognløbsbilledeIndtastTransporttyper()
         this.ændrVognløbsbilledeAfslut()
         return
     }
@@ -450,10 +451,10 @@ class P6 extends class {
     {
         this.navAktiverP6Vindue()
         this.navVindueVognløb()
-        this.ændrVognløbsbilledeIndtastVognløbOgDato()
-        this.ændrVognløbsbilledeÆndreVognløb()
-        this.ændrVognløbsbilledeTjekKørselsaftaleOgStyresystem()
-        this.tjekVognløbsbiledeÅbningstiderogZone()
+        this.vognløbsbilledeIndtastVognløbOgDato()
+        this.vognløbsbilledeÆndrVognløb()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        this.vognløbsbilledeTjekÅbningstiderOgZone()
 
     }
 }
