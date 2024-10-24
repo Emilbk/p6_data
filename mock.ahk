@@ -1,8 +1,14 @@
 #Include vlClass.ahk
 #Include p6Navigering.ahk
+#Include excelClass.ahk
+#Include excelClassP6Data.ahk
 #Include config.ahk
 
+F12:: Pause
 +F1:: konfiguring.setBreakLoop()
++Escape:: ExitApp()
++F2::udrulÆndringerMock()
+
 
 class mockExcelP6Data extends Class {
 
@@ -49,9 +55,9 @@ class mockExcelP6Data extends Class {
             "Starttid", "09",
             "Sluttid", "23",
             "Sluttid", "23",
-            "Undtagne transporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
+            "UndtagneTransporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
             "Vognløbsdato", "",
-            "Ugedage", Array("ma", "mA", "Ma")
+            "Ugedage", Array("ma", "ma", "ma")
         ))
         this.aktivWorksheetArrayRække.Push(Map(
             "Budnummer", "24-2266",
@@ -70,12 +76,12 @@ class mockExcelP6Data extends Class {
             "Starttid", "10",
             "Sluttid", "22",
             "Sluttid", "22",
-            "Undtagne transporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
+            "UndtagneTransporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
             "Vognløbsdato", "",
             "Ugedage", Array("ma")
         ))
 
-        this.færdigbehandletData := {kolonneNavnOgNummer: this.kolonneNavnOgNummer, rækkerSomMapIArray: this.aktivWorksheetArrayRække}
+        this.færdigbehandletData := { kolonneNavnOgNummer: this.kolonneNavnOgNummer, rækkerSomMapIArray: this.aktivWorksheetArrayRække }
 
     }
 
@@ -93,23 +99,23 @@ class mockExcelP6Data extends Class {
 udrulÆndringerMock()
 {
 
-    mockExcel := mockExcelP6Data()
+    excelobj := mockExcelP6Data()
+    rækkeArray := excelobj.getRækkeData()
+    ; excel := mockExcelP6Data()
+    vlObj := VognløbConstructor()
+    vlObj.setVognløbsdata(rækkeArray)
 
-    vlData := mockExcel.getRækkeData()
-    kolonneNavne := mockExcel.getKolonneNavnOgNummer()
+    vlArray := vlObj.getVognløbsdata()
 
-    testvl := VognløbObj()
-    testvlArray := Array()
-    for vognløb in vldata
+    tlf := 7011000
+    for vognløbssamling in vlArray
     {
-        testvl.indhentVognløbsdata(vognløb)
-        testvl.opretVognløbForHverDato()
-        testp6 := P6()
-
-        for vognløbsdag, vognløb in testvl.Vognløb
+        samlingsNummer := A_Index
+        for vognløb in vognløbssamling
         {
-            testp6.dataIndhentVlObj(vognløb)
-            testp6.funkÆndrVognløb()
+            tlf += 1
+            p6Obj := p6()
+            p6Obj.setVognløb(vognløb)
             if konfiguring.getBreakLoopStatus()
             {
                 MsgBox "Break=loop"
@@ -117,20 +123,32 @@ udrulÆndringerMock()
                 konfiguring.removeBreakLoop()
                 break 2
             }
+            p6Obj.vognløb.tilIndlæsning.MobilnrChf := tlf
+            p6Obj.funkÆndrVognløb()
         }
-
     }
+
+
     MsgBox "Done!"
 
 
 }
 
-excel := mockExcelP6Data()
-vlObj := VognløbConstructor()
-vlArray := excel.getRækkeData()
-vlObj.setVognløbsdata(vlArray)
-test := vlObj.vognløbArrayPrVognløb()
-test2 := vlObj.vognløbArrayPrUgedag()
+konfiguring := config()
+
+
+; excelfil := "C:\Users\ebk\makro\p6_data\VL.xlsx"
+; excelobj := excelObjP6Data()
+; excelobj.setExcelFil(excelfil)
+; excelobj.helperIndlæsAlt(1)
+; excelobj.quit()
+
+; test := P6()
+; loop 100
+; {
+;     test.kopierVærdi("ctrl", 1)
+; }
+
 
 ; for vl in vldata
 ; {
@@ -162,5 +180,6 @@ test2 := vlObj.vognløbArrayPrUgedag()
 
 ; testvl.eksempelDatastruktur()
 
+udrulÆndringerMock()
 
 return
