@@ -149,12 +149,12 @@ udrulÆndringer(pExcelobj)
                 break 2
             }
             p6Obj.vognløb.tilIndlæsning.MobilnrChf := tlf
-            try {
+            ; try {
                 p6Obj.funkÆndrVognløb()
-            } catch Error as fejl {
-                SendInput("{enter}")
+            ; } catch Error as fejl {
+                ; SendInput("{enter}")
                 ; MsgBox fejl.Message
-            }
+            ; }
         }
     }
 
