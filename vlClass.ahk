@@ -122,52 +122,38 @@ class VognløbObj
     ;     for vl in this.excelDataTilIndlæsning
     ;         this.vlDataTilIndlæsningArray.push(vl)
     ; }
+    
+    tilIndlæsning := Object()
 
-    Vognløb := Array()
-    IndlæsteVognløb := Array()
-    indhentVognløbsdata(pVlArray)
-    {
-        this.vlData := pVlArray
+    tilIndlæsning.Budnummer := ""
+    tilIndlæsning.Vognløbsnummer := ""
+    tilIndlæsning.Kørselsaftale := ""
+    tilIndlæsning.Styresystem := ""
+    tilIndlæsning.Startzone := ""
+    tilIndlæsning.Slutzone := ""
+    tilIndlæsning.Hjemzone := ""
+    tilIndlæsning.MobilnrChf := ""
+    tilIndlæsning.Vognløbskategori := ""
+    tilIndlæsning.Planskema := ""
+    tilIndlæsning.Økonomiskema := ""
+    tilIndlæsning.Statistikgruppe := ""
+    tilIndlæsning.Vognløbsnotering := ""
+    tilIndlæsning.Starttid := ""
+    tilIndlæsning.Sluttid := ""
+    tilIndlæsning.UndtagneTransporttyper := ""
+    tilIndlæsning.Vognløbsdato := ""
+    tilIndlæsning.Ugedage := ""
 
-        return
-    }
-
-    opretVognløbForHverDato()
-    {
-        this.Vognløb := array()
-        arrayCount := 0
-        for ugedag in this.vlData["Ugedage"]
+    setVognløb(vlData) {
+        for vlKey, vlIndhold in vlData
         {
-            if ugedag = ""
-                continue
-            ugedag := Format("{:U}", ugedag)
-            dp := DeepCopy(this.vlData)
-            midlObj := dp()
-            arrayCount += 1
-            this.Vognløb.Push(midlObj)
-            this.Vognløb[arrayCount]["Vognløbsdato"] := ugedag
-            ; this.Vognløb.Set(ugedag, midlObj)
-            ; this.Vognløb[ugedag]["Vognløbsdato"] := ugedag
-
-            ; this.Vognløb[ugedag] := midlObj()
-
-            ; this.Vognløb[a_index].Set(ugedag, midlObj)
-            ; this.Vognløb[a_index].Set("Vognløbsdato", ugedag)
-
-
+            this.tilIndlæsning.%vlkey% := vlIndhold
         }
+    }
+    test(){
+        MsgBox this.tilIndlæsning.vognløbsnummer " - " this.tilIndlæsning.Vognløbsdato
+
         return
     }
-
-    ; eksempelDataStruktur() {
-
-    ; }
-
-    ; aeksempelDatastruktur() {
-
-    ;     for vlsomMapKey, vlSomMap in this.Vognløb["Fr"]
-    ;         for celleArraySomMapValue in vlSomMap
-    ;             MsgBox vlSomMap["Vognløbsnummer"][1] ": " kolonneNavnSomMapKey " - " endeligCelleVærdi
-    ;     return
-    ; }
+    
 }
