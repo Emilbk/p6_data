@@ -7,7 +7,7 @@
 F12:: Pause
 +F1:: konfiguring.setBreakLoop()
 +Escape:: ExitApp()
-+F2::udrulÆndringerMock()
++F2:: udrulÆndringerMock()
 
 
 class mockExcelP6Data extends Class {
@@ -104,9 +104,10 @@ udrulÆndringerMock()
     ; excel := mockExcelP6Data()
     vlObj := VognløbConstructor()
     vlObj.setVognløbsdata(rækkeArray)
-
     vlArray := vlObj.getVognløbsdata()
-
+    p6nav := p6()
+    p6nav.navAktiverP6Vindue()
+    p6nav.navLukAlleVinduer()
     tlf := 7011000
     for vognløbssamling in vlArray
     {
@@ -119,7 +120,7 @@ udrulÆndringerMock()
             if konfiguring.getBreakLoopStatus()
             {
                 MsgBox "Break=loop"
-                ; save-state json
+                ; TODO save-state json
                 konfiguring.removeBreakLoop()
                 break 2
             }
