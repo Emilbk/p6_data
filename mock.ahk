@@ -6,10 +6,13 @@
 #Include config.ahk
 
 F12:: Pause
-+F1:: konfigurering.setBreakLoop()
-+Escape:: ExitApp()
-+F2:: udrulÆndringerMock()
-
+!F12:: konfigurering.setBreakLoop()
++F12:: ExitApp()
+::tudrul::
+{
+    udrulÆndringerMock()
+    return
+}
 
 class mockExcelP6Data extends Class {
 
@@ -97,15 +100,60 @@ class mockExcelP6Data extends Class {
     }
 }
 
+udrulÆndringerExcel()
+{
+
+    ; excelobj := mockExcelP6Data()
+    ; excel := mockExcelP6Data()
+    
+    excelfil := "C:\Users\ebk\makro\p6_data\assets\VL.xlsx"
+    excelobj := excelObjP6Data()
+    excelobj.setExcelFil(excelfil)
+    excelobj.helperIndlæsAlt(1)
+    excelobj.quit()
+    rækkeArray := excelobj.getRækkeData()
+    vlObj := VognløbConstructor()
+    vlObj.setVognløbsdata(rækkeArray)
+    vlArray := vlObj.getVognløbsdata()
+    p6nav := p6()
+    p6nav.navAktiverP6Vindue()
+    p6nav.navLukAlleVinduer()
+    tlf := 7011000
+    for vognløbssamling in vlArray
+    {
+        samlingsNummer := A_Index
+        for vognløb in vognløbssamling
+        {
+            tlf += 1
+            p6Obj := p6()
+            p6Obj.setVognløb(vognløb)
+            if konfigurering.getBreakLoopStatus()
+            {
+                MsgBox "Break=loop"
+                ; TODO save-state json
+                konfigurering.removeBreakLoop()
+                break 2
+            }
+            p6Obj.vognløb.tilIndlæsning.MobilnrChf := tlf
+            p6Obj.funkÆndrVognløb()
+        }
+    }
+
+
+    MsgBox "Done!"
+
+
+}
 udrulÆndringerMock()
 {
 
     excelobj := mockExcelP6Data()
     rækkeArray := excelobj.getRækkeData()
-    ; excel := mockExcelP6Data()
+    
     vlObj := VognløbConstructor()
     vlObj.setVognløbsdata(rækkeArray)
     vlArray := vlObj.getVognløbsdata()
+
     p6nav := p6()
     p6nav.navAktiverP6Vindue()
     p6nav.navLukAlleVinduer()
