@@ -163,7 +163,64 @@ class P6 extends class {
     }
 
     ;; Data
-    ændrVognløbsbilledeIndtastVognløbOgDato()
+    kørselsaftaleTjekKørselsaftaleOgStyresystem(){
+        
+    }
+
+    kørselsaftaleÆndr(){
+
+    }
+
+
+    kørselsaftaleAfbryd(){
+
+    }
+
+    kørselsaftaleIndtastPlansskemaOgØkonomiskema(){
+        ;planskema !p
+        ;økonomi !p{tab 4}
+    
+    }
+
+    kørselsaftaleIndtastStatistikgruppe(){
+        ;stat !p{tab 6}
+    }
+
+    kørselsaftaleIndtastNormalHjemzone(){
+        ;normHjemzone !m{tab 6}
+    }
+    kørselsaftaleIndtastVognmandNavn(){
+        ;vmnavn !a
+    }
+
+    kørselsaftaleIndtastVognmanCO(){
+        ;vmCo !a{tab}
+    }
+
+    kørselsaftaleIndtastHjemzoneAdresse(){
+        ;vmAdr !a{tab 2}
+    }
+
+    kørselsaftaleIndtastHjemzonePostnr(){
+
+        ;  !a{tab 3}
+    }
+
+    kørselsaftaleIndtastVMKontaktnummer(){
+        ; !a{tab 4}
+    }
+
+
+
+
+    kørselsaftaleIndtastKørerIkkeTransporttyper(){
+        ;!k
+    }
+
+
+
+
+    vognløbsbilledeIndtastVognløbOgDato()
     {
 
         vognløbsnummer := this.vognløb.tilIndlæsning.Vognløbsnummer
