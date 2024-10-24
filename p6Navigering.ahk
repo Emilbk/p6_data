@@ -131,6 +131,14 @@ class P6 extends class {
         return
     }
 
+    navVindueVognløbvognløbsnummer(){
+        SendInput("!l")
+    }
+
+    navVindueVognløbvognløbsdato(){
+        SendInput("!l{tab}")
+    }
+
     ;; Data
     ændrVognløbsbilledeIndtastVognløbOgDato()
     {
