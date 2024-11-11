@@ -6,7 +6,7 @@
  * 
  * Indlæser excelark
  * Datastruktur:
- * Hver række defineres separat i array aktivWorksheetArrayRække
+ * Hver række defineres separat i array aktivWorksheet.SheetArray
  * Herunder defineres hver celle i en map, med kolonnenavn som key og celleværdi som value
  * Hvis flere kolonner har samme navn oprettes i stedet for celleværdien et array med de samlede celleværdier
  * worksheetArrayRække(alle rækker)[en specifik række]{en specific celle knyttet til kolonnenavn}([array hvis flere af den samme kolonne])
@@ -15,200 +15,134 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 
-/**
- * @param pExcelFil valgt excel-fil-path
- * @property app ComObject
- * @property aktivWorkbook 
- * @property aktivWorksheet 
- * @property aktivWorksheetRækkerEnd 
- * @property aktivWorksheetKolonnerEnd 
- * @property aktivWorksheetArrayAlt ComArray, [kolonne, række] - int.
- * @property aktivWorksheetKolonneNavnOgNummer Map, Kolonnenavn: kolonnerække
- * @property aktivWorksheetArrayRække array med map for hver række, kolonnenavn: kolonneindhold
- * @property færdigbehandletData
- */
-class excelClass extends Class {
-    __New(pExcelFilConstructor := "") {
+class excelIndlæsVlData extends Class {
+    __New(pExcelFil, pArkNavnEllerNummer) {
         this.app := ComObject("Excel.Application")
 
-        this.excelFilNavnLong := pExcelFilConstructor
+        this.helperIndlæsAlt(pExcelFil, pArkNavnEllerNummer)
 
+        this.quit()
+    }
+
+    aktivWorkbook := Object()
+    aktivWorksheet := Object()
+    aktivWorksheet.SheetArray := Array()
+    aktivWorksheet.KolonneNavnOgNummer := Map()
+
+
+    åbenWorkbookReadonly(pExcelFil) {
+
+        
+        this.excelFilNavnLong := pExcelFil
         SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
         this.excelFilNavn := varFilNavn
         this.excelFilDir := varFilDir
         this.excelFilNavnUdenExtension := varFilNavnUdenExtension
 
+        this.aktivWorkbookComObj := this.app.Workbooks.open(pExcelFil, "ReadOnly" = true)
+        return
     }
 
-    app := ""
-    aktivWorkbook := ""
-    aktivWorksheet := ""
-    aktivWorksheetRækkerEnd := ""
-    aktivWorksheetKolonnerEnd := ""
-    aktivWorksheetArrayAlt := Array()
-    aktivWorksheetKolonneNavnOgNummer := Map()
-    /** @type {Array} */
-    aktivWorksheetArrayRække := Array()
-    færdigbehandletData := {KolonnenavneOgNummer: "", rækkerSomMapIArray: ""}
-    /**
-     * Vælg excel-fil hvis ikke indlæst gennem constructor
-     * @param pExcelFil 
-     */
-    filLavNyWorkbook(pWorkbookFil){
+    setAktivRækkeNummer(pAktivRække){
 
-        this.aktivWorkbook := this.app.Workbooks.add()
-        this.aktivWorkbook.Title := "Ny workbook"
-        this.aktivWorkbook.Subject := "Ny subject"
-        ; this.aktivWorkbook.Saveas := "Ny subject"
+        this.aktivWorksheet.AktivRække := pAktivRække
 
-        return this.aktivWorkbook
     }
 
-    /**
-     * Aktiver excel-dokument
-     * @property this.aktivWorkbook resultat
-     */
-    filAktiverExcelWorkbookReadonly() {
 
-        this.aktivWorkbook := this.app.Workbooks.open(this.excelFilNavnLong, , "ReadOnly" = true)
+
+    setAktivWorksheet(pSheetNummerEllerNavn) {
+        this.aktivWorksheetComObj := this.aktivWorkbookComObj.Sheets(pSheetNummerEllerNavn)
 
         return
     }
 
-    /**
-     * Aktiver sheet i aktiv workbook
-     * @param pSheetNummerEllerNavn det valgte ark, string eller int
-     * @property aktivWorksheet resultat
-     */
-    filVælgAktivWorksheet(pSheetNummerEllerNavn) {
-        this.aktivWorksheet := this.aktivWorkbook.Sheets(pSheetNummerEllerNavn)
-
-        return
-    }
-
-    /**
-     * Definer de fyldte celler i aktivt ark
-     * @property this.aktivWorksheetRækkerEnd Sidste række, int
-     * @property this.aktivWorksheetKolonnerEnd Sidste Kolonne, int
-     */
     dataFindBrugtExcelRangeIAktivWorksheet() {
 
-        this.aktivWorksheetRækkerEnd := this.aktivWorksheet.usedrange.rows.count
-        this.aktivWorksheetKolonnerEnd := this.aktivWorksheet.usedrange.columns.count
+        this.aktivWorksheet.RækkerEnd := this.aktivWorksheetComObj.usedrange.rows.count
+        this.aktivWorksheet.KolonnerEnd := this.aktivWorksheetComObj.usedrange.columns.count
 
         return
     }
 
-    /**
-     * Hent range af udfyldte celler til comObj-array
-     * @property this.aktivWorksheetArrayAlt array, [kolonne-nr, række-nr]
-     */
     dataIndlæsAktivRangetilArray() {
-        this.aktivWorksheetArrayAlt := this.aktivWorksheet.usedrange.value
-        ; this.aktivWorksheetArrayAlt := this.aktivWorksheet.usedrange.value
+        this.aktivWorksheet.SheetArray := this.aktivWorksheetComObj.usedrange.value
 
         return
     }
 
-    /**
-     * Opretter map med kolonnenavn og nummer, kolonnenanv[kolonnenummer]
-     * Hvis flere kolonner med samme navn oprettes der et array med kolonnenummer[i...i]
-     * @property this.aktivWorksheetKolonneNavnOgNummer
-     */
     dataIndlæsKolonneNavnogNummerTilMap() {
-        if not this.aktivWorksheetArrayAlt is ComObjArray
-            throw Error("aktivWorksheetArrayAlt er ikke indlæst")
+        if not this.aktivWorksheet.SheetArray is ComObjArray
+            throw Error("aktivWorksheet.SheetArray er ikke indlæst")
 
-        loop this.aktivWorksheetRækkerEnd {
+        loop this.aktivWorksheet.RækkerEnd {
             rækkeNummer := A_Index
             rækkeKolonneNavn := 1
             if rækkeNummer != rækkeKolonneNavn
                 break
-            loop this.aktivWorksheetKolonnerEnd {
+            loop this.aktivWorksheet.KolonnerEnd {
                 kolonneNummer := A_Index
-                nuværendeKolonneNavn := this.aktivWorksheetArrayAlt[rækkeNummer, kolonneNummer]
+                nuværendeKolonneNavn := this.aktivWorksheet.SheetArray[rækkeNummer, kolonneNummer]
                 if Type(nuværendeKolonneNavn) = "Float"
                     nuværendeKolonneNavn := String(Floor(nuværendeKolonneNavn))
-                if (this.aktivWorksheetKolonneNavnOgNummer.Has(nuværendeKolonneNavn)) {
-                    if (type(this.aktivWorksheetKolonneNavnOgNummer[nuværendeKolonneNavn]) != "Array")
-                        this.aktivWorksheetKolonneNavnOgNummer[nuværendeKolonneNavn] := Array(this.aktivWorksheetKolonneNavnOgNummer[
+                if (this.aktivWorksheet.KolonneNavnOgNummer.Has(nuværendeKolonneNavn)) {
+                    if (type(this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn]) != "Array")
+                        this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn] := Array(this.aktivWorksheet.KolonneNavnOgNummer[
                             nuværendeKolonneNavn])
-                    this.aktivWorksheetKolonneNavnOgNummer[nuværendeKolonneNavn].Push(kolonneNummer)
+                    this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn].Push(kolonneNummer)
                 }
                 else
-                    this.aktivWorksheetKolonneNavnOgNummer[nuværendeKolonneNavn] := kolonneNummer
+                    this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn] := kolonneNummer
             }
         }
 
         return
     }
 
-    /**
-     * Indlæser rækker til maps i array, en række pr. map, organiseret i samlet array
-     * Hvis flere kolonner med samme navn oprettes der array med cellerne, i det underordnede map
-     * @property this.WorksheetArrayRække indlæste rækker, første række fjernes (kolonne-overskrifter)
-     */
     dataIndlæsRækkeArrayMinusKolonneNavne() {
 
-        this.aktivWorksheetArrayRække := Array()
-        loop this.aktivWorksheetRækkerEnd {
+        this.vlArray := Array()
+        loop this.aktivWorksheet.RækkerEnd {
             rækkenummer := A_Index
             kolonneNavnRække := 1
-            this.aktivWorksheetArrayRække.Push(Map())
-            loop this.aktivWorksheetKolonnerEnd {
+            this.vlArray.Push(Map())
+            loop this.aktivWorksheet.KolonnerEnd {
                 kolonneNummer := A_Index
-                kolonneNavn := this.aktivWorksheetArrayAlt[kolonneNavnRække, kolonneNummer]
-                celleIndhold := this.aktivWorksheetArrayAlt[rækkenummer, kolonneNummer]
+                kolonneNavn := this.aktivWorksheet.SheetArray[kolonneNavnRække, kolonneNummer]
+                celleIndhold := this.aktivWorksheet.SheetArray[rækkenummer, kolonneNummer]
                 if Type(celleIndhold) = "Float"
                     celleIndhold := String(Floor(celleIndhold))
-                if (this.aktivWorksheetArrayRække[rækkenummer].Has(kolonneNavn)) {
-                    if (type(this.aktivWorksheetArrayRække[rækkenummer][kolonneNavn]) != "Array")
-                        this.aktivWorksheetArrayRække[rækkenummer][kolonneNavn] := Array(this.aktivWorksheetArrayRække[
+                if (this.vlArray[rækkenummer].Has(kolonneNavn)) {
+                    if (type(this.vlArray[rækkenummer][kolonneNavn]) != "Array")
+                        this.vlArray[rækkenummer][kolonneNavn] := Array(this.vlArray[
                             rækkenummer][kolonneNavn])
-                    this.aktivWorksheetArrayRække[rækkenummer][kolonneNavn].push(celleIndhold)
+                    this.vlArray[rækkenummer][kolonneNavn].push(celleIndhold)
                 }
                 else
-                    this.aktivWorksheetArrayRække[rækkenummer][kolonneNavn] := celleIndhold
+                    this.vlArray[rækkenummer][kolonneNavn] := celleIndhold
             }
         }
-        this.aktivWorksheetArrayRække.RemoveAt(1)
+        this.vlArray.RemoveAt(1)
         return
     }
-        
-    /**
-     * 
-     * @param pArkNavnEllerNummer
-     */
-    helperIndlæsAlt(pArkNavnEllerNummer) {
-        this.filAktiverExcelWorkbookReadonly()
-        this.filVælgAktivWorksheet(pArkNavnEllerNummer)
+
+    helperIndlæsAlt(pExcelFil, pArkNavnEllerNummer) {
+        this.åbenWorkbookReadonly(pExcelFil)
+        this.setAktivWorksheet(pArkNavnEllerNummer)
         this.dataFindBrugtExcelRangeIAktivWorksheet()
         this.dataIndlæsAktivRangetilArray()
+        this.dataIndlæsKolonneNavnogNummerTilMap()
         this.dataIndlæsRækkeArrayMinusKolonneNavne()
         return
     }
 
     getKolonneNavnOgNummer()
     {
-        this.færdigbehandletData.KolonnenavnOgNummer := this.aktivWorksheetKolonneNavnOgNummer
-        return this.færdigbehandletData.KolonnenavneOgNummer
-    }
-    getRækkeData()
-    {
-        this.færdigbehandletData.rækkerSomMapIArray := this.aktivWorksheetArrayRække
-        return this.færdigbehandletData.rækkerSomMapIArray
+        return this.aktivWorksheet.KolonnenavneOgNummer
     }
 
-    setExcelFil(pExcelFilFunc) {
-
-        this.excelFilNavnLong := pExcelFilFunc
-
-        SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
-        this.excelFilNavn := varFilNavn
-        this.excelFilDir := varFilDir
-        this.excelFilNavnUdenExtension := varFilNavnUdenExtension
-
-        return
+    getVlArray(){
+        return this.vlArray
     }
 
     quit() {
@@ -216,4 +150,184 @@ class excelClass extends Class {
         return
     }
 
+}
+
+
+class excelLavNyWorkbook {
+    
+    LavNyWorkbook(pExcelFil) {
+
+        this.aktivWorkbookComObj := this.app.Workbooks.add()
+
+        this.excelFilNavnLong := pExcelFil
+        SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
+        this.excelFilNavn := varFilNavn
+        this.excelFilDir := varFilDir
+        this.excelFilNavnUdenExtension := varFilNavnUdenExtension
+
+        this.aktivWorkbookComObj.Saveas(pExcelFil)
+        return
+    }
+
+}
+
+class excelBehandlWorkbook {
+    
+    åbenWorkbookReadWrite(pExcelFil) {
+        if !FileExist(pExcelFil)
+            throw Error("Excel-fil findes ikke")
+
+        this.excelFilNavnLong := pExcelFil
+
+        SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
+        this.excelFilNavn := varFilNavn
+        this.excelFilDir := varFilDir
+        this.excelFilNavnUdenExtension := varFilNavnUdenExtension
+
+        this.aktivWorkbookComObj := this.app.Workbooks.open(this.excelFilNavnLong, "ReadOnly" = false)
+
+    }
+
+    gemWorkbook(){
+
+        this.aktivWorkbookComObj.Save()
+    }
+
+    kolonneNavnogNummerTilArray(pKolonneNavnOgNummer) {
+
+        outputArray := Array()
+
+        kolonneNummerHojest := this.kolonneNummerArrayFindHøjestePlads(pKolonneNavnOgNummer)
+
+        loop kolonneNummerHojest
+            outputArray.Push("")
+
+        outputArray := this.kolonneNavnogNummerUdfyldArray(pKolonneNavnOgNummer, outputArray)
+
+        this.kolonneNavnogNummerArray := outputArray
+
+        return outputArray
+    }
+
+    kolonneNummerArrayFindHøjestePlads(pKolonneNavnOgNummer) {
+
+        kolonneNummerHojest := 0
+        for kolonneNavn, kolonneNummer in pKolonneNavnOgNummer
+        {
+            if type(kolonneNummer) = "Integer"
+                if kolonneNummer >= kolonneNummerHojest
+                    kolonneNummerHojest := kolonneNummer
+            if Type(kolonneNummer) = "Array"
+                for kolonneNummerArray in kolonneNummer
+                    if kolonneNummerArray >= kolonneNummerHojest
+                        kolonneNummerHojest := kolonneNummerArray
+        }
+        return kolonneNummerHojest
+
+    }
+
+    kolonneNavnogNummerUdfyldArray(pKolonneNavnOgNummer, pInputArray) {
+
+        for kolonneNavn, kolonneNummer in pKolonneNavnOgNummer
+        {
+            if Type(kolonneNummer) = "Integer"
+                pInputArray[kolonneNummer] := kolonneNavn
+            if Type(kolonneNummer) = "Array"
+                for kolonneNummerArray in kolonneNummer
+                    pInputArray[kolonneNummerArray] := kolonneNavn
+        }
+
+        return pInputArray
+    }
+}
+
+class mockExcelP6Data extends Class {
+
+    __New() {
+
+        gyldigeKolonner := Map(
+            "Budnummer", 1,
+            "Vognløbsnummer", 1,
+            "Kørselsaftale", 1,
+            "Styresystem", 1,
+            "Startzone", 1,
+            "Slutzone", 1,
+            "Hjemzone", 1,
+            "MobilnrChf", 1,
+            "Vognløbskategori", 1,
+            "Planskema", 1,
+            "Økonomiskema", 1,
+            "Statistikgruppe", 1,
+            "Vognløbsnotering", 1,
+            "Starttid", 1,
+            "Sluttid", 1,
+            "Sluttid", 1,
+            "Undtagne transporttyper", 1,
+            "Ugedage", 1
+        )
+        this.kolonneNavnOgNummer := Map("Budnummer", 1, "Vognløbsnummer", 2)
+
+        this.aktivWorksheet.SheetArray := Array()
+
+        this.aktivWorksheet.SheetArray.Push(Map(
+            "Budnummer", "24-2267",
+            "Vognløbsnummer", "31400",
+            "Kørselsaftale", "3400",
+            "Styresystem", "1",
+            "Startzone", "ÅRH142",
+            "Slutzone", "ÅRH142",
+            "Hjemzone", "ÅRH142",
+            "MobilnrChf", "701122010",
+            "Vognløbskategori", "FG9",
+            "Planskema", "31400",
+            "Økonomiskema", "31400",
+            "Statistikgruppe", "2GVEL",
+            "Vognløbsnotering", "Notering1",
+            "Starttid", "09",
+            "Sluttid", "23",
+            "Sluttid", "23",
+            "UndtagneTransporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
+            "Vognløbsdato", "",
+            "Ugedage", Array("ma", "ma", "ma")
+        ))
+        this.aktivWorksheet.SheetArray.Push(Map(
+            "Budnummer", "24-2266",
+            "Vognløbsnummer", "31400",
+            "Kørselsaftale", "3400",
+            "Styresystem", "1",
+            "Startzone", "ÅRH143",
+            "Slutzone", "ÅRH143",
+            "Hjemzone", "ÅRH143",
+            "MobilnrChf", "701122011",
+            "Vognløbskategori", "FG9",
+            "Planskema", "31401",
+            "Økonomiskema", "31401",
+            "Statistikgruppe", "2GVEL",
+            "Vognløbsnotering", "Notering2",
+            "Starttid", "10",
+            "Sluttid", "22",
+            "Sluttid", "22",
+            "UndtagneTransporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
+            "Vognløbsdato", "",
+            "Ugedage", Array("ma")
+        ))
+
+        this.færdigbehandletData := { kolonneNavnOgNummer: this.kolonneNavnOgNummer, rækkerSomMapIArray: this.aktivWorksheet.SheetArray }
+
+    }
+
+    getKolonneNavnOgNummer()
+    {
+        return this.færdigbehandletData.kolonneNavnOgNummer
+    }
+
+    getRækkeData()
+    {
+        return this.færdigbehandletData.rækkerSomMapIArray
+    }
+
+    get() {
+
+        return this.færdigbehandletData.rækkerSomMapIArray
+    }
 }
