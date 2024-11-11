@@ -2,25 +2,51 @@
 #Include ../Lib/deepCopy.ahk
 
 class VognløbConstructor {
+    __New(pExcelInput) {
+        
+        this.behandlVognløsbsdata(pExcelInput)
+    }
 
     vognløbInput := ""
     vognløbOutput := Array()
 
-    setVognløbsdata(pVognløbsData) {
+    /**
+     *  Main interface
+     * @param pVognløbsdata 
+     * @returns {Array} 
+     */
+    behandlVognløsbsdata(pVognløbsdata){
+        this.setVognløbsdataTilBehandling(pVognløbsdata)
+        this.danVognløbOutput()
 
-        this.vognløbInput := pVognløbsData
-        this.vognløbArrayPrVognløb()
-        this.vognløbArrayPrUgedag()
-        return
+        return this.vognløbOutput
     }
 
-    getVognløbsdata()
+    setVognløbsdataTilBehandling(pVognløbsData) {
+
+        this.vognløbInput := pVognløbsData
+        return
+    }
+    /**
+     * Array med hvert vognløb, underinddelt i array vlObj med konkrete vognløbsdage
+     * @returns {Array} 
+     */
+    getBehandletVognløbsArray()
     {
         return this.vognløbOutput
     }
 
 
-    vognløbArrayPrVognløb() {
+    danVognløbOutput(){
+
+        this.danVognløbsArray()
+        this.danVognløbIVognløbsArray()
+    }
+
+    
+    
+
+    danVognløbsArray() {
         vognløbsarray := this.vognløbInput
         vognløbOutput := this.vognløbOutput
 
@@ -31,24 +57,26 @@ class VognløbConstructor {
         return
     }
 
-    vognløbArrayPrUgedag() {
+    ; omskriv
+    danVognløbIVognløbsArray() {
         vognløbsarray := this.vognløbInput
         vognløbOutput := this.vognløbOutput
 
-        for vognløb in vognløbsarray
+        for enkeltVognløbInput in vognløbsarray
         {
             ugedagArrayCount := 0
             outerIndex := A_Index
-            for ugedag in vognløb["Ugedage"]
+            for ugedag in enkeltVognløbInput["Ugedage"]
             {
                 if ugedag = ""
                     continue
                 ugedagArrayCount += 1
                 ugedag := Format("{:U}", ugedag)
-                vognløb["Vognløbsdato"] := ugedag
+                enkeltVognløbInput["Vognløbsdato"] := ugedag
                 vognløbOutput[outerIndex].push(Array)
                 vognløbOutput[outerIndex][ugedagArrayCount] := VognløbObj()
-                vognløbOutput[outerIndex][ugedagArrayCount].setVognløb(vognløb)
+                vognløbOutput[outerIndex][ugedagArrayCount].setVognløbsDataTilIndlæsning(enkeltVognløbInput)
+                vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
                 vognløbOutput[outerIndex][ugedagArrayCount].tilIndlæsning.Vognløbsdato := ugedag
                 vognløbOutput[outerIndex][ugedagArrayCount].tilIndlæsning.Ugedage := ""
             }
@@ -56,31 +84,14 @@ class VognløbConstructor {
 
         return vognløbOutput
     }
-    ; static setKolonneNavnOgNummer(pKolonneNavnOgNummer){
 
-    ;     VognløbConstructor.kolonneNavnOgNummer := pKolonneNavnOgNummer
-    ; }
 }
 
 /** Repræsenterer et specifikt vognløb på en specifik dato (eller fast ugedag) */
 class VognløbObj
 {
-    ; /**
-    ;  * @param {Object} excelObjP6Data obj fra class excelobjP6Data
-    ;  * @property {Array} this.vlDataIndlæst asdsad
-    ;  */
-    ; __New(excelObjP6Data) {
-
-    ;     this.excelDataTilIndlæsning := excelObjP6Data.getData()
-    ;     this.VlDataIndlæst := Array(Map())
-
-    ;     /** @type {Array}  */
-    ;     this.vlDataTilIndlæsningArray := Array()
-
-    ;     for vl in this.excelDataTilIndlæsning
-    ;         this.vlDataTilIndlæsningArray.push(vl)
-    ; }
     
+    tjekkedeParametre := p6Parameter()
     tilIndlæsning := Object()
 
     tilIndlæsning.Budnummer := ""
@@ -101,12 +112,29 @@ class VognløbObj
     tilIndlæsning.UndtagneTransporttyper := ""
     tilIndlæsning.Vognløbsdato := ""
     tilIndlæsning.Ugedage := ""
-
-    setVognløb(vlData) {
-        for vlKey, vlIndhold in vlData
+    
+    setVognløbsDataTilIndlæsning(pVLParameter) {
+        
+        for vlKey, vlIndhold in pVLParameter
         {
-            this.tilIndlæsning.%vlkey% := vlIndhold
+            this.tilIndlæsning.%vlKey% := vlIndhold
         }
+    }
+    
+    setTjekketVognløb(pTjekketVognløb){
+
+        this.TjekketVognløb := pTjekketVognløb
+    }
+
+    getTjekketVognløb(){
+
+        return this.TjekketVognløb
+    }
+
+    setFejlLog(pVlData)
+    {
+        this.fejlLog := fejlLogObj()
+        this.fejlLog.setVognløbsnummerOgDato(pVlData)
     }
     test(){
         MsgBox this.tilIndlæsning.vognløbsnummer " - " this.tilIndlæsning.Vognløbsdato
