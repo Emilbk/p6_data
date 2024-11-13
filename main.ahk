@@ -1,10 +1,11 @@
 #Requires AutoHotkey v2.0
 Persistent
 ; omskriv til bedre organisering
+#Include modules
 #Include excelClassP6Data.ahk
 ; #Include dataGUI.ahk
 #Include vlClass.ahk
-#Include p6Navigering.ahk
+#Include p6.ahk
 ; #Include test.ahk
 
 +escape:: ExitApp()
@@ -44,7 +45,7 @@ udrulÆndringer()
 
 }
 
-udrulÆndringer()
+; udrulÆndringer()
 
 ; DataGUI.excelData := excelIndlæsArr(excel_fil)
 

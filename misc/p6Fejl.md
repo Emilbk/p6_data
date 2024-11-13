@@ -82,3 +82,11 @@ Du kan ikke vælge samme transporttype flere gange.
 ---------------------------
 OK   
 ---------------------------
+### Inaktiv timeout
+---------------------------
+
+---------------------------
+Du har været inaktiv i mere end 60 minutter. Ny indlogning påkrævet. [30103]
+---------------------------
+OK   
+---------------------------

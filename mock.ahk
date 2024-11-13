@@ -1,119 +1,40 @@
-ListLines 1
-
-#Include modules
-#Include vlClass.ahk
-#Include p6.ahk
-#Include excelClass.ahk
-#Include excelClassP6Data.ahk
-#Include config.ahk
+﻿#Include include.ahk
+p6vindID := 336108
 
 F12:: Pause
 !F12:: konfigurering.setBreakLoop()
 +F12:: ExitApp()
-::tudrul::
+^F12::
 {
-    udrulÆndringerMock()
+    udrulÆndringerExcel()
+    return
+}
++F11:: {
+    p6vindue := p6nav.setP6Vindue()
+    MsgBox(p6vindue)
     return
 }
 
-class mockExcelP6Data extends Class {
+p6nav := p6()
+p6vindue := p6nav.setP6Vindue(p6vindID)
+; MsgBox p6vindue
 
-    __New() {
 
-        gyldigeKolonner := Map(
-            "Budnummer", 1,
-            "Vognløbsnummer", 1,
-            "Kørselsaftale", 1,
-            "Styresystem", 1,
-            "Startzone", 1,
-            "Slutzone", 1,
-            "Hjemzone", 1,
-            "MobilnrChf", 1,
-            "Vognløbskategori", 1,
-            "Planskema", 1,
-            "Økonomiskema", 1,
-            "Statistikgruppe", 1,
-            "Vognløbsnotering", 1,
-            "Starttid", 1,
-            "Sluttid", 1,
-            "Sluttid", 1,
-            "Undtagne transporttyper", 1,
-            "Ugedage", 1
-        )
-        this.kolonneNavnOgNummer := Map("Budnummer", 1, "Vognløbsnummer", 2)
-
-        this.aktivWorksheetArrayRække := Array()
-
-        this.aktivWorksheetArrayRække.Push(Map(
-            "Budnummer", "24-2267",
-            "Vognløbsnummer", "31400",
-            "Kørselsaftale", "3400",
-            "Styresystem", "1",
-            "Startzone", "ÅRH142",
-            "Slutzone", "ÅRH142",
-            "Hjemzone", "ÅRH142",
-            "MobilnrChf", "701122010",
-            "Vognløbskategori", "FG9",
-            "Planskema", "31400",
-            "Økonomiskema", "31400",
-            "Statistikgruppe", "2GVEL",
-            "Vognløbsnotering", "Notering1",
-            "Starttid", "09",
-            "Sluttid", "23",
-            "Sluttid", "23",
-            "UndtagneTransporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
-            "Vognløbsdato", "",
-            "Ugedage", Array("ma", "ma", "ma")
-        ))
-        this.aktivWorksheetArrayRække.Push(Map(
-            "Budnummer", "24-2266",
-            "Vognløbsnummer", "31400",
-            "Kørselsaftale", "3400",
-            "Styresystem", "1",
-            "Startzone", "ÅRH143",
-            "Slutzone", "ÅRH143",
-            "Hjemzone", "ÅRH143",
-            "MobilnrChf", "701122011",
-            "Vognløbskategori", "FG9",
-            "Planskema", "31401",
-            "Økonomiskema", "31401",
-            "Statistikgruppe", "2GVEL",
-            "Vognløbsnotering", "Notering2",
-            "Starttid", "10",
-            "Sluttid", "22",
-            "Sluttid", "22",
-            "UndtagneTransporttyper", Array("LAV", "NJA", "TRANSPORT", "TMHJUL"),
-            "Vognløbsdato", "",
-            "Ugedage", Array("ma")
-        ))
-
-        this.færdigbehandletData := { kolonneNavnOgNummer: this.kolonneNavnOgNummer, rækkerSomMapIArray: this.aktivWorksheetArrayRække }
-
-    }
-
-    getKolonneNavnOgNummer()
-    {
-        return this.færdigbehandletData.kolonneNavnOgNummer
-    }
-
-    getRækkeData()
-    {
-        return this.færdigbehandletData.rækkerSomMapIArray
-    }
-}
-udrulÆndringerExcel(){
-    excelobj := mockExcelP6Data()
-    excelfil := "C:\Users\ebk\makro\p6_data\assets\VL.xlsx"
-    excelobj := excelObjP6Data()
-    excelobj.setExcelFil(excelfil)
-    excelobj.helperIndlæsAlt(1)
-    excelobj.quit()
-    udrulÆndringer(excelobj)
+udrulÆndringerExcel() {
+    ; excelobj := mockExcelP6Data()
+    excelFil := "C:\Users\ebk\makro\p6_data\assets\VL.xlsx"
+    excelArk := 1
+    excelobj := excelObjP6Data(excelFil, excelArk)
+    excelArray := excelobj.getVlArray()
+    ; excelobj.setExcelFil(excelfil)
+    ; excelobj.helperIndlæsAlt(1)
+    ; excelobj.quit()
+    udrulÆndringer(excelArray)
 
     return
 }
 
-udrulÆndringermock(){
+udrulÆndringermock() {
     excelobj := mockExcelP6Data()
     udrulÆndringer(excelobj)
 
@@ -122,24 +43,25 @@ udrulÆndringermock(){
 
 udrulÆndringer(pExcelobj)
 {
-    excelobj := pExcelobj
-    rækkeArray := excelobj.getRækkeData()
 
-    vlObj := VognløbConstructor()
-    vlObj.setVognløbsdata(rækkeArray)
-    vlArray := vlObj.getVognløbsdata()
+    vlConstruct := VognløbConstructor(pExcelobj)
+    vlArray := vlConstruct.getBehandletVognløbsArray()
 
-    p6nav := p6()
     p6nav.navAktiverP6Vindue()
     p6nav.navLukAlleVinduer()
     tlf := 7011000
+    samlingIgen := ""
     for vognløbssamling in vlArray
     {
         samlingsNummer := A_Index
+        ; if samlingIgen
+        ; samlingsNummer := samlingIgen, samlingIgen := ""
         for vognløb in vognløbssamling
         {
             tlf += 1
+            vognløbsnummerISamling := A_Index
             p6Obj := p6()
+            p6Obj.setP6Vindue(p6vindID)
             p6Obj.setVognløb(vognløb)
             if konfigurering.getBreakLoopStatus()
             {
@@ -149,22 +71,62 @@ udrulÆndringer(pExcelobj)
                 break 2
             }
             p6Obj.vognløb.tilIndlæsning.MobilnrChf := tlf
-            ; try {
+            try {
                 p6Obj.funkÆndrVognløb()
-            ; } catch Error as fejl {
-                ; SendInput("{enter}")
+            } catch P6MsgboxError as msgboxFejl {
+
+                vognløb.fejlLog.importP6MsgboxFejl(msgboxFejl)
+                SendInput("{enter}")
                 ; MsgBox fejl.Message
-            ; }
+            } catch P6Indtastningsfejl as indtastningsfejl {
+                ; MsgBox("Datafejl!")
+                ; indtastningsfejl.test()
+                ; indtastningsfejl.construct(vognløb)
+                p6Obj.vognløbsbilledeAfbryd()
+            } catch p6ForkertDataError as datafejl {
+                ; MsgBox("Datafejl!")
+                ; indtastningsfejl.test()
+                p6Obj.vognløbsbilledeAfbryd()
+            }
+            else {
+            }
+            ; hvornår i loopet?
         }
+
+
     }
-
-
     MsgBox "Done!"
 
-
 }
-
 konfigurering := config()
+
+; excelFil := "C:\Users\ebk\makro\p6_data\assets\VL.xlsx"
+; excelArk := 1
+; excelobj := excelObjP6Data()
+; excelobj.get(excelFil, excelArk)
+
+; ; excelMock := mockExcelP6Data()
+; excelRækkeArray := excelobj.getRækkeData()
+; vlConstruct := VognløbConstructor()
+; vlContainer := vlConstruct.behandlVognløsbsdata(excelRækkeArray)
+; vognlob := vlContainer[1][1]
+
+; excelTest := excelObjP6Data()
+; excelPath := A_ScriptDir "\exceltest\test-" FormatTime(, "dd-HH-mm-ss") ".xlsx" ; Saves in the same folder as the script
+; excelTest.setWorkbookSavePath(excelPath)
+; excelTest.setAktivWorkbookDir(excelPath)
+; excelTest.lavNyWorkbook()
+; ; excelTest.setAktivWorksheetName("Vognløbstest")
+
+; kolonneArray := exceltest.kolonneNavnogNummerTilArray(excelObj.aktivWorksheetKolonneNavnOgNummer)
+; excelTest.skrivExcelKolonneNavn(kolonneArray)
+
+
+; test := p6Mock()
+; test.setVognløb(vognlob)
+
+; test.tjekkedeParametre.skabOgTestParameter("Vognløbsnummer", "31400", "31401")
+; test.tjekkedeParametre.skabOgTestParameter("Styresystem", "47", "47")
 
 
 ; excelfil := "C:\Users\ebk\makro\p6_data\VL.xlsx"
@@ -172,9 +134,8 @@ konfigurering := config()
 ; excelobj.setExcelFil(excelfil)
 ; excelobj.helperIndlæsAlt(1)
 ; excelobj.quit()
-
 ; test := P6()
-; loop 100
+
 ; {
 ;     test.kopierVærdi("ctrl", 1)
 ; }
@@ -210,6 +171,6 @@ konfigurering := config()
 
 ; testvl.eksempelDatastruktur()
 
-udrulÆndringerExcel()
+; udrulÆndringerExcel()
 
-return
+; return

@@ -92,6 +92,7 @@ class VognløbObj
 {
     
     tjekkedeParametre := p6Parameter()
+    indhentedeParametre := p6Parameter()
     tilIndlæsning := Object()
 
     tilIndlæsning.Budnummer := ""
