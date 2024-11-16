@@ -73,13 +73,17 @@ class VognløbConstructor {
                 enkeltVognløbInput["Vognløbsdato"] := ugedag
                 vognløbOutput[outerIndex].push(Array)
                 vognløbOutput[outerIndex][ugedagArrayCount] := VognløbObj()
-                vognløbOutput[outerIndex][ugedagArrayCount].setVognløbsDataTilIndlæsning(enkeltVognløbInput)
-                ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
-                ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
-                vognløbOutput[outerIndex][ugedagArrayCount].parametre.Vognløbsdato.forventetIndhold := ugedag
-                vognløbOutput[outerIndex][ugedagArrayCount].tjekSlutTidOverMidnat()
+                aktueltVognløb := vognløbOutput[outerIndex][ugedagArrayCount]
+                aktueltVognløb.setVognløbsDataTilIndlæsning(enkeltVognløbInput)
+                aktueltVognløb.udfyldundtagneTransportTyperArray()
+                aktueltVognløb.udfyldKørerIkkeTransporttyperArray()
 
-                vognløbOutput[outerIndex][ugedagArrayCount].parametre.Ugedage := ""
+                ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
+                ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
+                aktueltVognløb.parametre.Vognløbsdato.forventetIndhold := ugedag
+                aktueltVognløb.tjekSlutTidOverMidnat()
+
+                aktueltVognløb.parametre.Ugedage := ""
             }
         }
 
@@ -126,7 +130,7 @@ class VognløbObj
 
         if InStr(this.parametre.Sluttid.forventetIndhold, "*")
         {
-            this.parametre.Sluttid.forventetIndhold := SubStr(this.parametre.Sluttid.forventetIndhold, 1, 4)
+            this.parametre.Sluttid.forventetIndhold := SubStr(this.parametre.Sluttid.forventetIndhold, 1, 5)
             if arrayPos < 7
                 this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[arrayPos + 1]
             else 
@@ -139,12 +143,8 @@ class VognløbObj
     setVognløbsDataTilIndlæsning(pVLParameter) {
 
         for vlKey, vlIndhold in pVLParameter
-        {
-            if Type(this.parametre.%vlKey%.forventetIndhold) != "Array"
+
                 this.parametre.%vlKey%.forventetIndhold := vlIndhold
-            else
-                this.parametre.%vlKey%.forventetIndhold.push(vlIndhold)
-        }
     }
 
     setTjekketVognløb(pTjekketVognløb) {
