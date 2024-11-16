@@ -151,22 +151,59 @@ class excelIndlæsVlData extends Class {
                 kolonneNavn := this.aktivWorksheet.SheetArray[kolonneNavnRække, kolonneNummer]
                 celleIndhold := this.aktivWorksheet.SheetArray[rækkenummer, kolonneNummer]
                 if this.gyldigeKolonneNavnOgNummer.HasProp(kolonneNavn)
-                    {
-                if Type(celleIndhold) = "Float"
-                    celleIndhold := String(Floor(celleIndhold))
-                if (this.vlArray[rækkenummer].Has(kolonneNavn)) {
-                    if (type(this.vlArray[rækkenummer][kolonneNavn]) != "Array")
-                        this.vlArray[rækkenummer][kolonneNavn] := Array(this.vlArray[
-                            rækkenummer][kolonneNavn])
-                    this.vlArray[rækkenummer][kolonneNavn].push(celleIndhold)
-                }
-                else
-                    this.vlArray[rækkenummer][kolonneNavn] := celleIndhold
+                {
+                    if Type(celleIndhold) = "Float"
+                        celleIndhold := String(Floor(celleIndhold))
+                    if (this.vlArray[rækkenummer].Has(kolonneNavn)) {
+                        if (type(this.vlArray[rækkenummer][kolonneNavn]) != "Array")
+                            this.vlArray[rækkenummer][kolonneNavn] := Array(this.vlArray[
+                                rækkenummer][kolonneNavn])
+                        this.vlArray[rækkenummer][kolonneNavn].push(celleIndhold)
                     }
+                    else
+                        this.vlArray[rækkenummer][kolonneNavn] := celleIndhold
+                }
             }
         }
         this.vlArray.RemoveAt(1)
         return
+    }
+
+    dataVerificerInputTidspunkt() {
+
+        datestr := "20241116"
+        loop this.aktivWorksheet.RækkerEnd {
+
+            rækkeNummer := A_Index
+            if rækkeNummer = 1
+                continue
+            kolonneStartTid := this.gyldigeKolonneNavnOgNummer.Starttid.kolonneNummer
+            kolonneSluttTid := this.gyldigeKolonneNavnOgNummer.Sluttid.kolonneNummer
+
+            celleStartTid := this.aktivWorksheet.SheetArray[rækkeNummer, kolonneStartTid]
+            celleSlutTid := this.aktivWorksheet.SheetArray[rækkeNummer, kolonneSluttTid]
+
+            if !InStr(celleStartTid, ":") or !InStr(celleSlutTid, ":")
+                throw Error("Forkert format i række " A_Index " - tidspunkt skal angives tt:mm")
+
+            if InStr(celleSlutTid, "*")
+                testStrSlut := SubStr(celleSlutTid, 1, 5)
+            else
+                testStrSlut := celleSlutTid
+
+            testStrStartArray := StrSplit(celleStartTid, ":")
+            testStrStart := testStrStartArray[1] . testStrStartArray[2]
+            testStrSlutArray := StrSplit(testStrSlut, ":")
+            testStrSlut := testStrSlutArray[1] . testStrSlutArray[2]
+
+            dateTestStart := datestr . testStrStart
+            dateTestSlut := datestr . testStrSlut
+
+
+            if !IsTime(dateTestStart) or !IsTime(dateTestSlut)
+                throw Error("Forkert format i række " A_Index " - tidspunkt skal angives tt:mm eller tt:mm*")
+        }
+
     }
 
     helperIndlæsAlt(pExcelFil, pArkNavnEllerNummer) {
@@ -176,6 +213,7 @@ class excelIndlæsVlData extends Class {
         this.dataIndlæsAktivRangetilArray()
         this.dataIndlæsKolonneNavnogNummerTilMap()
         this.dataIndlæsRækkeArrayMinusKolonneNavne()
+        this.dataVerificerInputTidspunkt()
         return
     }
 
