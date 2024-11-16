@@ -94,6 +94,28 @@ class VognløbObj
 
     parametre := parameterClass()
 
+    udfyldUndtagneTransportTyperArray(){
+
+        antalTransportTyper := this.parametre.UndtagneTransporttyper.forventetIndhold.Length 
+        ønsketAntalTransportTyper := 20
+
+        while this.parametre.UndtagneTransporttyper.forventetIndhold.Length != ønsketAntalTransportTyper
+            this.parametre.UndtagneTransporttyper.forventetIndhold.push(A_Space)
+
+        for index, transportType in this.parametre.UndtagneTransporttyper.forventetIndhold
+            if transportType = ""
+                this.parametre.UndtagneTransporttyper.forventetIndhold[index] := A_Space
+    }
+
+    udfyldKørerIkkeTransporttyperArray(){
+
+        antalTransportTyper := this.parametre.KørerIkkeTransporttyper.forventetIndhold.Length 
+        ønsketAntalTransportTyper := 10
+
+        while this.parametre.KørerIkkeTransporttyper.forventetIndhold.Length != ønsketAntalTransportTyper
+            this.parametre.KørerIkkeTransporttyper.forventetIndhold.push(A_Space)
+    }
+
     tjekSlutTidOverMidnat() {
 
         fasteDageArray := ["MA", "TI", "ON", "TO", "FR", "LØ", "SØ"]
