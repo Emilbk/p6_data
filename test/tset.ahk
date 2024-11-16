@@ -12,6 +12,8 @@ vlContainer := vlConst.getBehandletVognløbsArray()
 vl := vlContainer[1][1]
 p6obj := P6()
 
+MsgBox vl.parametre.vognløbsnummer.forventetIndhold
+
 p6Vindue := 333930 
 
 ; p6obj.setP6Vindue(p6Vindue)

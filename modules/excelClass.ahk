@@ -29,10 +29,41 @@ class excelIndlæsVlData extends Class {
     aktivWorksheet.SheetArray := Array()
     aktivWorksheet.KolonneNavnOgNummer := Map()
 
+    gyldigeKolonneNavnOgNummer := {
+        Budnummer: { kolonneNavn: "Budnummer", kolonneNummer: 0, iBrug: 0 },
+        Vognløbsnummer: { kolonneNavn: "Vognløbsnummer", kolonneNummer: 0, iBrug: 0 },
+        Vognløbsdato: { kolonneNavn: "Vognløbsdato", kolonneNummer: 0, iBrug: 0 },
+        Kørselsaftale: { kolonneNavn: "Kørselsaftale", kolonneNummer: 0, iBrug: 0 },
+        Styresystem: { kolonneNavn: "Styresystem", kolonneNummer: 0, iBrug: 0 },
+        Starttid: { kolonneNavn: "Starttid", kolonneNummer: 0, iBrug: 0 },
+        Sluttid: { kolonneNavn: "Sluttid", kolonneNummer: 0, iBrug: 0, overMidnat: 0 },
+        Startzone: { kolonneNavn: "Startzone", kolonneNummer: 0, iBrug: 0 },
+        Slutzone: { kolonneNavn: "Slutzone", kolonneNummer: 0, iBrug: 0 },
+        Hjemzone: { kolonneNavn: "Hjemzone", kolonneNummer: 0, iBrug: 0 },
+        MobilnrChf: { kolonneNavn: "MobilnrChf", kolonneNummer: 0, iBrug: 0 },
+        Vognløbskategori: { kolonneNavn: "Vognløbskategori", kolonneNummer: 0, iBrug: 0 },
+        Planskema: { kolonneNavn: "Planskema", kolonneNummer: 0, iBrug: 0 },
+        Økonomiskema: { kolonneNavn: "Økonomiskema", kolonneNummer: 0, iBrug: 0 },
+        Statistikgruppe: { kolonneNavn: "Statistikgruppe", kolonneNummer: 0, iBrug: 0 },
+        Vognløbsnotering: { kolonneNavn: "Vognløbsnotering", kolonneNummer: 0, iBrug: 0 },
+        VognmandLinie1: { kolonneNavn: "VognmandLinie1", kolonneNummer: 0, iBrug: 0 },
+        VognmandLinie2: { kolonneNavn: "VognmandLinie2", kolonneNummer: 0, iBrug: 0 },
+        VognmandLinie3: { kolonneNavn: "VognmandLinie3", kolonneNummer: 0, iBrug: 0 },
+        VognmandLinie4: { kolonneNavn: "VognmandLinie4", kolonneNummer: 0, iBrug: 0 },
+        VognmandTelefon: { kolonneNavn: "vognmandTelefon", kolonneNummer: 0, iBrug: 0 },
+        ObligatoriskVognmand: { kolonneNavn: "ObligatoriskVognmand", kolonneNummer: 0, iBrug: 0 },
+        KørselsaftaleVognmand: { kolonneNavn: "KørselsaftaleVognmand", kolonneNummer: 0, iBrug: 0 },
+        Ugedage: { kolonneNavn: "Ugedage", kolonneNummer: Array(), iBrug: 0 },
+        UndtagneTransporttyper: { kolonneNavn: "UndtagneTransporttyper", kolonneNummer: Array(), iBrug: 0 },
+        KørerIkkeTransportyper: { kolonneNavn: "KørerIkkeTransportyper", kolonneNummer: Array(), iBrug: 0 },
+    }
+
+    ugyldigeKolonneNavne := {}
+
 
     åbenWorkbookReadonly(pExcelFil) {
 
-        
+
         this.excelFilNavnLong := pExcelFil
         SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
         this.excelFilNavn := varFilNavn
@@ -43,12 +74,11 @@ class excelIndlæsVlData extends Class {
         return
     }
 
-    setAktivRækkeNummer(pAktivRække){
+    setAktivRækkeNummer(pAktivRække) {
 
         this.aktivWorksheet.AktivRække := pAktivRække
 
     }
-
 
 
     setAktivWorksheet(pSheetNummerEllerNavn) {
@@ -71,33 +101,43 @@ class excelIndlæsVlData extends Class {
         return
     }
 
+    erGyldigKolonne(pKolonneTilTjek) {
+
+
+        if this.gyldigeKolonneNavnOgNummer.HasOwnProp(pKolonneTilTjek)
+            return 1
+        else
+            return 0
+    }
+
+
     dataIndlæsKolonneNavnogNummerTilMap() {
         if not this.aktivWorksheet.SheetArray is ComObjArray
             throw Error("aktivWorksheet.SheetArray er ikke indlæst")
 
-        loop this.aktivWorksheet.RækkerEnd {
-            rækkeNummer := A_Index
-            rækkeKolonneNavn := 1
-            if rækkeNummer != rækkeKolonneNavn
-                break
-            loop this.aktivWorksheet.KolonnerEnd {
-                kolonneNummer := A_Index
-                nuværendeKolonneNavn := this.aktivWorksheet.SheetArray[rækkeNummer, kolonneNummer]
-                if Type(nuværendeKolonneNavn) = "Float"
-                    nuværendeKolonneNavn := String(Floor(nuværendeKolonneNavn))
-                if (this.aktivWorksheet.KolonneNavnOgNummer.Has(nuværendeKolonneNavn)) {
-                    if (type(this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn]) != "Array")
-                        this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn] := Array(this.aktivWorksheet.KolonneNavnOgNummer[
-                            nuværendeKolonneNavn])
-                    this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn].Push(kolonneNummer)
+        rækkeKolonneNavn := 1
+        loop this.aktivWorksheet.KolonnerEnd {
+            kolonneNummer := A_Index
+            nuværendeKolonneNavn := this.aktivWorksheet.SheetArray[rækkeKolonneNavn, kolonneNummer]
+            if this.erGyldigKolonne(nuværendeKolonneNavn)
+            {
+                if Type(this.gyldigeKolonneNavnOgNummer.%nuværendeKolonneNavn%.kolonneNummer) != "Array"
+                {
+                    this.gyldigeKolonneNavnOgNummer.%nuværendeKolonneNavn%.iBrug := 1
+                    this.gyldigeKolonneNavnOgNummer.%nuværendeKolonneNavn%.kolonneNummer := kolonneNummer
                 }
-                else
-                    this.aktivWorksheet.KolonneNavnOgNummer[nuværendeKolonneNavn] := kolonneNummer
-            }
-        }
 
-        return
+                if Type(this.gyldigeKolonneNavnOgNummer.%nuværendeKolonneNavn%.kolonneNummer) = "Array"
+                {
+                    this.gyldigeKolonneNavnOgNummer.%nuværendeKolonneNavn%.iBrug := 1
+                    this.gyldigeKolonneNavnOgNummer.%nuværendeKolonneNavn%.kolonneNummer.push(kolonneNummer)
+                }
+            }
+            else
+                this.ugyldigeKolonneNavne.%nuværendeKolonneNavn% := {kolonneNavn: nuværendeKolonneNavn, kolonneNummer: kolonneNummer}
+        }
     }
+
 
     dataIndlæsRækkeArrayMinusKolonneNavne() {
 
@@ -110,6 +150,8 @@ class excelIndlæsVlData extends Class {
                 kolonneNummer := A_Index
                 kolonneNavn := this.aktivWorksheet.SheetArray[kolonneNavnRække, kolonneNummer]
                 celleIndhold := this.aktivWorksheet.SheetArray[rækkenummer, kolonneNummer]
+                if this.gyldigeKolonneNavnOgNummer.HasProp(kolonneNavn)
+                    {
                 if Type(celleIndhold) = "Float"
                     celleIndhold := String(Floor(celleIndhold))
                 if (this.vlArray[rækkenummer].Has(kolonneNavn)) {
@@ -120,6 +162,7 @@ class excelIndlæsVlData extends Class {
                 }
                 else
                     this.vlArray[rækkenummer][kolonneNavn] := celleIndhold
+                    }
             }
         }
         this.vlArray.RemoveAt(1)
@@ -141,7 +184,7 @@ class excelIndlæsVlData extends Class {
         return this.aktivWorksheet.KolonnenavneOgNummer
     }
 
-    getVlArray(){
+    getVlArray() {
         return this.vlArray
     }
 
@@ -154,7 +197,7 @@ class excelIndlæsVlData extends Class {
 
 
 class excelLavNyWorkbook {
-    
+
     LavNyWorkbook(pExcelFil) {
 
         this.aktivWorkbookComObj := this.app.Workbooks.add()
@@ -172,7 +215,7 @@ class excelLavNyWorkbook {
 }
 
 class excelBehandlWorkbook {
-    
+
     åbenWorkbookReadWrite(pExcelFil) {
         if !FileExist(pExcelFil)
             throw Error("Excel-fil findes ikke")
@@ -188,7 +231,7 @@ class excelBehandlWorkbook {
 
     }
 
-    gemWorkbook(){
+    gemWorkbook() {
 
         this.aktivWorkbookComObj.Save()
     }

@@ -12,8 +12,8 @@ class P6 extends class {
 
     vognløb := Object()
     ; dannes undervejs i parametertjek
-    vognløb.tjekkedeParametre := p6Parameter()
-    vognløb.indhentedeParametre := p6Parameter()
+    vognløb.tjekkedeParametre := parameterClass()
+    vognløb.indhentedeParametre := parameterClass()
     vindueHandle := ""
 
 
@@ -842,40 +842,51 @@ class P6 extends class {
     }
 }
 
-class p6Parameter {
+class parameterClass {
 
-    vognløbDatoStart := { navn: "vognløbDatoStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognløbDatoSlut := { navn: "vognløbDatoSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognløbTidStart := { navn: "vognløbTidStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognløbTidSlut := { navn: "vognløbTidSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    startzone := { navn: "startzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    slutzone := { navn: "slutzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    hjemzone := { navn: "hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognløbsNotering := { navn: "vognløbsNotering", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognløbsKategori := { navn: "vognløbsKategori", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    undtagneTransportTyper := { navn: "undtagneTransportTyper", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    mobilNrChf := { navn: "mobilNrChf", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognmandNavn := { navn: "vognmandNavn", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognmandCO := { navn: "vognmandCO", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognmandAdresse := { navn: "vognmandAdresse", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognmandPostNr := { navn: "vognmandPostNr", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognmandTelefon := { navn: "vognmandTelefon", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Budnummer := { navn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Vognløbsnummer := { navn: "Vognløbsnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Vognløbsdato := { navn: "Vognløbsdato", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    VognløbsdatoSlut := { navn: "Vognløbsdato", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Kørselsaftale := { navn: "Kørselsaftale", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Styresystem := { navn: "Styresystem", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Starttid := { navn: "Starttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Sluttid := { navn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Startzone := { navn: "Startzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Slutzone := { navn: "Slutzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Hjemzone := { navn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    MobilnrChf := { navn: "MobilnrChf", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Vognløbskategori := { navn: "Vognløbskategori", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Planskema := { navn: "Planskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Økonomiskema := { navn: "Økonomiskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Statistikgruppe := { navn: "Statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Vognløbsnotering := { navn: "Vognløbsnotering", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    VognmandLinie1 := { navn: "VognmandLinie1", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    VognmandLinie2 := { navn: "VognmandLinie2", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    VognmandLinie3 := { navn: "VognmandLinie3", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    VognmandLinie4 := { navn: "VognmandLinie4", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    VognmandTelefon := { navn: "VognmandTelefon", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    ObligatoriskVognmand := { navn: "ObligatoriskVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    KørselsaftaleVognmand := { navn: "KørselsaftaleVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+    Ugedage := { navn: "Ugedage", forventetIndhold: Array(), eksisterendeIndhold: Array(), fejl: 0 }
+    UndtagneTransporttyper := { navn: "UndtagneTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), fejl: 0 }
+    KørerIkkeTransporttyper := { navn: "KørerIkkeTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), fejl: 0 }
+    
+
+    ; kun i P6
     pauseRegel := { navn: "pauseRegel", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
     pauseDynamisk := { navn: "pauseDynamisk", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
     pauseStart := { navn: "pauseStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
     pauseSlut := { navn: "pauseSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
     kørerIkkeTransportTyperOprindeligRækkefølge := { navn: "kørerIkkeTransportTyperOprindeligRækkefølge", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
     normalHjemzone := { navn: "normalHjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    parameterVognmand := { navn: "parameterVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    obligatoriskVognmand := { navn: "obligatoriskVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    statistikgruppe := { navn: "statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    økonomiskema := { navn: "økonomiskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    planskema := { navn: "planskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    kørselsaftale := { navn: "kørselsaftale", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    styresystem := { navn: "styresystem", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognløbsDato := { navn: "vognløbsDato", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-    vognløbsNummer := { navn: "vognløbsNummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
 
+
+
+
+
+
+    
     danParameterObj(pParameterNavn) {
 
         if this.HasOwnProp(pParameterNavn)
@@ -979,7 +990,7 @@ class p6Mock extends P6 {
     }
 }
 
-class p6ParameterMock extends p6Parameter {
+class p6ParameterMock extends parameterClass {
 
 
 }
