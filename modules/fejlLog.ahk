@@ -44,6 +44,9 @@ class fejlLogObj extends Error {
 
     __New(message := "", what := "", extra := "", dataObj := "") {
         super.__New(message, what, extra)
+        
+        this.data := dataObj
+        this.fundetFejl := 0
     }
     setVognløbsnummerOgDato(pVognløb)
     {

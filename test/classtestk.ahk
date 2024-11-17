@@ -1,46 +1,23 @@
 
-class maincl {
-    
-    __New(vognløb) {
-        
-        this.vognløb := vognløb
+teststr := "TI*"
 
-        this.nested := maincl.nestedcl()
-    }
+if (IsInteger(SubStr(teststr,1, 2)) and InStr(teststr, "*"))
+    MsgBox "ja"
 
-    class nestedcl {
+år := SubStr(teststr, -4, 4)
+mned := SubStr(teststr, 4, 2)
+dag := SubStr(teststr, 1, 2)
 
-        ; __New(vognløb) {
-           
-        ;     this.vognløb := vognløb
-        ; }
+datestr := år mned dag
+msgbox FormatTime(datestr,"yyyy")
 
-        testfunk(){
+nydate := DateAdd(datestr,1,"Days")
 
-            MsgBox "test"
-            ; MsgBox this.vognløb.Vognløbsnummer
-        }
-        
-    }
-}
+teststrny := SubStr(teststr, 1, 2)
 
-; test := Object()
+teststrny += 1
 
-; vognløb := {Vognløbsnummer: "312400", Styresystem: "47"}
-; main := maincl(vognløb)
-; main.nested.testfunk()
-; Define an object literal
-obj := {Name: "Alice", Age: 30}
-
-; Access properties using bracket notation
-MsgBox(obj.Name)         ; Should display "Alice"
-MsgBox(obj.Age)          ; Should display "30"
-
-; Test dynamic addition of properties
-obj.Occupation := "Engineer"
-MsgBox(obj.Occupation)   ; Should display "Engineer"
-
-; Attempt bracket notation access, standard in v2
-MsgBox(obj["Name"])      ; Should display "Alice"
+if IsInteger(teststrny)
+    msgbox "ja"
 
 return

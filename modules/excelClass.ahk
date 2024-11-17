@@ -14,8 +14,19 @@
 
 #Requires AutoHotkey v2.0
 #SingleInstance Force
+#include ../include.ahk
 
-class excelIndlæsVlData extends Class {
+class excel {
+
+    app := ComObject("Excel.Application")
+
+    quit() {
+
+        this.app.quit()
+    }
+}
+
+class excelIndlæsVlData extends excel {
     __New(pExcelFil, pArkNavnEllerNummer) {
         this.app := ComObject("Excel.Application")
 
@@ -29,37 +40,9 @@ class excelIndlæsVlData extends Class {
     aktivWorksheet.SheetArray := Array()
     aktivWorksheet.KolonneNavnOgNummer := Map()
 
-    gyldigeKolonneNavnOgNummer := {
-        Budnummer: { kolonneNavn: "Budnummer", kolonneNummer: 0, iBrug: 0 },
-        Vognløbsnummer: { kolonneNavn: "Vognløbsnummer", kolonneNummer: 0, iBrug: 0 },
-        Vognløbsdato: { kolonneNavn: "Vognløbsdato", kolonneNummer: 0, iBrug: 0 },
-        Kørselsaftale: { kolonneNavn: "Kørselsaftale", kolonneNummer: 0, iBrug: 0 },
-        Styresystem: { kolonneNavn: "Styresystem", kolonneNummer: 0, iBrug: 0 },
-        Starttid: { kolonneNavn: "Starttid", kolonneNummer: 0, iBrug: 0 },
-        Sluttid: { kolonneNavn: "Sluttid", kolonneNummer: 0, iBrug: 0, overMidnat: 0 },
-        Startzone: { kolonneNavn: "Startzone", kolonneNummer: 0, iBrug: 0 },
-        Slutzone: { kolonneNavn: "Slutzone", kolonneNummer: 0, iBrug: 0 },
-        Hjemzone: { kolonneNavn: "Hjemzone", kolonneNummer: 0, iBrug: 0 },
-        MobilnrChf: { kolonneNavn: "MobilnrChf", kolonneNummer: 0, iBrug: 0 },
-        Vognløbskategori: { kolonneNavn: "Vognløbskategori", kolonneNummer: 0, iBrug: 0 },
-        Planskema: { kolonneNavn: "Planskema", kolonneNummer: 0, iBrug: 0 },
-        Økonomiskema: { kolonneNavn: "Økonomiskema", kolonneNummer: 0, iBrug: 0 },
-        Statistikgruppe: { kolonneNavn: "Statistikgruppe", kolonneNummer: 0, iBrug: 0 },
-        Vognløbsnotering: { kolonneNavn: "Vognløbsnotering", kolonneNummer: 0, iBrug: 0 },
-        VognmandLinie1: { kolonneNavn: "VognmandLinie1", kolonneNummer: 0, iBrug: 0 },
-        VognmandLinie2: { kolonneNavn: "VognmandLinie2", kolonneNummer: 0, iBrug: 0 },
-        VognmandLinie3: { kolonneNavn: "VognmandLinie3", kolonneNummer: 0, iBrug: 0 },
-        VognmandLinie4: { kolonneNavn: "VognmandLinie4", kolonneNummer: 0, iBrug: 0 },
-        VognmandTelefon: { kolonneNavn: "vognmandTelefon", kolonneNummer: 0, iBrug: 0 },
-        ObligatoriskVognmand: { kolonneNavn: "ObligatoriskVognmand", kolonneNummer: 0, iBrug: 0 },
-        KørselsaftaleVognmand: { kolonneNavn: "KørselsaftaleVognmand", kolonneNummer: 0, iBrug: 0 },
-        Ugedage: { kolonneNavn: "Ugedage", kolonneNummer: Array(), iBrug: 0 },
-        UndtagneTransporttyper: { kolonneNavn: "UndtagneTransporttyper", kolonneNummer: Array(), iBrug: 0 },
-        KørerIkkeTransportyper: { kolonneNavn: "KørerIkkeTransportyper", kolonneNummer: Array(), iBrug: 0 },
-    }
-
     ugyldigeKolonneNavne := {}
 
+    gyldigeKolonneNavnOgNummer := staticGyldigeKolonneNavnOgNummer
 
     åbenWorkbookReadonly(pExcelFil) {
 
@@ -134,18 +117,19 @@ class excelIndlæsVlData extends Class {
                 }
             }
             else
-                this.ugyldigeKolonneNavne.%nuværendeKolonneNavn% := {kolonneNavn: nuværendeKolonneNavn, kolonneNummer: kolonneNummer}
+                this.ugyldigeKolonneNavne.%nuværendeKolonneNavn% := { kolonneNavn: nuværendeKolonneNavn, kolonneNummer: kolonneNummer }
         }
     }
 
 
     dataIndlæsRækkeArrayMinusKolonneNavne() {
 
+        arrayKolonneNavne := map("KørerIkkeTransporttyper", 0, "UndtagneTransporttyper", 0, "Ugedage", 0,)
         this.vlArray := Array()
         loop this.aktivWorksheet.RækkerEnd {
             rækkenummer := A_Index
             kolonneNavnRække := 1
-            this.vlArray.Push(Map())
+            this.vlArray.Push(Map("KørerIkkeTransporttyper", Array(), "UndtagneTransporttyper", Array(), "Ugedage", Array()))
             loop this.aktivWorksheet.KolonnerEnd {
                 kolonneNummer := A_Index
                 kolonneNavn := this.aktivWorksheet.SheetArray[kolonneNavnRække, kolonneNummer]
@@ -154,12 +138,8 @@ class excelIndlæsVlData extends Class {
                 {
                     if Type(celleIndhold) = "Float"
                         celleIndhold := String(Floor(celleIndhold))
-                    if (this.vlArray[rækkenummer].Has(kolonneNavn)) {
-                        if (type(this.vlArray[rækkenummer][kolonneNavn]) != "Array")
-                            this.vlArray[rækkenummer][kolonneNavn] := Array(this.vlArray[
-                                rækkenummer][kolonneNavn])
-                        this.vlArray[rækkenummer][kolonneNavn].push(celleIndhold)
-                    }
+                    if arrayKolonneNavne.Has(kolonneNavn)
+                        this.vlArray[rækkenummer][kolonneNavn].Push(celleIndhold)
                     else
                         this.vlArray[rækkenummer][kolonneNavn] := celleIndhold
                 }
@@ -234,7 +214,11 @@ class excelIndlæsVlData extends Class {
 }
 
 
-class excelLavNyWorkbook {
+class excelLavNyWorkbook extends excel {
+
+    __New(pPath) {
+        this.LavNyWorkbook(pPath)
+    }
 
     LavNyWorkbook(pExcelFil) {
 
@@ -247,12 +231,13 @@ class excelLavNyWorkbook {
         this.excelFilNavnUdenExtension := varFilNavnUdenExtension
 
         this.aktivWorkbookComObj.Saveas(pExcelFil)
+        this.quit()
         return
     }
 
 }
 
-class excelBehandlWorkbook {
+class excelBehandlWorkbook extends excel {
 
     åbenWorkbookReadWrite(pExcelFil) {
         if !FileExist(pExcelFil)
@@ -322,7 +307,263 @@ class excelBehandlWorkbook {
     }
 }
 
-class mockExcelP6Data extends Class {
+class udfyldTestExcelArk extends excel {
+
+    testVl := vognløbObj()
+
+    testVl.parametre.Budnummer.eksisterendeIndhold := "24-2267"
+    testVl.parametre.Vognløbsnummer.eksisterendeIndhold := "31400"
+    testVl.parametre.Planskema.eksisterendeIndhold := "31400"
+    testVl.parametre.Økonomiskema.eksisterendeIndhold := "31400"
+    testVl.parametre.Kørselsaftale.eksisterendeIndhold := "3400"
+    testVl.parametre.KørselsaftaleVognmand.eksisterendeIndhold := "3VOGNM"
+    testVl.parametre.ObligatoriskVognmand.eksisterendeIndhold := "3BAR"
+    testVl.parametre.Vognløbsnotering.eksisterendeIndhold := "Type 2, GV 19-02, Autostol 0-13"
+    testVl.parametre.Statistikgruppe.eksisterendeIndhold := "2GVEL"
+    testVl.parametre.Styresystem.eksisterendeIndhold := "1"
+    testVl.parametre.Starttid.eksisterendeIndhold := "19:00"
+    testVl.parametre.Sluttid.eksisterendeIndhold := "02:00*"
+    testVl.parametre.Slutzone.eksisterendeIndhold := "Årh142"
+    testVl.parametre.Startzone.eksisterendeIndhold := "Årh142"
+    testVl.parametre.Hjemzone.eksisterendeIndhold := "Årh142"
+    testVl.parametre.ChfKontaktNummer.eksisterendeIndhold := "70112210"
+    testVl.parametre.VognmandKontaktnummer.eksisterendeIndhold := "70112220"
+    testVl.parametre.VognmandLinie1.eksisterendeIndhold := "Vognmand ApS"
+    testVl.parametre.VognmandLinie2.eksisterendeIndhold := "Ny hjemzone pr. 01-12-2024"
+    testVl.parametre.VognmandLinie3.eksisterendeIndhold := "Hjemzonegade 101"
+    testVl.parametre.VognmandLinie4.eksisterendeIndhold := "Hjemzoneby, 8000"
+    testVl.parametre.Vognløbskategori.eksisterendeIndhold := "FG9"
+    testVl.parametre.UndtagneTransporttyper.eksisterendeIndhold := ["Nja", "CrosSER", "Barn1", "Barn2", "TTJHjul", A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space]
+    testVl.parametre.KørerIkkeTransporttyper.eksisterendeIndhold := ["Crosser", "Barn3," "NJA", "Barn1", A_Space, A_Space, A_Space, A_Space, A_Space, A_Space]
+    testVl.parametre.ugedage.eksisterendeIndhold := ["24-12-2024", "MA", "TI", "ON", "TO", "FR", "LØ"]
+
+
+    TestKolonneNavnOgNummer := {
+        Budnummer: { kolonneNavn: "Budnummer", kolonneNummer: 1, iBrug: 0, kolonneKommentar: 0 },
+        Vognløbsnummer: { kolonneNavn: "Vognløbsnummer", kolonneNummer: 2, iBrug: 0, kolonneKommentar: "Påkrævet" },
+        Kørselsaftale: { kolonneNavn: "Kørselsaftale", kolonneNummer: 3, iBrug: 0, kolonneKommentar: "Påkrævet" },
+        Styresystem: { kolonneNavn: "Styresystem", kolonneNummer: 4, iBrug: 0, kolonneKommentar: "Påkrævet" },
+        Starttid: { kolonneNavn: "Starttid", kolonneNummer: 5, iBrug: 0, kolonneKommentar: "Vognløbets starttid i tekstformat `"tt:mm`"." },
+        Sluttid: { kolonneNavn: "Sluttid", kolonneNummer: 6, iBrug: 0, overMidnat: 0, kolonneKommentar: "Vognløbets sluttid i tekstformat `"tt:mm`". Hvis vognløbet løber over midnat tilføjes *, f. eks. `"01:30*`" (nødvendigt for at vognløbsdato defineres korrekt)." },
+        Startzone: { kolonneNavn: "Startzone", kolonneNummer: 7, iBrug: 0, kolonneKommentar: 0 },
+        Slutzone: { kolonneNavn: "Slutzone", kolonneNummer: 8, iBrug: 0, kolonneKommentar: 0 },
+        Hjemzone: { kolonneNavn: "Hjemzone", kolonneNummer: 9, iBrug: 0, kolonneKommentar: 0 },
+        ChfKontaktNummer: { kolonneNavn: "ChfKontaktNummer", kolonneNummer: 10, iBrug: 0, kolonneKommentar: 0 },
+        VognmandKontaktNummer: { kolonneNavn: "VognmandKontaktNummer", kolonneNummer: 11, iBrug: 0, kolonneKommentar: 0 },
+        Vognløbskategori: { kolonneNavn: "Vognløbskategori", kolonneNummer: 12, iBrug: 0, kolonneKommentar: 0 },
+        Planskema: { kolonneNavn: "Planskema", kolonneNummer: 13, iBrug: 0, kolonneKommentar: 0 },
+        Økonomiskema: { kolonneNavn: "Økonomiskema", kolonneNummer: 14, iBrug: 0, kolonneKommentar: 0 },
+        Statistikgruppe: { kolonneNavn: "Statistikgruppe", kolonneNummer: 15, iBrug: 0, kolonneKommentar: 0 },
+        Vognløbsnotering: { kolonneNavn: "Vognløbsnotering", kolonneNummer: 16, iBrug: 0, kolonneKommentar: "Fast notat på vognløb. Bruges pt. på alle vognløbsdage." },
+        VognmandLinie1: { kolonneNavn: "VognmandLinie1", kolonneNummer: 17, iBrug: 0, kolonneKommentar: "Første linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        VognmandLinie2: { kolonneNavn: "VognmandLinie2", kolonneNummer: 18, iBrug: 0, kolonneKommentar: "Anden linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        VognmandLinie3: { kolonneNavn: "VognmandLinie3", kolonneNummer: 19, iBrug: 0, kolonneKommentar: "Tredje linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        VognmandLinie4: { kolonneNavn: "VognmandLinie4", kolonneNummer: 20, iBrug: 0, kolonneKommentar: "Fjerde linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        ObligatoriskVognmand: { kolonneNavn: "ObligatoriskVognmand", kolonneNummer: 21, iBrug: 0, kolonneKommentar: 0 },
+        KørselsaftaleVognmand: { kolonneNavn: "KørselsaftaleVognmand", kolonneNummer: 22, iBrug: 0, kolonneKommentar: "Vognmandsparameter defineret i kørselsaftalen." },
+        Ugedage: { kolonneNavn: "Ugedage", kolonneNummer: Array(23, 24, 25, 26, 27, 28, 29), iBrug: 0, kolonneKommentar: "Faste ugedage i P6-format (MA, TI osv.) Kan også tage konkret dato i formatet `"dd-mm-åååå`". Én dato pr. kolonne, så mange kolonner som ønsket" },
+        UndtagneTransporttyper: { kolonneNavn: "UndtagneTransporttyper", kolonneNummer: Array(30, 31, 32, 33, 34, 35), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i vognløbet. Definer op til 20 stk. Én transporttype pr. kolonne" },
+        KørerIkkeTransporttyper: { kolonneNavn: "KørerIkkeTransporttyper", kolonneNummer: Array(36, 37, 38, 39, 40, 41, 42, 43, 44,), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i kørselsaftalen. Definer op til 10 stk. Én transporttype pr. kolonne." },
+    }
+
+    tjekketVLKolonneNavnOgNummer := {
+        Vognløbsnummer: { kolonneNavn: "Vognløbsnummer", kolonneNummer: 1, iBrug: 0, kolonneKommentar: 0 },
+        Vognløbsdato: { kolonneNavn: "Vognløbsdato", kolonneNummer: 2, iBrug: 0, kolonneKommentar: 0 },
+        Kørselsaftale: { kolonneNavn: "Kørselsaftale", kolonneNummer: 3, iBrug: 0, kolonneKommentar: 0 },
+        Styresystem: { kolonneNavn: "Styresystem", kolonneNummer: 4, iBrug: 0, kolonneKommentar: 0 },
+        Starttid: { kolonneNavn: "Starttid", kolonneNummer: 5, iBrug: 0, kolonneKommentar: "Vognløbets starttid i tekstformat `"tt:mm`"." },
+        Sluttid: { kolonneNavn: "Sluttid", kolonneNummer: 6, iBrug: 0, overMidnat: 0, kolonneKommentar: "Vognløbets sluttid i tekstformat `"tt:mm`". Hvis vognløbet løber over midnat tilføjes *, f. eks. `"01:30*`" (nødvendigt for at vognløbsdato defineres korrekt)." },
+        Startzone: { kolonneNavn: "Startzone", kolonneNummer: 7, iBrug: 0, kolonneKommentar: 0 },
+        Slutzone: { kolonneNavn: "Slutzone", kolonneNummer: 8, iBrug: 0, kolonneKommentar: 0 },
+        Hjemzone: { kolonneNavn: "Hjemzone", kolonneNummer: 9, iBrug: 0, kolonneKommentar: 0 },
+        ChfKontaktNummer: { kolonneNavn: "ChfKontaktNummer", kolonneNummer: 10, iBrug: 0, kolonneKommentar: 0 },
+        VognmandKontaktNummer: { kolonneNavn: "VognmandKontaktNummer", kolonneNummer: 11, iBrug: 0, kolonneKommentar: 0 },
+        Vognløbskategori: { kolonneNavn: "Vognløbskategori", kolonneNummer: 12, iBrug: 0, kolonneKommentar: 0 },
+        Planskema: { kolonneNavn: "Planskema", kolonneNummer: 13, iBrug: 0, kolonneKommentar: 0 },
+        Økonomiskema: { kolonneNavn: "Økonomiskema", kolonneNummer: 14, iBrug: 0, kolonneKommentar: 0 },
+        Statistikgruppe: { kolonneNavn: "Statistikgruppe", kolonneNummer: 15, iBrug: 0, kolonneKommentar: 0 },
+        Vognløbsnotering: { kolonneNavn: "Vognløbsnotering", kolonneNummer: 16, iBrug: 0, kolonneKommentar: "Fast notat på vognløb. Bruges pt. på alle vognløbsdage." },
+        VognmandLinie0: { kolonneNavn: "VognmandLinie1", kolonneNummer: 18, iBrug: 0, kolonneKommentar: "Første linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        VognmandLinie1: { kolonneNavn: "VognmandLinie2", kolonneNummer: 19, iBrug: 0, kolonneKommentar: "Anden linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        VognmandLinie2: { kolonneNavn: "VognmandLinie3", kolonneNummer: 20, iBrug: 0, kolonneKommentar: "Tredje linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        VognmandLinie3: { kolonneNavn: "VognmandLinie4", kolonneNummer: 21, iBrug: 0, kolonneKommentar: "Fjerde linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        ObligatoriskVognmand: { kolonneNavn: "ObligatoriskVognmand", kolonneNummer: 22, iBrug: 0, kolonneKommentar: 0 },
+        KørselsaftaleVognmand: { kolonneNavn: "KørselsaftaleVognmand", kolonneNummer: 23, iBrug: 0, kolonneKommentar: "Vognmandsparameter defineret i kørselsaftalen." },
+        UndtagneTransporttyper: { kolonneNavn: "UndtagneTransporttyper", kolonneNummer: Array(24, 25, 26, 27, 28, 29), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i vognløbet. Definer op til 20 stk. Én transporttype pr. kolonne" },
+        KørerIkkeTransporttyper: { kolonneNavn: "KørerIkkeTransporttyper", kolonneNummer: Array(30, 31, 32, 33), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i kørselsaftalen. Definer op til 10 stk. Én transporttype pr. kolonne." },
+    }
+
+    TestKolonneNavnOgNummerArray := Array()
+
+    åbenWorkbookReadWrite(pExcelFil) {
+        if !FileExist(pExcelFil)
+            throw Error("Excel-fil findes ikke")
+
+        this.excelFilNavnLong := pExcelFil
+
+        SplitPath(this.excelFilNavnLong, &varFilNavn, &varFilDir, , &varFilNavnUdenExtension)
+        this.excelFilNavn := varFilNavn
+        this.excelFilDir := varFilDir
+        this.excelFilNavnUdenExtension := varFilNavnUdenExtension
+        this.aktivWorkbookComObj := this.app.Workbooks.open(this.excelFilNavnLong, "ReadOnly" = false)
+        this.aktivSheet := this.app.ActiveWorkbook.activeSheet
+
+    }
+
+    gemWorkbook() {
+
+        this.aktivWorkbookComObj.save()
+        this.quit()
+    }
+
+    navngivSheet(pSheet, pNavn) {
+
+        this.app.Worksheets(pSheet).name := pNavn
+    }
+
+    setAktivSheet(pSheetNavnEllerNummer) {
+
+        this.aktivSheet := this.app.Worksheets(pSheetNavnEllerNummer)
+
+        this.aktivSheet.activate()
+    }
+
+    kolonneNavnogNummerTilArray() {
+
+
+        outputArray := this.TestKolonneNavnOgNummerArray
+
+        kolonneNummerHojest := this.kolonneNummerArrayFindHøjestePlads()
+
+        loop kolonneNummerHojest
+            outputArray.Push("")
+
+        outputArray := this.kolonneNavnogNummerUdfyldArray(outputArray)
+
+        this.kolonneNavnogNummerArray := outputArray
+
+        return outputArray
+    }
+
+    kolonneNummerArrayFindHøjestePlads() {
+
+        kolonneNummerHojest := 0
+        KolonneNavnOgNummer := this.TestKolonneNavnOgNummer
+
+
+        for kolonneNavn, kolonneObj in KolonneNavnOgNummer.OwnProps()
+        {
+            if type(kolonneObj.KolonneNummer) = "Integer"
+                if kolonneObj.KolonneNummer >= kolonneNummerHojest
+                    kolonneNummerHojest := kolonneObj.KolonneNummer
+            if Type(kolonneObj.KolonneNummer) = "Array"
+                for kolonneNummerArray in kolonneObj.KolonneNummer
+                    if kolonneNummerArray >= kolonneNummerHojest
+                        kolonneNummerHojest := kolonneNummerArray
+        }
+        return kolonneNummerHojest
+
+    }
+
+    kolonneNavnogNummerUdfyldArray(pInputArray) {
+
+        KolonneNavnOgNummer := this.TestKolonneNavnOgNummer
+
+
+        for kolonneNavn, kolonneObj in KolonneNavnOgNummer.OwnProps()
+        {
+            if Type(kolonneObj.kolonneNummer) = "Integer"
+                pInputArray[kolonneObj.kolonneNummer] := kolonneNavn
+            if Type(kolonneObj.kolonneNummer) = "Array"
+                for kolonneNummerArray in kolonneObj.kolonneNummer
+                    pInputArray[kolonneNummerArray] := kolonneNavn
+        }
+
+        return pInputArray
+    }
+
+    lavTestKolonnerExcel() {
+
+        kolonneRække := 1
+        for kolonneNavn in this.TestKolonneNavnOgNummerArray
+        {
+            aktivKolonne := A_Index
+            aktivKolonneObj := this.TestKolonneNavnOgNummer.%kolonneNavn%
+            aktivCelle := this.aktivSheet.cells(kolonneRække, aktivKolonne)
+            aktivCelle.value := aktivKolonneObj.kolonneNavn
+            this.aktivSheet.columns().AutoFit
+            if aktivKolonneObj.kolonneKommentar
+            {
+                ; aktivCelle.addcomment()
+                ; aktivCelle.comment.text(aktivKolonneObj.kolonneKommentar)
+                aktivCelle.addcommentthreaded(aktivKolonneObj.kolonneKommentar)
+            }
+
+        }
+
+    }
+
+    udfyldVognløbRækker(pVl, pRækkenummer) {
+
+        pVl.parametre.sorterUndtagneTransporttyperEksisterende()
+        pVl.parametre.sorterUndtagneTransporttyperForventet()
+        pVl.parametre.sorterKørerIkkeTransporttyperEksisterende()
+        pVl.parametre.sorterKørerIkkeTransporttyperForventet()
+
+        for parameterNavn, parameterObj in pVl.parametre.OwnProps()
+        {
+            if !parameterObj.eksisterendeIndhold
+                continue
+            parameterObj := pVl.parametre.%parameterNavn%
+            if parameterObj.eksisterendeIndhold
+                if type(parameterObj.eksisterendeIndhold) != "Array"
+                {
+                    parmameterKolonne := parameterobj.navn
+                    kolonneNummer := this.TestKolonneNavnOgNummer.%parmameterKolonne%.kolonneNummer
+
+                    aktivCelle := this.aktivSheet.cells(pRækkenummer, kolonneNummer)
+                    aktivCelle.value := parameterObj.eksisterendeIndhold
+                }
+            if type(parameterObj.eksisterendeIndhold) = "Array"
+            {
+                kolonneNummer := this.testKolonneNavnOgNummer.%parameterobj.navn%.kolonneNummer[1]
+                for celleIndhold in parameterObj.eksisterendeIndhold
+                {
+                    aktivCelleIndhold := celleIndhold
+                    parmameterKolonne := parameterobj.navn
+
+                    aktivCelle := this.aktivSheet.cells(pRækkenummer, kolonneNummer)
+                    aktivCelle.value := aktivCelleIndhold
+                    kolonneNummer += 1
+                }
+            }
+        this.aktivSheet.columns().AutoFit
+        }
+        ; kolonneNavn := pvl.parametre.vognløbsnummer.navn
+        ; parameterObj := pvl.parametre.%kolonneNavn%
+
+
+    }
+
+    lavExcelTemplate() {
+
+        testExcelPath := A_ScriptDir "\excelTemplate.xlsx"
+        if FileExist(testExcelPath)
+            FileDelete(testExcelPath)
+        excelNyWorkbook := excelLavNyWorkbook(testExcelPath)
+        excelNyWorkbook.quit()
+        this.åbenWorkbookReadWrite(testExcelPath)
+        this.setAktivSheet(1)
+        this.navngivSheet(1, "Alle Gyldige Kolonner")
+        this.kolonneNavnogNummerTilArray()
+        this.lavTestKolonnerExcel()
+        this.udfyldVognløbRækker(this.testVl, 2)
+        this.gemWorkbook()
+
+    }
+}
+
+class mockExcelP6Data extends excel {
 
     __New() {
 

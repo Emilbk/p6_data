@@ -1,8 +1,8 @@
 
-obj := {}
 
-obj.test := "2"
+testStr := "20241611222"
 
-MsgBox ObjOwnPropCount(obj)
+
+test := isTime(testStr)
 
 return

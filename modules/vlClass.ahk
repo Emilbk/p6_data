@@ -74,6 +74,7 @@ class VognløbConstructor {
                 vognløbOutput[outerIndex].push(Array)
                 vognløbOutput[outerIndex][ugedagArrayCount] := VognløbObj()
                 aktueltVognløb := vognløbOutput[outerIndex][ugedagArrayCount]
+
                 aktueltVognløb.setVognløbsDataTilIndlæsning(enkeltVognløbInput)
                 aktueltVognløb.udfyldundtagneTransportTyperArray()
                 aktueltVognløb.udfyldKørerIkkeTransporttyperArray()
@@ -97,10 +98,17 @@ class VognløbObj
 {
 
     parametre := parameterClass()
+    fejlLog := fejlLogObj()
 
-    udfyldUndtagneTransportTyperArray(){
+    setFejlLog(pFejlObj) {
 
-        antalTransportTyper := this.parametre.UndtagneTransporttyper.forventetIndhold.Length 
+        this.fejlLog := pFejlObj
+        this.fejlLog.fundetFejl := 1
+
+    }
+    udfyldUndtagneTransportTyperArray() {
+
+        antalTransportTyper := this.parametre.UndtagneTransporttyper.forventetIndhold.Length
         ønsketAntalTransportTyper := 20
 
         while this.parametre.UndtagneTransporttyper.forventetIndhold.Length != ønsketAntalTransportTyper
@@ -111,30 +119,55 @@ class VognløbObj
                 this.parametre.UndtagneTransporttyper.forventetIndhold[index] := A_Space
     }
 
-    udfyldKørerIkkeTransporttyperArray(){
+    udfyldKørerIkkeTransporttyperArray() {
 
-        antalTransportTyper := this.parametre.KørerIkkeTransporttyper.forventetIndhold.Length 
+        antalTransportTyper := this.parametre.KørerIkkeTransporttyper.forventetIndhold.Length
         ønsketAntalTransportTyper := 10
 
         while this.parametre.KørerIkkeTransporttyper.forventetIndhold.Length != ønsketAntalTransportTyper
             this.parametre.KørerIkkeTransporttyper.forventetIndhold.push(A_Space)
+
+        for index, transportType in this.parametre.KørerIkkeTransporttyper.forventetIndhold
+            if transportType = ""
+                this.parametre.KørerIkkeTransporttyper.forventetIndhold[index] := A_Space
     }
 
     tjekSlutTidOverMidnat() {
 
+        slutTid := this.parametre.Sluttid.forventetIndhold
         fasteDageArray := ["MA", "TI", "ON", "TO", "FR", "LØ", "SØ"]
         arrayPos := 0
         for index, fastdag in fasteDageArray
             if fastdag = this.parametre.Vognløbsdato.forventetIndhold
                 arrayPos := index
 
-        if InStr(this.parametre.Sluttid.forventetIndhold, "*")
+        VlDato := this.parametre.Vognløbsdato.forventetIndhold
+        if IsInteger(SubStr(VlDato, 1, 2))
+            if InStr(slutTid, "*")
+            {
+                år := SubStr(vlDato, -4, 4)
+                måned := SubStr(vlDato, 4, 2)
+                dag := SubStr(vlDato, 1, 2)
+
+                dateStr := år måned dag
+                nyDato := DateAdd(datestr, 1, "Days")
+
+                slutDato := FormatTime(nyDato, "dd-MM-yyyy")
+
+                this.parametre.VognløbsdatoSlut.forventetIndhold := slutDato
+
+                return
+
+            }
+
+
+        if InStr(slutTid, "*")
         {
-            this.parametre.Sluttid.forventetIndhold := SubStr(this.parametre.Sluttid.forventetIndhold, 1, 5)
+            slutTid := SubStr(slutTid, 1, 5)
             if arrayPos < 7
                 this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[arrayPos + 1]
-            else 
-            this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[1]
+            else
+                this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[1]
         }
         else
             this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[arrayPos]
@@ -143,8 +176,10 @@ class VognløbObj
     setVognløbsDataTilIndlæsning(pVLParameter) {
 
         for vlKey, vlIndhold in pVLParameter
-
-                this.parametre.%vlKey%.forventetIndhold := vlIndhold
+        {
+            this.parametre.%vlKey%.forventetIndhold := vlIndhold
+            this.parametre.%vlKey%.iBrug := 1
+        }
     }
 
     setTjekketVognløb(pTjekketVognløb) {
@@ -157,11 +192,11 @@ class VognløbObj
         return this.TjekketVognløb
     }
 
-    setFejlLog(pVlData)
-    {
-        this.fejlLog := fejlLogObj()
-        this.fejlLog.setVognløbsnummerOgDato(pVlData)
-    }
+    ; setFejlLog(pVlData)
+    ; {
+    ;     this.fejlLog := fejlLogObj()
+    ;     this.fejlLog.setVognløbsnummerOgDato(pVlData)
+    ; }
     test() {
         MsgBox this.tilIndlæsning.vognløbsnummer " - " this.tilIndlæsning.Vognløbsdato
 
