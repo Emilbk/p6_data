@@ -70,6 +70,11 @@ class excelIndlæsVlData extends excel {
         return
     }
 
+
+    getGyldigeKolonner() {
+
+        return this.gyldigeKolonneNavnOgNummer
+    }
     dataFindBrugtExcelRangeIAktivWorksheet() {
 
         this.aktivWorksheet.RækkerEnd := this.aktivWorksheetComObj.usedrange.rows.count
@@ -150,6 +155,9 @@ class excelIndlæsVlData extends excel {
     }
 
     dataVerificerInputTidspunkt() {
+
+        if !this.gyldigeKolonneNavnOgNummer.Starttid.iBrug or !this.gyldigeKolonneNavnOgNummer.Sluttid.iBrug
+            return
 
         datestr := "20241116"
         loop this.aktivWorksheet.RækkerEnd {
@@ -254,37 +262,54 @@ class excelBehandlWorkbook extends excel {
 
     }
 
+    gyldigKolonneNavnOgNummer := {}
+    aktivSheet := ""
+
+    setAktivSheet(pSheetNavnEllerNummer) {
+
+        this.aktivSheet := this.app.Worksheets(pSheetNavnEllerNummer)
+
+        this.aktivSheet.activate()
+    }
+    setGyldigeKolonner(pGyldigKolonne) {
+
+        this.gyldigKolonneNavnOgNummer := pGyldigKolonne
+    }
     gemWorkbook() {
 
         this.aktivWorkbookComObj.Save()
     }
 
-    kolonneNavnogNummerTilArray(pKolonneNavnOgNummer) {
+    kolonneNavnogNummerTilArray(pGyldigKolonne) {
 
-        outputArray := Array()
 
-        kolonneNummerHojest := this.kolonneNummerArrayFindHøjestePlads(pKolonneNavnOgNummer)
+        outputArray := this.KolonneNavnOgNummerArray
+
+        kolonneNummerHojest := this.kolonneNummerArrayFindHøjestePlads(pGyldigKolonne)
 
         loop kolonneNummerHojest
             outputArray.Push("")
 
-        outputArray := this.kolonneNavnogNummerUdfyldArray(pKolonneNavnOgNummer, outputArray)
+        outputArray := this.kolonneNavnogNummerUdfyldArray(outputArray, pGyldigKolonne)
 
         this.kolonneNavnogNummerArray := outputArray
 
         return outputArray
     }
 
-    kolonneNummerArrayFindHøjestePlads(pKolonneNavnOgNummer) {
+    kolonneNummerArrayFindHøjestePlads(pGyldigKolonne) {
 
         kolonneNummerHojest := 0
-        for kolonneNavn, kolonneNummer in pKolonneNavnOgNummer
+        KolonneNavnOgNummer := pGyldigKolonne
+
+
+        for kolonneNavn, kolonneObj in KolonneNavnOgNummer.OwnProps()
         {
-            if type(kolonneNummer) = "Integer"
-                if kolonneNummer >= kolonneNummerHojest
-                    kolonneNummerHojest := kolonneNummer
-            if Type(kolonneNummer) = "Array"
-                for kolonneNummerArray in kolonneNummer
+            if type(kolonneObj.KolonneNummer) = "Integer"
+                if kolonneObj.KolonneNummer >= kolonneNummerHojest
+                    kolonneNummerHojest := kolonneObj.KolonneNummer
+            if Type(kolonneObj.KolonneNummer) = "Array"
+                for kolonneNummerArray in kolonneObj.KolonneNummer
                     if kolonneNummerArray >= kolonneNummerHojest
                         kolonneNummerHojest := kolonneNummerArray
         }
@@ -292,19 +317,68 @@ class excelBehandlWorkbook extends excel {
 
     }
 
-    kolonneNavnogNummerUdfyldArray(pKolonneNavnOgNummer, pInputArray) {
+    kolonneNavnogNummerUdfyldArray(pInputArray, pGyldigKolonne) {
 
-        for kolonneNavn, kolonneNummer in pKolonneNavnOgNummer
+        KolonneNavnOgNummer := pGyldigKolonne
+
+
+        for kolonneNavn, kolonneObj in KolonneNavnOgNummer.OwnProps()
         {
-            if Type(kolonneNummer) = "Integer"
-                pInputArray[kolonneNummer] := kolonneNavn
-            if Type(kolonneNummer) = "Array"
-                for kolonneNummerArray in kolonneNummer
+            if Type(kolonneObj.kolonneNummer) = "Integer"
+                pInputArray[kolonneObj.kolonneNummer] := kolonneNavn
+            if Type(kolonneObj.kolonneNummer) = "Array"
+                for kolonneNummerArray in kolonneObj.kolonneNummer
                     pInputArray[kolonneNummerArray] := kolonneNavn
         }
 
         return pInputArray
     }
+
+    udfyldVognløbRækker(pVl, pRækkenummer) {
+
+        pVl.parametre.sorterUndtagneTransporttyperEksisterende()
+        pVl.parametre.sorterUndtagneTransporttyperForventet()
+        pVl.parametre.sorterKørerIkkeTransporttyperEksisterende()
+        pVl.parametre.sorterKørerIkkeTransporttyperForventet()
+
+        for parameterNavn, parameterObj in pVl.parametre.OwnProps()
+        {
+            if !parameterObj.eksisterendeIndhold
+                continue
+            parameterObj := pVl.parametre.%parameterNavn%
+            if parameterObj.eksisterendeIndhold
+                if this.gyldigKolonneNavnOgNummer.HasOwnProp(parameterNavn)
+                {
+                    if type(parameterObj.eksisterendeIndhold) != "Array"
+                    {
+                        parmameterKolonne := parameterobj.navn
+                        kolonneNummer := this.gyldigKolonneNavnOgNummer.%parmameterKolonne%.kolonneNummer
+
+                        aktivCelle := this.aktivSheet.cells(pRækkenummer, kolonneNummer)
+                        aktivCelle.value := parameterObj.eksisterendeIndhold
+                    }
+                    if type(parameterObj.eksisterendeIndhold) = "Array"
+                    {
+                        kolonneNummer := this.gyldigKolonneNavnOgNummer.%parameterobj.navn%.kolonneNummer[1]
+                        for celleIndhold in parameterObj.eksisterendeIndhold
+                        {
+                            aktivCelleIndhold := celleIndhold
+                            parmameterKolonne := parameterobj.navn
+
+                            aktivCelle := this.aktivSheet.cells(pRækkenummer, kolonneNummer)
+                            aktivCelle.value := aktivCelleIndhold
+                            kolonneNummer += 1
+                        }
+                    }
+                }
+        }
+        this.aktivSheet.columns().AutoFit
+        ; kolonneNavn := pvl.parametre.vognløbsnummer.navn
+        ; parameterObj := pvl.parametre.%kolonneNavn%
+
+
+    }
+
 }
 
 class udfyldTestExcelArk extends excel {
@@ -537,7 +611,7 @@ class udfyldTestExcelArk extends excel {
                     kolonneNummer += 1
                 }
             }
-        this.aktivSheet.columns().AutoFit
+            this.aktivSheet.columns().AutoFit
         }
         ; kolonneNavn := pvl.parametre.vognløbsnummer.navn
         ; parameterObj := pvl.parametre.%kolonneNavn%

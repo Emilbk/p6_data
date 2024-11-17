@@ -54,7 +54,7 @@ if !FileExist(testExcelPath)
 testExcel := udfyldTestExcelArk()
 ; testExcel.app.Visible := 1
 testExcel.lavExcelTemplate()
-; testExcel.åbenWorkbookReadWrite(testExcelPath)
+testExcel.åbenWorkbookReadWrite(testExcelPath)
 ; testExcel.app.Worksheets.add()
 ; testExcel.app.Worksheets.add()
 ; testExcel.setAktivSheet(1)

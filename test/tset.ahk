@@ -6,7 +6,7 @@ excelArk := 1
 excelobj := excelObjP6Data(excelFil, excelArk)
 excelArray := excelobj.getVlArray()
 
-vlConst := VognløbConstructor(excelArray)
+vlConst := VognløbConstructor(excelArray, excelobj.getGyldigeKolonner())
 vlContainer := vlConst.getBehandletVognløbsArray()
 
 vl := vlContainer[1][1]
@@ -14,35 +14,56 @@ p6obj := P6()
 
 ; MsgBox vl.parametre.vognløbsnummer.forventetIndhold
 
-p6Vindue := 1706740
+p6Vindue := 331448 
 
 p6obj.setP6Vindue(p6Vindue)
-; p6obj.setVognløb(vl)
 
-; p6obj.funkIndhentVognløbsbillede()
-; p6obj.funkIndhentKørselsaftale()
+
+testExcelPath := A_ScriptDir "\exceltest\test2.xlsx" 
+
+if !FileExist(testExcelPath)
+    excelNyWorkbook := excelLavNyWorkbook(testExcelPath)
+
+testexcel := excelBehandlWorkbook()
+testexcel.app.Visible := 1
+testexcel.åbenWorkbookReadWrite(testExcelPath)
+testexcel.setAktivSheet(1)
+testexcel.setGyldigeKolonner(excelobj.getGyldigeKolonner())
+testexcel.gyldigKolonneNavnOgNummer.Vognløbsdato :={ kolonneNavn: "Vognløbsdato", kolonneNummer: 1, iBrug: 0 },
+rækkeNummer := 1
 for vlSamling in vlContainer
 {
     vlFørste := vlSamling[1]
     p6Samling := p6()
     p6Samling.setP6Vindue(p6Vindue)
     p6Samling.setVognløb(vlFørste)
-    p6Samling.funkKørselsaftaleÆndrHjemzone()
+    ; p6Samling.funkKørselsaftaleÆndrHjemzone()
 
+    p6Samling.navAktiverP6Vindue()
     p6Samling.navLukAlleVinduer()
     p6Samling.navVindueVognløb()
     for vl in vlSamling
     {
+        rækkeNummer += 1
         p6obj := p6()
         p6obj.setP6Vindue(p6Vindue)
         p6obj.setVognløb(vl)
         try {
-            p6obj.funkVognløbsbilledeÆndrHjemzone()
+            ; p6obj.funkIndhentData()
+            p6obj.funkIndhentData()
+
 
         } catch P6MsgboxError as msg {
-
+            
             vl.setFejlLog(msg)
-        }
+            testexcel.aktivSheet.Cells(rækkeNummer, 1).value := msg.Message
+            testexcel.aktivSheet.Cells(rækkeNummer, 2).value := vl.parametre.Vognløbsnummer.forventetIndhold
+        } 
+        else
+            {
+                testexcel.udfyldVognløbRækker(vl, rækkeNummer)
+                
+            }
     }
 }
 ; SendInput("{Enter}")

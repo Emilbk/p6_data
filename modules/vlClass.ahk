@@ -2,8 +2,9 @@
 #Include ../Lib/deepCopy.ahk
 
 class VognløbConstructor {
-    __New(pExcelInput) {
+    __New(pExcelInput, pGyldigeKolonner) {
 
+        this.gyldigeKolonner := pGyldigeKolonner
         this.behandlVognløsbsdata(pExcelInput)
     }
 
@@ -78,13 +79,13 @@ class VognløbConstructor {
                 aktueltVognløb.setVognløbsDataTilIndlæsning(enkeltVognløbInput)
                 aktueltVognløb.udfyldundtagneTransportTyperArray()
                 aktueltVognløb.udfyldKørerIkkeTransporttyperArray()
+                aktueltVognløb.setGyldigeKolonner(this.gyldigeKolonner)
 
                 ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
                 ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
                 aktueltVognløb.parametre.Vognløbsdato.forventetIndhold := ugedag
                 aktueltVognløb.tjekSlutTidOverMidnat()
 
-                aktueltVognløb.parametre.Ugedage := ""
             }
         }
 
@@ -99,7 +100,13 @@ class VognløbObj
 
     parametre := parameterClass()
     fejlLog := fejlLogObj()
+    gyldigeKolonner := {}
 
+    setGyldigeKolonner(pGyldigeKolonner){
+
+        this.gyldigeKolonner := pGyldigeKolonner
+
+    }
     setFejlLog(pFejlObj) {
 
         this.fejlLog := pFejlObj
@@ -133,6 +140,9 @@ class VognløbObj
     }
 
     tjekSlutTidOverMidnat() {
+
+        if !this.parametre.Starttid.forventetIndhold or !this.parametre.Sluttid.forventetIndhold or !this.parametre.Vognløbsdato.forventetIndhold
+            return
 
         slutTid := this.parametre.Sluttid.forventetIndhold
         fasteDageArray := ["MA", "TI", "ON", "TO", "FR", "LØ", "SØ"]
