@@ -619,14 +619,13 @@ class udfyldTestExcelArk extends excel {
 
     }
 
-    lavExcelTemplate() {
+    lavExcelTemplate(pPath) {
 
-        testExcelPath := A_ScriptDir "\excelTemplate.xlsx"
-        if FileExist(testExcelPath)
-            FileDelete(testExcelPath)
-        excelNyWorkbook := excelLavNyWorkbook(testExcelPath)
+        if FileExist(pPath)
+            FileDelete(pPath)
+        excelNyWorkbook := excelLavNyWorkbook(pPath)
         excelNyWorkbook.quit()
-        this.åbenWorkbookReadWrite(testExcelPath)
+        this.åbenWorkbookReadWrite(pPath)
         this.setAktivSheet(1)
         this.navngivSheet(1, "Alle Gyldige Kolonner")
         this.kolonneNavnogNummerTilArray()

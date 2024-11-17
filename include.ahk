@@ -7,4 +7,5 @@
 #Include modules\vlClass.ahk
 #Include modules\fejlLog.ahk
 #Include modules\config.ahk
+#Include modules\GUIny.ahk
 #Include static\gyldigeKolonner.ahk

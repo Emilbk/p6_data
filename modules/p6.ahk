@@ -166,8 +166,13 @@ class P6 extends class {
         ; TODO bedre window-løsning? handle?
         if !WinActive("PLANET")
         {
-            WinActivate("ahk_id" this.vindueHandle)
-            WinWaitSuccess := WinWaitActive(this.vindueHandle, , 3)
+            try {
+                WinActivate("ahk_id" this.vindueHandle)
+                WinWaitSuccess := WinWaitActive(this.vindueHandle, , 3)
+                
+            } catch Error as e {
+                MsgBox "P6-vindue er ikke valgt!"
+            }
 
             ; hvordan håndteres timeout?
             ; if !WinWaitSuccess
@@ -967,8 +972,6 @@ class P6 extends class {
         }
         funkÆndrVognløb()
         {
-            this.navAktiverP6Vindue()
-            this.navLukAlleVinduer()
             this.navVindueVognløb()
             this.vognløbsbilledeIndtastVognløbOgDato()
             this.vognløbsbilledeÆndrVognløb()

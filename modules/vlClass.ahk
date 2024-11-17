@@ -141,6 +141,8 @@ class VognløbObj
 
     tjekSlutTidOverMidnat() {
 
+        
+
         if !this.parametre.Starttid.forventetIndhold or !this.parametre.Sluttid.forventetIndhold or !this.parametre.Vognløbsdato.forventetIndhold
             return
 
@@ -169,6 +171,12 @@ class VognløbObj
                 return
 
             }
+            else
+                {
+                    
+                    this.parametre.VognløbsdatoSlut.forventetIndhold := VlDato
+                    return
+                }
 
 
         if InStr(slutTid, "*")
