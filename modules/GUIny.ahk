@@ -148,6 +148,7 @@ danExcelSkabelon() {
         {
             p6Obj.setVognløb(vl)
             try {
+                vl.tjekForbudtVognløbsDato()
                 p6obj.funkÆndrVognløb()
 
             } catch P6MsgboxError as msg {
@@ -181,6 +182,7 @@ danExcelSkabelon() {
         {
             p6Obj.setVognløb(vl)
             try {
+                vl.tjekForbudtVognløbsDato()
                 p6obj.funkVognløbsbilledeÆndrHjemzone()
 
             } catch P6MsgboxError as msg {

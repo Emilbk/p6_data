@@ -241,15 +241,14 @@ class VognløbObj
         return this.TjekketVognløb
     }
 
-    ; setFejlLog(pVlData)
-    ; {
-    ;     this.fejlLog := fejlLogObj()
-    ;     this.fejlLog.setVognløbsnummerOgDato(pVlData)
-    ; }
-    test() {
-        MsgBox this.tilIndlæsning.vognløbsnummer " - " this.tilIndlæsning.Vognløbsdato
 
-        return
+    tjekForbudtVognløbsDato(){
+
+        forbudteDatoer := ["23-12", "24-12", "31-12", "01-01"]
+
+        for forbudtDato in forbudteDatoer
+            if this.parametre.Vognløbsdato = forbudtDato
+                Throw Error("Forbudt dato - " this.parametre.Vognløbsdato)
+
     }
-
 }
