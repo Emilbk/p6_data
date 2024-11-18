@@ -4,6 +4,7 @@
 #Requires AutoHotkey v2.0
 ; TODO opdel i navigering, datatjek og databehandling?
 
+; TODO tilpas ny datastruktur (kolonnenavn og parameternavn)
 
 ; Aktiverer P6-vindue, hvis ikke aktivt
 /**

@@ -169,15 +169,20 @@ danExcelSkabelon() {
         MsgBox("P6-vindue er ikke valgt endnu!")
         return
     }
-    for vlSamling in goo.vognløb.vlArray
-    {
-        vlFørste := vlSamling[1]
-        p6obj.setVognløb(vlFørste)
+        goo.VognløbConstructor.vlArray.masterVognløb := vlKørselaftale
+        p6obj.setVognløb(vlKørselaftale)
         p6obj.navAktiverP6Vindue()
         p6obj.navLukAlleVinduer()
-        p6obj.setVognløb(vlFørste)
-        p6obj.funkKørselsaftaleÆndrHjemzone()
+        p6obj.setVognløb(vlKørselsaftale)
+        try {
+            p6obj.funkKørselsaftaleÆndrHjemzone()
+            
+        } catch Error as e {
+           ; kørselsaftalefejl 
+        }
 
+    for vlSamling in goo.vognløb.vlArray.vognløbsListe
+    {
         for Vl in vlSamling
         {
             p6Obj.setVognløb(vl)

@@ -9,7 +9,7 @@ excelArray := excelobj.getVlArray()
 vlConst := VognløbConstructor(excelArray, excelobj.getGyldigeKolonner())
 vlContainer := vlConst.getBehandletVognløbsArray()
 
-vl := vlContainer[1][1]
+vl := vlContainer.vognløbsListe[1][1]
 p6obj := P6()
 
 ; MsgBox vl.parametre.vognløbsnummer.forventetIndhold

@@ -1,8 +1,7 @@
 
 
-testStr := "20241611222"
+testOjb := {test: "gammeltest"}
 
-
-test := isTime(testStr)
+nytest := testOjb.test := "nytest"
 
 return

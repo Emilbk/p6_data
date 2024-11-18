@@ -9,7 +9,9 @@ class VognløbConstructor {
     }
 
     vognløbInput := ""
-    vognløbOutput := Array()
+    vognløbOutput := { masterVognløb: VognløbObj(), vognløbsListe: Array() }
+    ; vognløbOutput := { masterVognløb: VognløbObj(), vognløbsListe: Array() }
+
 
     /**
      *  Main interface
@@ -50,7 +52,7 @@ class VognløbConstructor {
         vognløbOutput := this.vognløbOutput
 
         for vognløb in vognløbsarray
-            vognløbOutput.push(Array())
+            vognløbOutput.vognløbsListe.push(Array())
 
         this.vognløbOutput := vognløbOutput
         return
@@ -64,7 +66,13 @@ class VognløbConstructor {
         for enkeltVognløbInput in vognløbsarray
         {
             ugedagArrayCount := 0
+            
             outerIndex := A_Index
+            masterVL := vognløbOutput.masterVognløb := VognløbObj()
+            masterVL.setVognløbsDataTilIndlæsning(enkeltVognløbInput, this.gyldigeKolonner)
+            masterVl.udfyldundtagneTransportTyperArray()
+            masterVl.udfyldKørerIkkeTransporttyperArray()
+            masterVl.setGyldigeKolonner(this.gyldigeKolonner)
             for ugedag in enkeltVognløbInput["Ugedage"]
             {
                 if ugedag = ""
@@ -72,9 +80,9 @@ class VognløbConstructor {
                 ugedagArrayCount += 1
                 ugedag := Format("{:U}", ugedag)
 
-                vognløbOutput[outerIndex].push(Array)
-                vognløbOutput[outerIndex][ugedagArrayCount] := VognløbObj()
-                aktueltVognløb := vognløbOutput[outerIndex][ugedagArrayCount]
+                vognløbOutput.vognløbsListe[outerIndex].push(Array)
+                vognløbOutput.vognløbsListe[outerIndex][ugedagArrayCount] := VognløbObj()
+                aktueltVognløb := vognløbOutput.vognløbsListe[outerIndex][ugedagArrayCount]
                 aktueltVognløb.setVognløbsDataTilIndlæsning(enkeltVognløbInput, this.gyldigeKolonner)
                 aktueltVognløb.setVognløbsdato(ugedag)
                 aktueltVognløb.tjekSlutTidOverMidnat()
@@ -242,7 +250,7 @@ class VognløbObj
     }
 
 
-    tjekForbudtVognløbsDato(){
+    tjekForbudtVognløbsDato() {
 
         forbudteDatoer := ["23-12", "24-12", "31-12", "01-01"]
 
