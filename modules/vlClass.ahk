@@ -71,12 +71,13 @@ class VognløbConstructor {
                     continue
                 ugedagArrayCount += 1
                 ugedag := Format("{:U}", ugedag)
-                enkeltVognløbInput["Vognløbsdato"] := ugedag
+
                 vognløbOutput[outerIndex].push(Array)
                 vognløbOutput[outerIndex][ugedagArrayCount] := VognløbObj()
                 aktueltVognløb := vognløbOutput[outerIndex][ugedagArrayCount]
-
-                aktueltVognløb.setVognløbsDataTilIndlæsning(enkeltVognløbInput)
+                aktueltVognløb.setVognløbsDataTilIndlæsning(enkeltVognløbInput, this.gyldigeKolonner)
+                aktueltVognløb.setVognløbsdato(ugedag)
+                aktueltVognløb.tjekSlutTidOverMidnat()
                 aktueltVognløb.udfyldundtagneTransportTyperArray()
                 aktueltVognløb.udfyldKørerIkkeTransporttyperArray()
                 aktueltVognløb.setGyldigeKolonner(this.gyldigeKolonner)
@@ -84,7 +85,6 @@ class VognløbConstructor {
                 ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
                 ; vognløbOutput[outerIndex][ugedagArrayCount].setfejlLog(enkeltVognløbInput)
                 aktueltVognløb.parametre.Vognløbsdato.forventetIndhold := ugedag
-                aktueltVognløb.tjekSlutTidOverMidnat()
 
             }
         }
@@ -102,7 +102,7 @@ class VognløbObj
     fejlLog := fejlLogObj()
     gyldigeKolonner := {}
 
-    setGyldigeKolonner(pGyldigeKolonner){
+    setGyldigeKolonner(pGyldigeKolonner) {
 
         this.gyldigeKolonner := pGyldigeKolonner
 
@@ -139,10 +139,16 @@ class VognløbObj
                 this.parametre.KørerIkkeTransporttyper.forventetIndhold[index] := A_Space
     }
 
+    setVognløbsdato(pVognløbsdato) {
+        for parameterNavn, parameterObj in this.parametre.OwnProps()
+            if (parameterObj.kolonneNavn = "Ugedage")
+                parameterObj.forventetIndhold := pVognløbsdato
+    }
+
     tjekSlutTidOverMidnat() {
 
-        
 
+        ; Hvorfor?
         if !this.parametre.Starttid.forventetIndhold or !this.parametre.Sluttid.forventetIndhold or !this.parametre.Vognløbsdato.forventetIndhold
             return
 
@@ -166,37 +172,62 @@ class VognløbObj
 
                 slutDato := FormatTime(nyDato, "dd-MM-yyyy")
 
-                this.parametre.VognløbsdatoSlut.forventetIndhold := slutDato
-
+                for parameterNavn, parameterObj in this.parametre.OwnProps()
+                {
+                    if (parameterObj.kolonneNavn = "Ugedage")
+                        if (parameterObj.parameterNavn != "Vognløbsdato" and parameterObj.parameterNavn != "VognløbsdatoStart")
+                            parameterObj.forventetIndhold := slutdato
+                }
                 return
 
             }
             else
-                {
-                    
-                    this.parametre.VognløbsdatoSlut.forventetIndhold := VlDato
-                    return
-                }
+            {
 
+                for parameterNavn, parameterObj in this.parametre.OwnProps()
+                {
+                    if (parameterObj.kolonneNavn = "Ugedage")
+                        if (parameterObj.parameterNavn != "Vognløbsdato" and parameterObj.parameterNavn != "VognløbsdatoStart")
+                            parameterObj.forventetIndhold := vlDato
+                }
+                return
+            }
 
         if InStr(slutTid, "*")
         {
             slutTid := SubStr(slutTid, 1, 5)
             if arrayPos < 7
-                this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[arrayPos + 1]
+            {
+                for parameterNavn, parameterObj in this.parametre.OwnProps()
+                {
+                    if (parameterObj.kolonneNavn = "Ugedage")
+                        if (parameterObj.parameterNavn != "Vognløbsdato" and parameterObj.parameterNavn != "VognløbsdatoStart")
+                            parameterObj.forventetIndhold := fastedagearray[arrayPos + 1]
+                }
+            }
             else
-                this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[1]
+                for parameterNavn, parameterObj in this.parametre.OwnProps()
+                {
+                    if (parameterObj.kolonneNavn = "Ugedage")
+                        if (parameterObj.parameterNavn != "Vognløbsdato" and parameterObj.parameterNavn != "VognløbsdatoStart")
+                            parameterObj.forventetIndhold := fastedagearray[1]
+                }
+
+
         }
-        else
-            this.parametre.VognløbsdatoSlut.forventetIndhold := fasteDageArray[arrayPos]
     }
+    setVognløbsDataTilIndlæsning(pVLParameter, pGyldigeKolonner) {
 
-    setVognløbsDataTilIndlæsning(pVLParameter) {
-
-        for vlKey, vlIndhold in pVLParameter
+        for kolonneNavnExcel, parameterIndholdExcel in pVLParameter
         {
-            this.parametre.%vlKey%.forventetIndhold := vlIndhold
-            this.parametre.%vlKey%.iBrug := 1
+            for parameterNavn, parameterObj in this.parametre.OwnProps()
+                if parameterObj.kolonneNavn = kolonneNavnExcel
+                {
+                    parameterObj.forventetIndhold := parameterIndholdExcel
+                    parameterObj.iBrug := 1
+                    parameterObj.kolonneNummer := pGyldigeKolonner.%kolonneNavnExcel%.KolonneNummer
+                }
+
         }
     }
 

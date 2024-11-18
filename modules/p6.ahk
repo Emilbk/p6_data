@@ -169,7 +169,7 @@ class P6 extends class {
             try {
                 WinActivate("ahk_id" this.vindueHandle)
                 WinWaitSuccess := WinWaitActive(this.vindueHandle, , 3)
-                
+
             } catch Error as e {
                 MsgBox "P6-vindue er ikke valgt!"
             }
@@ -570,7 +570,7 @@ class P6 extends class {
         {
             indtastningObj := { indtastetVognløbsnummer: tjekAfIndtastningVognløbsnummer, indtastetVognløbsdato: tjekAfIndtastningVognløbsdato, fejlType: "Indtastning af kørselsaftale" }
             throw (P6Indtastningsfejl("Fejl i indtastning, vognløbsnummer eller dato er ikke det forventede", , indtastningObj))
-        
+
         }
 
         ; TODO omskriv når setparameter omskrevet
@@ -864,456 +864,455 @@ class P6 extends class {
             this.vognløb.parametre.setParameterEksisterende(hjemzonePar, hjemzone)
             SendInput("{tab}")
         }
-            SendInput("{Enter}")
+        SendInput("{Enter}")
 
-            p6_msgbox := this.kopierVærdi("ctrl", 1)
-            if InStr(p6_msgbox, "Zone ikke registreret")
-                throw (P6MsgboxError("Zonen findes ikke i P6"))
-            if InStr(p6_msgbox, "Zone skal angives")
-                throw (P6MsgboxError("Zonen er udfyldt tom"))
-
-        }
-
-        vognløbsbilledeIndhentØvrige() {
-
-            if this.vognløb.gyldigeKolonner.Vognløbsnotering.iBrug
-            {
-                SendInput("!v+{Up}")
-                Vognløbsnotering := this.kopierVærdi("ctrl",,,1)
-                VognløbsnoteringPar := this.vognløb.parametre.Vognløbsnotering
-                this.vognløb.parametre.setParameterEksisterende(VognløbsnoteringPar, Vognløbsnotering)
-            }
-            if this.vognløb.gyldigeKolonner.chfKontaktNummer.iBrug
-            {
-                SendInput("!ø{tab 2}")
-                chfKontaktNummer := this.kopierVærdi("appsKey")
-                chfKontaktNummerPar := this.vognløb.parametre.chfKontaktNummer
-                this.vognløb.parametre.setParameterEksisterende(chfKontaktNummerPar, chfKontaktNummer)
-            }
-            if this.vognløb.gyldigeKolonner.Vognløbskategori.iBrug
-            {
-                SendInput("!ø{tab 3}")
-                Vognløbskategori := this.kopierVærdi("appsKey")
-                VognløbskategoriPar := this.vognløb.parametre.Vognløbskategori
-                this.vognløb.parametre.setParameterEksisterende(VognløbskategoriPar, Vognløbskategori)
-            }
-            if this.vognløb.gyldigeKolonner.Planskema.iBrug
-            {
-                SendInput("!ø{tab 6}")
-                Planskema := this.kopierVærdi("appsKey")
-                PlanskemaPar := this.vognløb.parametre.Planskema
-                this.vognløb.parametre.setParameterEksisterende(PlanskemaPar, Planskema)
-            }
-            if this.vognløb.gyldigeKolonner.Økonomiskema.iBrug
-            {
-                SendInput("!ø{tab 8}")
-                Økonomiskema := this.kopierVærdi("appsKey")
-                ØkonomiskemaPar := this.vognløb.parametre.Økonomiskema
-                this.vognløb.parametre.setParameterEksisterende(ØkonomiskemaPar, Økonomiskema)
-            }
-            if this.vognløb.gyldigeKolonner.Statistikgruppe.iBrug
-            {
-                SendInput("!ø{tab 9}")
-                Statistikgruppe := this.kopierVærdi("appsKey")
-                StatistikgruppePar := this.vognløb.parametre.Statistikgruppe
-                this.vognløb.parametre.setParameterEksisterende(StatistikgruppePar, Statistikgruppe)
-            }
-        }
-
-        vognløbsbilledeIndhentTransporttyper() {
-            if this.vognløb.gyldigeKolonner.undtagneTransportTyper.iBrug
-            {
-
-                undtagneTransportTyper := Array()
-                transportTyperPar := this.vognløb.parametre.undtagneTransportTyper
-                this.vognløb.parametre.undtagneTransportTyper.eksisterendeIndhold := undtagneTransportTyper
-
-                SendInput("!u")
-                loop 19
-                {
-                    tType := this.kopierVærdi("ctrl", , , 1)
-                    if !tType
-                        break
-                    undtagneTransportTyper.Push(tType)
-                    SendInput("{tab}")
-
-                }
-            }
-        }
-
-        kørselsaftaleIndhent() {
-
-        }
-
-
-        funkKørselsaftaleÆndrHjemzone() {
-
-            this.navAktiverP6Vindue()
-            this.navLukAlleVinduer()
-            this.navVindueKørselsaftale()
-            this.kørselsaftaleIndtastKørselsaftale()
-            this.kørselsaftaleTjekKørselsaftaleOgStyresystem()
-            this.kørselsaftaleÆndr()
-            this.kørselsaftaleIndtastNormalHjemzone()
-            this.kørselsaftaleIndtastVognmandLinie1()
-            this.kørselsaftaleIndtastVognmandLinie2()
-            this.kørselsaftaleIndtastVognmandLinie3()
-            this.kørselsaftaleIndtastVognmandLinie4()
-            this.kørselsaftaleAfslut()
-        }
-        funkVognløbsbilledeÆndrHjemzone() {
-
-            this.navVindueVognløb()
-            this.vognløbsbilledeIndtastVognløbOgDato()
-            this.vognløbsbilledeÆndrVognløb()
-            this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
-            this.vognløbsbilledeIndtastÅbningstiderOgZone()
-            this.ændrVognløbsbilledeAfslut()
-        }
-        funkÆndrVognløb()
-        {
-            this.navVindueVognløb()
-            this.vognløbsbilledeIndtastVognløbOgDato()
-            this.vognløbsbilledeÆndrVognløb()
-            this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
-            this.vognløbsbilledeIndtastÅbningstiderOgZone()
-            this.vognløbsbilledeIndtastØvrige()
-            this.vognløbsbilledeIndtastTransporttyper()
-            this.ændrVognløbsbilledeAfslut()
-            return
-        }
-
-        funkTjekVognløb()
-        {
-            this.navAktiverP6Vindue()
-            this.navVindueVognløb()
-            this.vognløbsbilledeIndtastVognløbOgDato()
-            this.vognløbsbilledeÆndrVognløb()
-            this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
-            this.vognløbsbilledeTjekÅbningstiderOgZone()
-
-        }
-
-        funkIndhentData() {
-
-            this.funkIndhentVognløbsbillede()
-        }
-
-        funkIndhentVognløbsbillede() {
-
-            ; this.navAktiverP6Vindue()
-            ; this.navLukAlleVinduer()
-            this.navVindueVognløb()
-            this.vognløbsbilledeIndtastVognløbOgDato()
-            this.vognløbsbilledeÆndrVognløb()
-            this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
-            this.vognløbsbilledeIndhentÅbningstiderogZone()
-            this.vognløbsbilledeIndhentØvrige()
-            this.vognløbsbilledeIndhentTransporttyper()
-            this.ændrVognløbsbilledeAfslut()
-        }
-        funkIndhentKørselsaftale() {
-
-            this.navAktiverP6Vindue()
-            this.navLukAlleVinduer()
-            this.navVindueKørselsaftale()
-            this.kørselsaftaleIndtastKørselsaftale()
-            this.kørselsaftaleTjekKørselsaftaleOgStyresystem()
-            this.kørselsaftaleÆndr()
-            this.kørselsaftaleIndhentPlanskema()
-            this.kørselsaftaleIndhentØkonomiskema()
-            this.kørselsaftaleIndhentStatistikgruppe()
-            this.kørselsaftaleIndhentNormalHjemzone()
-            this.kørselsaftaleIndhentKørerIkkeTransportTyper()
-            this.kørselsaftaleIndhentObligatoriskVognmand()
-            this.kørselsaftaleIndhentPauseRegel()
-            this.kørselsaftaleIndhentPauseDynamisk()
-            this.kørselsaftaleIndhentPauseStart()
-            this.kørselsaftaleIndhentPauseSlut()
-            this.kørselsaftaleIndhentVognmandNavn()
-            this.kørselsaftaleIndhentVognmandCO()
-            this.kørselsaftaleIndhentVognmandAdresse()
-            this.kørselsaftaleIndhentVognmandPostNr()
-            this.kørselsaftaleIndhentVognmandTelefon()
-        }
+        p6_msgbox := this.kopierVærdi("ctrl", 1)
+        if InStr(p6_msgbox, "Zone ikke registreret")
+            throw (P6MsgboxError("Zonen findes ikke i P6"))
+        if InStr(p6_msgbox, "Zone skal angives")
+            throw (P6MsgboxError("Zonen er udfyldt tom"))
 
     }
 
-    class parameterClass {
+    vognløbsbilledeIndhentØvrige() {
 
-        Budnummer := { navn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Vognløbsnummer := { navn: "Vognløbsnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Vognløbsdato := { navn: "Vognløbsdato", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognløbsdatoStart := { navn: "VognløbsdatoStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognløbsdatoSlut := { navn: "VognløbsdatoSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognløbsdatoNormalSlut := { navn: "VognløbsdatoNormalslut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognløbsdatoSidsteSlut := { navn: "VognløbsdatoSidsteSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Kørselsaftale := { navn: "Kørselsaftale", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Styresystem := { navn: "Styresystem", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Starttid := { navn: "Starttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Sluttid := { navn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        NormalSluttid := { navn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        SidsteSluttid := { navn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Hjemzone := { navn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Startzone := { navn: "Startzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Slutzone := { navn: "Slutzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        NormalHjemzone := { navn: "NormalHjemzone", forventetIndhold: this.Hjemzone.forventetIndhold, eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        chfKontaktNummer := { navn: "chfKontaktNummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Vognløbskategori := { navn: "Vognløbskategori", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Planskema := { navn: "Planskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Økonomiskema := { navn: "Økonomiskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Statistikgruppe := { navn: "Statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Vognløbsnotering := { navn: "Vognløbsnotering", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognmandLinie1 := { navn: "VognmandLinie1", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognmandLinie2 := { navn: "VognmandLinie2", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognmandLinie3 := { navn: "VognmandLinie3", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognmandLinie4 := { navn: "VognmandLinie4", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        VognmandKontaktnummer := { navn: "VognmandKontaktnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        ObligatoriskVognmand := { navn: "ObligatoriskVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        KørselsaftaleVognmand := { navn: "KørselsaftaleVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        Ugedage := { navn: "Ugedage", forventetIndhold: Array(), eksisterendeIndhold: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        UndtagneTransporttyper := { navn: "UndtagneTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
-        KørerIkkeTransporttyper := { navn: "KørerIkkeTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
-
-
-        ; kun i P6
-        pauseRegel := { navn: "pauseRegel", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-        pauseDynamisk := { navn: "pauseDynamisk", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-        pauseStart := { navn: "pauseStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-        pauseSlut := { navn: "pauseSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-        kørerIkkeTransportTyperOprindeligRækkefølge := { navn: "kørerIkkeTransportTyperOprindeligRækkefølge", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-
-
-        danParameterObj(pParameterNavn) {
-
-            if this.HasOwnProp(pParameterNavn)
-                return
-
-            this.%pParameterNavn% := { navn: pParameterNavn, forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
-
-            return this.%pParameterNavn%
+        if this.vognløb.gyldigeKolonner.Vognløbsnotering.iBrug
+        {
+            SendInput("!v+{Up}")
+            Vognløbsnotering := this.kopierVærdi("ctrl", , , 1)
+            VognløbsnoteringPar := this.vognløb.parametre.Vognløbsnotering
+            this.vognløb.parametre.setParameterEksisterende(VognløbsnoteringPar, Vognløbsnotering)
         }
-
-        setParameterForventet(pParameterObj, pForventet) {
-
-
-            pParameterObj.forventetIndhold := pForventet
-
-
+        if this.vognløb.gyldigeKolonner.chfKontaktNummer.iBrug
+        {
+            SendInput("!ø{tab 2}")
+            chfKontaktNummer := this.kopierVærdi("appsKey")
+            chfKontaktNummerPar := this.vognløb.parametre.chfKontaktNummer
+            this.vognløb.parametre.setParameterEksisterende(chfKontaktNummerPar, chfKontaktNummer)
         }
-        setParameterEksisterende(pParameterObj, pEksisterende) {
-
-
-            pParameterObj.eksisterendeIndhold := pEksisterende
-
-
+        if this.vognløb.gyldigeKolonner.Vognløbskategori.iBrug
+        {
+            SendInput("!ø{tab 3}")
+            Vognløbskategori := this.kopierVærdi("appsKey")
+            VognløbskategoriPar := this.vognløb.parametre.Vognløbskategori
+            this.vognløb.parametre.setParameterEksisterende(VognløbskategoriPar, Vognløbskategori)
         }
-
-        /**
-         * 
-         * @param pParamaetObj 
-         * @returns Bool
-         */
-        tjekParameterForFejl(pParamaetObj) {
-
-
-            forventetParameterIndhold := pParamaetObj.forventetIndhold
-            eksisterendeParameterIndhold := pParamaetObj.eksisterendeIndhold
-            fundetFejl := pParamaetObj.fejl
-
-            if !forventetParameterIndhold
-                return
-
-            if fundetFejl
-                return
-
-            if forventetParameterIndhold != eksisterendeParameterIndhold
-                pParamaetObj.fejl := 1
-            else
-                pParamaetObj.fejl := 0
+        if this.vognløb.gyldigeKolonner.Planskema.iBrug
+        {
+            SendInput("!ø{tab 6}")
+            Planskema := this.kopierVærdi("appsKey")
+            PlanskemaPar := this.vognløb.parametre.Planskema
+            this.vognløb.parametre.setParameterEksisterende(PlanskemaPar, Planskema)
         }
-
-        tjekAlleParameterForFejl() {
-
-            undtagetArray := Map("UndtagneTransporttyper", 0, "KørerIkkeTransporttyper", 0, "Ugedage", 0)
-            for parameternavn, parameterobj in this.OwnProps()
-                if !undtagetArray.Has(parameternavn)
-                    this.tjekParameterForFejl(parameterobj)
-
+        if this.vognløb.gyldigeKolonner.Økonomiskema.iBrug
+        {
+            SendInput("!ø{tab 8}")
+            Økonomiskema := this.kopierVærdi("appsKey")
+            ØkonomiskemaPar := this.vognløb.parametre.Økonomiskema
+            this.vognløb.parametre.setParameterEksisterende(ØkonomiskemaPar, Økonomiskema)
         }
-        skabOgTestParameter(pParameterNavn, pForventetIndhold, pEksisterendeIndhold) {
-
-
-            parameter := this.danParameterObj(pParameterNavn)
-            this.setParameterForventet(parameter, pForventetIndhold)
-            this.setParameterEksisterende(parameter, pEksisterendeIndhold)
-            this.tjekParameterForFejl(parameter)
+        if this.vognløb.gyldigeKolonner.Statistikgruppe.iBrug
+        {
+            SendInput("!ø{tab 9}")
+            Statistikgruppe := this.kopierVærdi("appsKey")
+            StatistikgruppePar := this.vognløb.parametre.Statistikgruppe
+            this.vognløb.parametre.setParameterEksisterende(StatistikgruppePar, Statistikgruppe)
         }
+    }
 
-        sorterArrayAlfabetisk(pArrayTilSortering) {
-            sorteretStr := ""
+    vognløbsbilledeIndhentTransporttyper() {
+        if this.vognløb.gyldigeKolonner.undtagneTransportTyper.iBrug
+        {
 
-            for arrayIndhold in pArrayTilSortering
+            undtagneTransportTyper := Array()
+            transportTyperPar := this.vognløb.parametre.undtagneTransportTyper
+            this.vognløb.parametre.undtagneTransportTyper.eksisterendeIndhold := undtagneTransportTyper
+
+            SendInput("!u")
+            loop 19
             {
-                if arrayIndhold != A_Space
-                {
-                    arrayIndhold := StrUpper(arrayIndhold)
-                    sorteretStr .= arrayIndhold ","
-                }
+                tType := this.kopierVærdi("ctrl", , , 1)
+                if !tType
+                    break
+                undtagneTransportTyper.Push(tType)
+                SendInput("{tab}")
+
             }
-
-            sorteretStr := SubStr(sorteretStr, 1, -1)
-            sorteretStr := Sort(sorteretStr, "d,")
-            sorteretArray := StrSplit(sorteretStr, ",")
-
-            return sorteretArray
-        }
-
-        sorterUndtagneTransporttyperForventet() {
-
-
-            sorteretArray := this.sorterArrayAlfabetisk(this.UndtagneTransporttyper.ForventetIndhold)
-
-            this.UndtagneTransporttyper.ForventetIndhold := sorteretArray
-
-            return
-        }
-        sorterUndtagneTransporttyperEksisterende() {
-
-
-            sorteretArray := this.sorterArrayAlfabetisk(this.UndtagneTransporttyper.eksisterendeIndhold)
-
-            this.UndtagneTransporttyper.eksisterendeIndhold := sorteretArray
-
-            return
-        }
-        sorterKørerIkkeTransporttyperEksisterende() {
-
-
-            sorteretArray := this.sorterArrayAlfabetisk(this.KørerIkkeTransporttyper.eksisterendeIndhold)
-
-            this.KørerIkkeTransporttyper.eksisterendeIndhold := sorteretArray
-
-            return
-        }
-        sorterKørerIkkeTransporttyperForventet() {
-
-
-            sorteretArray := this.sorterArrayAlfabetisk(this.KørerIkkeTransporttyper.ForventetIndhold)
-
-            this.KørerIkkeTransporttyper.ForventetIndhold := sorteretArray
-
-            return
-        }
-
-        arrayTilMap(pArrayTilMap) {
-
-            MapFraArray := Map()
-
-            for value in pArrayTilMap
-                MapFraArray.Set(value, "")
-
-
-            return MapFraArray
-        }
-
-        tjekUndtagneTransportTyperEns() {
-
-            tjekTransporttyperEksisterende := this.UndtagneTransporttyper.eksisterendeIndhold
-            tjekTransporttyperForventet := this.UndtagneTransporttyper.ForventetIndhold
-            tjekTransporttyperEksisterendeMenIkkeForventet := Array()
-            tjekTransporttyperForventetMenIkkeEksisterende := Array()
-
-            MapTransportTyperEksisterende := this.arrayTilMap(tjekTransporttyperEksisterende)
-            MapTransportTyperForventet := this.arrayTilMap(tjekTransporttyperForventet)
-
-            for mapName, mapValue in MapTransportTyperEksisterende
-                if !MapTransportTyperForventet.has(mapName)
-                    tjekTransporttyperEksisterendeMenIkkeForventet.Push(mapName)
-
-            for mapName, mapValue in MapTransportTyperForventet
-                if !MapTransportTyperEksisterende.Has(mapname)
-                    tjekTransporttyperForventetMenIkkeEksisterende.Push(mapname)
-
-            if tjekTransporttyperEksisterendeMenIkkeForventet.Length or tjekTransporttyperForventet.Length
-                this.UndtagneTransportTyper.fejl := 1
-
-            this.UndtagneTransporttyper.EksisterendeMenIkkeIForventet := tjekTransporttyperEksisterendeMenIkkeForventet
-            this.UndtagneTransporttyper.ForventetMenIkkeIEksisterende := tjekTransporttyperForventetMenIkkeEksisterende
-        }
-        tjekKørerIkkeTransportTyperEns() {
-
-            tjekTransporttyperEksisterende := this.KørerIkkeTransporttyper.eksisterendeIndhold
-            tjekTransporttyperForventet := this.KørerIkkeTransporttyper.ForventetIndhold
-            tjekTransporttyperEksisterendeMenIkkeForventet := Array()
-            tjekTransporttyperForventetMenIkkeEksisterende := Array()
-
-            MapTransportTyperEksisterende := this.arrayTilMap(tjekTransporttyperEksisterende)
-            MapTransportTyperForventet := this.arrayTilMap(tjekTransporttyperForventet)
-
-            for mapName, mapValue in MapTransportTyperEksisterende
-                if !MapTransportTyperForventet.has(mapName)
-                    tjekTransporttyperEksisterendeMenIkkeForventet.Push(mapName)
-
-            for mapName, mapValue in MapTransportTyperForventet
-                if !MapTransportTyperEksisterende.Has(mapname)
-                    tjekTransporttyperForventetMenIkkeEksisterende.Push(mapname)
-
-            if tjekTransporttyperEksisterendeMenIkkeForventet.Length or tjekTransporttyperForventet.Length
-                this.KørerIkkeTransportTyper.fejl := 1
-
-            this.KørerIkkeTransporttyper.EksisterendeMenIkkeIForventet := tjekTransporttyperEksisterendeMenIkkeForventet
-            this.KørerIkkeTransporttyper.ForventetMenIkkeIEksisterende := tjekTransporttyperForventetMenIkkeEksisterende
         }
     }
 
-    class p6Mock extends P6 {
+    kørselsaftaleIndhent() {
 
-        vognløb := Object()
-        tjekkedeParametre := p6ParameterMock()
-        vognløb.tjekkedeParametre := this.tjekkedeParametre
+    }
 
 
-        vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+    funkKørselsaftaleÆndrHjemzone() {
+
+        this.navAktiverP6Vindue()
+        this.navLukAlleVinduer()
+        this.navVindueKørselsaftale()
+        this.kørselsaftaleIndtastKørselsaftale()
+        this.kørselsaftaleTjekKørselsaftaleOgStyresystem()
+        this.kørselsaftaleÆndr()
+        this.kørselsaftaleIndtastNormalHjemzone()
+        this.kørselsaftaleIndtastVognmandLinie1()
+        this.kørselsaftaleIndtastVognmandLinie2()
+        this.kørselsaftaleIndtastVognmandLinie3()
+        this.kørselsaftaleIndtastVognmandLinie4()
+        this.kørselsaftaleAfslut()
+    }
+    funkVognløbsbilledeÆndrHjemzone() {
+
+        this.navVindueVognløb()
+        this.vognløbsbilledeIndtastVognløbOgDato()
+        this.vognløbsbilledeÆndrVognløb()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        this.vognløbsbilledeIndtastÅbningstiderOgZone()
+        this.ændrVognløbsbilledeAfslut()
+    }
+    funkÆndrVognløb()
+    {
+        this.navVindueVognløb()
+        this.vognløbsbilledeIndtastVognløbOgDato()
+        this.vognløbsbilledeÆndrVognløb()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        this.vognløbsbilledeIndtastÅbningstiderOgZone()
+        this.vognløbsbilledeIndtastØvrige()
+        this.vognløbsbilledeIndtastTransporttyper()
+        this.ændrVognløbsbilledeAfslut()
+        return
+    }
+
+    funkTjekVognløb()
+    {
+        this.navAktiverP6Vindue()
+        this.navVindueVognløb()
+        this.vognløbsbilledeIndtastVognløbOgDato()
+        this.vognløbsbilledeÆndrVognløb()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        this.vognløbsbilledeTjekÅbningstiderOgZone()
+
+    }
+
+    funkIndhentData() {
+
+        this.funkIndhentVognløbsbillede()
+    }
+
+    funkIndhentVognløbsbillede() {
+
+        ; this.navAktiverP6Vindue()
+        ; this.navLukAlleVinduer()
+        this.navVindueVognløb()
+        this.vognløbsbilledeIndtastVognløbOgDato()
+        this.vognløbsbilledeÆndrVognløb()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        this.vognløbsbilledeIndhentÅbningstiderogZone()
+        this.vognløbsbilledeIndhentØvrige()
+        this.vognløbsbilledeIndhentTransporttyper()
+        this.ændrVognløbsbilledeAfslut()
+    }
+    funkIndhentKørselsaftale() {
+
+        this.navAktiverP6Vindue()
+        this.navLukAlleVinduer()
+        this.navVindueKørselsaftale()
+        this.kørselsaftaleIndtastKørselsaftale()
+        this.kørselsaftaleTjekKørselsaftaleOgStyresystem()
+        this.kørselsaftaleÆndr()
+        this.kørselsaftaleIndhentPlanskema()
+        this.kørselsaftaleIndhentØkonomiskema()
+        this.kørselsaftaleIndhentStatistikgruppe()
+        this.kørselsaftaleIndhentNormalHjemzone()
+        this.kørselsaftaleIndhentKørerIkkeTransportTyper()
+        this.kørselsaftaleIndhentObligatoriskVognmand()
+        this.kørselsaftaleIndhentPauseRegel()
+        this.kørselsaftaleIndhentPauseDynamisk()
+        this.kørselsaftaleIndhentPauseStart()
+        this.kørselsaftaleIndhentPauseSlut()
+        this.kørselsaftaleIndhentVognmandNavn()
+        this.kørselsaftaleIndhentVognmandCO()
+        this.kørselsaftaleIndhentVognmandAdresse()
+        this.kørselsaftaleIndhentVognmandPostNr()
+        this.kørselsaftaleIndhentVognmandTelefon()
+    }
+
+}
+
+class parameterClass {
+
+    Budnummer := { parameterNavn: "Budnummer", kolonneNavn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Vognløbsnummer := { parameterNavn: "Vognløbsnummer", kolonneNavn: "Vognløbsnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Vognløbsdato := { parameterNavn: "Vognløbsdato", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognløbsdatoStart := { parameterNavn: "VognløbsdatoStart", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognløbsdatoSlut := { parameterNavn: "VognløbsdatoSlut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognløbsdatoNormalSlut := { parameterNavn: "VognløbsdatoNormalslut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognløbsdatoSidsteSlut := { parameterNavn: "VognløbsdatoSidsteSlut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Kørselsaftale := { parameterNavn: "Kørselsaftale", kolonneNavn: "Kørselsaftale", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Styresystem := { parameterNavn: "Styresystem", kolonneNavn: "Styresystem", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Starttid := { parameterNavn: "Starttid", kolonneNavn: "Starttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Sluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    NormalSluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    SidsteSluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Hjemzone := { parameterNavn: "Hjemzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Startzone := { parameterNavn: "Startzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Slutzone := { parameterNavn: "Slutzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    NormalHjemzone := { parameterNavn: "NormalHjemzone", kolonneNavn: "Hjemzone", forventetIndhold: this.Hjemzone.forventetIndhold, eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    chfKontaktNummer := { parameterNavn: "chfKontaktNummer", kolonneNavn: "chfKontaktNummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Vognløbskategori := { parameterNavn: "Vognløbskategori", kolonneNavn: "Vognløbskategori", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Planskema := { parameterNavn: "Planskema", kolonneNavn: "Planskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Økonomiskema := { parameterNavn: "Økonomiskema", kolonneNavn: "Økonomiskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Statistikgruppe := { parameterNavn: "Statistikgruppe", kolonneNavn: "Statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Vognløbsnotering := { parameterNavn: "Vognløbsnotering", kolonneNavn: "Vognløbsnotering", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognmandLinie1 := { parameterNavn: "VognmandLinie1", kolonneNavn: "VognmandLinie1", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognmandLinie2 := { parameterNavn: "VognmandLinie2", kolonneNavn: "VognmandLinie2", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognmandLinie3 := { parameterNavn: "VognmandLinie3", kolonneNavn: "VognmandLinie3", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognmandLinie4 := { parameterNavn: "VognmandLinie4", kolonneNavn: "VognmandLinie4", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    VognmandKontaktnummer := { parameterNavn: "VognmandKontaktnummer", kolonneNavn: "VognmandKontaktnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    ObligatoriskVognmand := { parameterNavn: "ObligatoriskVognmand", kolonneNavn: "ObligatoriskVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    KørselsaftaleVognmand := { parameterNavn: "KørselsaftaleVognmand", kolonneNavn: "KørselsaftaleVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Ugedage := { parameterNavn: "Ugedage", kolonneNavn: "Ugedage", forventetIndhold: Array(), eksisterendeIndhold: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    UndtagneTransporttyper := { parameterNavn: "UndtagneTransporttyper", kolonneNavn: "UndtagneTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    KørerIkkeTransporttyper := { parameterNavn: "KørerIkkeTransporttyper", kolonneNavn: "KørerIkkeTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
+
+
+    ; kun i P6
+    PauseRegel := { parameterNavn: "PauseRegel", kolonneNavn: "PauseRegel", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    PauseDynamisk := { parameterNavn: "PauseDynamisk", kolonneNavn: "PauseDynamisk", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    PauseStart := { parameterNavn: "PauseStart", kolonneNavn: "PauseStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    PauseSlut := { parameterNavn: "PauseSlut", kolonneNavn: "PauseSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+
+
+    danParameterObj(pParameterNavn) {
+
+        if this.HasOwnProp(pParameterNavn)
+            return
+
+        this.%pParameterNavn% := { navn: pParameterNavn, forventetIndhold: "", eksisterendeIndhold: "", fejl: 0 }
+
+        return this.%pParameterNavn%
+    }
+
+    setParameterForventet(pParameterObj, pForventet) {
+
+
+        pParameterObj.forventetIndhold := pForventet
+
+
+    }
+    setParameterEksisterende(pParameterObj, pEksisterende) {
+
+
+        pParameterObj.eksisterendeIndhold := pEksisterende
+
+
+    }
+
+    /**
+     * 
+     * @param pParamaetObj 
+     * @returns Bool
+     */
+    tjekParameterForFejl(pParamaetObj) {
+
+
+        forventetParameterIndhold := pParamaetObj.forventetIndhold
+        eksisterendeParameterIndhold := pParamaetObj.eksisterendeIndhold
+        fundetFejl := pParamaetObj.fejl
+
+        if !forventetParameterIndhold
+            return
+
+        if fundetFejl
+            return
+
+        if forventetParameterIndhold != eksisterendeParameterIndhold
+            pParamaetObj.fejl := 1
+        else
+            pParamaetObj.fejl := 0
+    }
+
+    tjekAlleParameterForFejl() {
+
+        undtagetArray := Map("UndtagneTransporttyper", 0, "KørerIkkeTransporttyper", 0, "Ugedage", 0)
+        for parameternavn, parameterobj in this.OwnProps()
+            if !undtagetArray.Has(parameternavn)
+                this.tjekParameterForFejl(parameterobj)
+
+    }
+    skabOgTestParameter(pParameterNavn, pForventetIndhold, pEksisterendeIndhold) {
+
+
+        parameter := this.danParameterObj(pParameterNavn)
+        this.setParameterForventet(parameter, pForventetIndhold)
+        this.setParameterEksisterende(parameter, pEksisterendeIndhold)
+        this.tjekParameterForFejl(parameter)
+    }
+
+    sorterArrayAlfabetisk(pArrayTilSortering) {
+        sorteretStr := ""
+
+        for arrayIndhold in pArrayTilSortering
         {
-            kørselsaftaleTilIndlæsning := this.vognløb.parametre.Kørselsaftale.forventetIndhold
-            styresystemTilIndlæsning := this.vognløb.parametre.Styresystem.forventetIndhold
-
-            kørselsaftaleEksisterende := this.kopierVærdi("appsKey", 0, "!k")
-            styresystemEksisterende := this.kopierVærdi("appsKey", 0, "!k{tab}")
-
-            if kørselsaftaleEksisterende != kørselsaftaleTilIndlæsning
-                throw p6ForkertDataError(
-                    Format("Fejl i indlæsning af {3}`nForventet {3}: {1}`nEksisterende {3}: {2}", kørselsaftaleEksisterende, styresystemEksisterende, "kørselsaftale")
-                    , , , { forventetParameter: kørselsaftaleTilIndlæsning,
-                        fundetParameter: kørselsaftaleEksisterende,
-                        fejlIParameter: "kørselsaftaleVognløbsbillede" })
-            if styresystemEksisterende != styresystemTilIndlæsning
-                throw p6ForkertDataError(
-                    Format("Fejl i indlæsning af {3}`nForventet {3}: {1}`nEksisterende {3}: {2}", styresystemTilIndlæsning, styresystemEksisterende, "styresystem")
-                    , , , { forventetParameter: kørselsaftaleTilIndlæsning,
-                        fundetParameter: kørselsaftaleEksisterende,
-                        FejlIParameter: "KørselsaftaleVognløbsbillede" })
-
-            mBoxFejl := this.enterOgTjekForMsgboxFejl()
-            if (InStr(mBoxFejl, "ikke registreret"))
-                throw P6MsgboxError("Kørselsaftalen eksisterer ikke i P6.", , mBoxFejl,)
-
-            return
+            if arrayIndhold != A_Space
+            {
+                arrayIndhold := StrUpper(arrayIndhold)
+                sorteretStr .= arrayIndhold ","
+            }
         }
-        funkTjekVognløb()
-        {
-            ; this.navAktiverP6Vindue()
-            ; this.navVindueVognløb()
-            this.vognløbsbilledeIndtastVognløbOgDato()
-            ; this.vognløbsbilledeÆndrVognløb()
-            this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
-            this.vognløbsbilledeTjekÅbningstiderOgZone()
 
-        }
+        sorteretStr := SubStr(sorteretStr, 1, -1)
+        sorteretStr := Sort(sorteretStr, "d,")
+        sorteretArray := StrSplit(sorteretStr, ",")
+
+        return sorteretArray
     }
 
-    class p6ParameterMock extends parameterClass {
+    sorterUndtagneTransporttyperForventet() {
 
+
+        sorteretArray := this.sorterArrayAlfabetisk(this.UndtagneTransporttyper.ForventetIndhold)
+
+        this.UndtagneTransporttyper.ForventetIndhold := sorteretArray
+
+        return
+    }
+    sorterUndtagneTransporttyperEksisterende() {
+
+
+        sorteretArray := this.sorterArrayAlfabetisk(this.UndtagneTransporttyper.eksisterendeIndhold)
+
+        this.UndtagneTransporttyper.eksisterendeIndhold := sorteretArray
+
+        return
+    }
+    sorterKørerIkkeTransporttyperEksisterende() {
+
+
+        sorteretArray := this.sorterArrayAlfabetisk(this.KørerIkkeTransporttyper.eksisterendeIndhold)
+
+        this.KørerIkkeTransporttyper.eksisterendeIndhold := sorteretArray
+
+        return
+    }
+    sorterKørerIkkeTransporttyperForventet() {
+
+
+        sorteretArray := this.sorterArrayAlfabetisk(this.KørerIkkeTransporttyper.ForventetIndhold)
+
+        this.KørerIkkeTransporttyper.ForventetIndhold := sorteretArray
+
+        return
+    }
+
+    arrayTilMap(pArrayTilMap) {
+
+        MapFraArray := Map()
+
+        for value in pArrayTilMap
+            MapFraArray.Set(value, "")
+
+
+        return MapFraArray
+    }
+
+    tjekUndtagneTransportTyperEns() {
+
+        tjekTransporttyperEksisterende := this.UndtagneTransporttyper.eksisterendeIndhold
+        tjekTransporttyperForventet := this.UndtagneTransporttyper.ForventetIndhold
+        tjekTransporttyperEksisterendeMenIkkeForventet := Array()
+        tjekTransporttyperForventetMenIkkeEksisterende := Array()
+
+        MapTransportTyperEksisterende := this.arrayTilMap(tjekTransporttyperEksisterende)
+        MapTransportTyperForventet := this.arrayTilMap(tjekTransporttyperForventet)
+
+        for mapName, mapValue in MapTransportTyperEksisterende
+            if !MapTransportTyperForventet.has(mapName)
+                tjekTransporttyperEksisterendeMenIkkeForventet.Push(mapName)
+
+        for mapName, mapValue in MapTransportTyperForventet
+            if !MapTransportTyperEksisterende.Has(mapname)
+                tjekTransporttyperForventetMenIkkeEksisterende.Push(mapname)
+
+        if tjekTransporttyperEksisterendeMenIkkeForventet.Length or tjekTransporttyperForventet.Length
+            this.UndtagneTransportTyper.fejl := 1
+
+        this.UndtagneTransporttyper.EksisterendeMenIkkeIForventet := tjekTransporttyperEksisterendeMenIkkeForventet
+        this.UndtagneTransporttyper.ForventetMenIkkeIEksisterende := tjekTransporttyperForventetMenIkkeEksisterende
+    }
+    tjekKørerIkkeTransportTyperEns() {
+
+        tjekTransporttyperEksisterende := this.KørerIkkeTransporttyper.eksisterendeIndhold
+        tjekTransporttyperForventet := this.KørerIkkeTransporttyper.ForventetIndhold
+        tjekTransporttyperEksisterendeMenIkkeForventet := Array()
+        tjekTransporttyperForventetMenIkkeEksisterende := Array()
+
+        MapTransportTyperEksisterende := this.arrayTilMap(tjekTransporttyperEksisterende)
+        MapTransportTyperForventet := this.arrayTilMap(tjekTransporttyperForventet)
+
+        for mapName, mapValue in MapTransportTyperEksisterende
+            if !MapTransportTyperForventet.has(mapName)
+                tjekTransporttyperEksisterendeMenIkkeForventet.Push(mapName)
+
+        for mapName, mapValue in MapTransportTyperForventet
+            if !MapTransportTyperEksisterende.Has(mapname)
+                tjekTransporttyperForventetMenIkkeEksisterende.Push(mapname)
+
+        if tjekTransporttyperEksisterendeMenIkkeForventet.Length or tjekTransporttyperForventet.Length
+            this.KørerIkkeTransportTyper.fejl := 1
+
+        this.KørerIkkeTransporttyper.EksisterendeMenIkkeIForventet := tjekTransporttyperEksisterendeMenIkkeForventet
+        this.KørerIkkeTransporttyper.ForventetMenIkkeIEksisterende := tjekTransporttyperForventetMenIkkeEksisterende
+    }
+}
+
+class p6Mock extends P6 {
+
+    vognløb := Object()
+    tjekkedeParametre := p6ParameterMock()
+    vognløb.tjekkedeParametre := this.tjekkedeParametre
+
+
+    vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+    {
+        kørselsaftaleTilIndlæsning := this.vognløb.parametre.Kørselsaftale.forventetIndhold
+        styresystemTilIndlæsning := this.vognløb.parametre.Styresystem.forventetIndhold
+
+        kørselsaftaleEksisterende := this.kopierVærdi("appsKey", 0, "!k")
+        styresystemEksisterende := this.kopierVærdi("appsKey", 0, "!k{tab}")
+
+        if kørselsaftaleEksisterende != kørselsaftaleTilIndlæsning
+            throw p6ForkertDataError(
+                Format("Fejl i indlæsning af {3}`nForventet {3}: {1}`nEksisterende {3}: {2}", kørselsaftaleEksisterende, styresystemEksisterende, "kørselsaftale")
+                , , , { forventetParameter: kørselsaftaleTilIndlæsning,
+                    fundetParameter: kørselsaftaleEksisterende,
+                    fejlIParameter: "kørselsaftaleVognløbsbillede" })
+        if styresystemEksisterende != styresystemTilIndlæsning
+            throw p6ForkertDataError(
+                Format("Fejl i indlæsning af {3}`nForventet {3}: {1}`nEksisterende {3}: {2}", styresystemTilIndlæsning, styresystemEksisterende, "styresystem")
+                , , , { forventetParameter: kørselsaftaleTilIndlæsning,
+                    fundetParameter: kørselsaftaleEksisterende,
+                    FejlIParameter: "KørselsaftaleVognløbsbillede" })
+
+        mBoxFejl := this.enterOgTjekForMsgboxFejl()
+        if (InStr(mBoxFejl, "ikke registreret"))
+            throw P6MsgboxError("Kørselsaftalen eksisterer ikke i P6.", , mBoxFejl,)
+
+        return
+    }
+    funkTjekVognløb()
+    {
+        ; this.navAktiverP6Vindue()
+        ; this.navVindueVognløb()
+        this.vognløbsbilledeIndtastVognløbOgDato()
+        ; this.vognløbsbilledeÆndrVognløb()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        this.vognløbsbilledeTjekÅbningstiderOgZone()
 
     }
+}
+
+class p6ParameterMock extends parameterClass {
+
+
+}
