@@ -431,16 +431,16 @@ class udfyldTestExcelArk extends excel {
         Planskema: { kolonneNavn: "Planskema", kolonneNummer: 13, iBrug: 0, kolonneKommentar: 0 },
         Økonomiskema: { kolonneNavn: "Økonomiskema", kolonneNummer: 14, iBrug: 0, kolonneKommentar: 0 },
         Statistikgruppe: { kolonneNavn: "Statistikgruppe", kolonneNummer: 15, iBrug: 0, kolonneKommentar: 0 },
-        Vognløbsnotering: { kolonneNavn: "Vognløbsnotering", kolonneNummer: 16, iBrug: 0, kolonneKommentar: "Fast notat på vognløb. Bruges pt. på alle vognløbsdage." },
-        VognmandLinie1: { kolonneNavn: "VognmandLinie1", kolonneNummer: 17, iBrug: 0, kolonneKommentar: "Første linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
-        VognmandLinie2: { kolonneNavn: "VognmandLinie2", kolonneNummer: 18, iBrug: 0, kolonneKommentar: "Anden linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
-        VognmandLinie3: { kolonneNavn: "VognmandLinie3", kolonneNummer: 19, iBrug: 0, kolonneKommentar: "Tredje linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
-        VognmandLinie4: { kolonneNavn: "VognmandLinie4", kolonneNummer: 20, iBrug: 0, kolonneKommentar: "Fjerde linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen." },
+        Vognløbsnotering: { kolonneNavn: "Vognløbsnotering", kolonneNummer: 16, iBrug: 0, kolonneKommentar: "Fast notat på vognløb. Bruges pt. på alle vognløbsdage. Maks. 240 karakterer langt." },
+        VognmandLinie1: { kolonneNavn: "VognmandLinie1", kolonneNummer: 17, iBrug: 0, kolonneKommentar: "Første linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen. Maks. 25 karakterer." },
+        VognmandLinie2: { kolonneNavn: "VognmandLinie2", kolonneNummer: 18, iBrug: 0, kolonneKommentar: "Anden linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen. Maks. 24 karakterer." },
+        VognmandLinie3: { kolonneNavn: "VognmandLinie3", kolonneNummer: 19, iBrug: 0, kolonneKommentar: "Tredje linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen. Maks 29 karakterer." },
+        VognmandLinie4: { kolonneNavn: "VognmandLinie4", kolonneNummer: 20, iBrug: 0, kolonneKommentar: "Fjerde linie af `"Ansvarlig`"-feltet defineret i kørselsaftalen. Maks 20 karakterer." },
         ObligatoriskVognmand: { kolonneNavn: "ObligatoriskVognmand", kolonneNummer: 21, iBrug: 0, kolonneKommentar: 0 },
         KørselsaftaleVognmand: { kolonneNavn: "KørselsaftaleVognmand", kolonneNummer: 22, iBrug: 0, kolonneKommentar: "Vognmandsparameter defineret i kørselsaftalen." },
-        Ugedage: { kolonneNavn: "Ugedage", kolonneNummer: Array(23, 24, 25, 26, 27, 28, 29), iBrug: 0, kolonneKommentar: "Faste ugedage i P6-format (MA, TI osv.) Kan også tage konkret dato i formatet `"dd-mm-åååå`". Én dato pr. kolonne, så mange kolonner som ønsket" },
-        UndtagneTransporttyper: { kolonneNavn: "UndtagneTransporttyper", kolonneNummer: Array(30, 31, 32, 33, 34, 35), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i vognløbet. Definer op til 20 stk. Én transporttype pr. kolonne" },
-        KørerIkkeTransporttyper: { kolonneNavn: "KørerIkkeTransporttyper", kolonneNummer: Array(36, 37, 38, 39, 40, 41, 42, 43, 44,), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i kørselsaftalen. Definer op til 10 stk. Én transporttype pr. kolonne." },
+        Ugedage: { kolonneNavn: "Ugedage", kolonneNummer: Array(23, 24, 25, 26, 27, 28, 29, 30), iBrug: 0, kolonneKommentar: "Faste ugedage i P6-format (MA, TI osv.) Kan også tage konkret dato i formatet `"dd-mm-åååå`". Én dato pr. kolonne, så mange kolonner som ønsket" },
+        UndtagneTransporttyper: { kolonneNavn: "UndtagneTransporttyper", kolonneNummer: Array(31, 32, 33, 34, 35, 36), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i vognløbet. Definer op til 20 stk. Én transporttype pr. kolonne" },
+        KørerIkkeTransporttyper: { kolonneNavn: "KørerIkkeTransporttyper", kolonneNummer: Array(37, 38, 39, 40, 41, 42, 43, 44, 45,), iBrug: 0, kolonneKommentar: "Undtagne transporttyper som defineret i kørselsaftalen. Definer op til 10 stk. Én transporttype pr. kolonne." },
     }
 
     tjekketVLKolonneNavnOgNummer := {
@@ -595,7 +595,7 @@ class udfyldTestExcelArk extends excel {
             if parameterObj.eksisterendeIndhold
                 if type(parameterObj.eksisterendeIndhold) != "Array"
                 {
-                    parmameterKolonne := parameterobj.navn
+                    parmameterKolonne := parameterobj.kolonneNavn
                     kolonneNummer := this.TestKolonneNavnOgNummer.%parmameterKolonne%.kolonneNummer
 
                     aktivCelle := this.aktivSheet.cells(pRækkenummer, kolonneNummer)
@@ -603,11 +603,11 @@ class udfyldTestExcelArk extends excel {
                 }
             if type(parameterObj.eksisterendeIndhold) = "Array"
             {
-                kolonneNummer := this.testKolonneNavnOgNummer.%parameterobj.navn%.kolonneNummer[1]
+                kolonneNummer := this.testKolonneNavnOgNummer.%parameterobj.kolonneNavn%.kolonneNummer[1]
                 for celleIndhold in parameterObj.eksisterendeIndhold
                 {
                     aktivCelleIndhold := celleIndhold
-                    parmameterKolonne := parameterobj.navn
+                    parmameterKolonne := parameterobj.kolonneNavn
 
                     aktivCelle := this.aktivSheet.cells(pRækkenummer, kolonneNummer)
                     aktivCelle.value := aktivCelleIndhold
