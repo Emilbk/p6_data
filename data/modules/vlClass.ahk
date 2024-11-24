@@ -126,6 +126,9 @@ class VognløbObj
         antalTransportTyper := this.parametre.UndtagneTransporttyper.forventetIndhold.Length
         ønsketAntalTransportTyper := 20
 
+        if antalTransportTyper > ønsketAntalTransportTyper
+            throw Error(Format("Fejl i parameter:`n{1}.`nKan maks. indeholde {2} kolonner. Er {3} kolonner.", "UndtagneTransportTyper", 2, antalTransportTyper))
+
         while this.parametre.UndtagneTransporttyper.forventetIndhold.Length != ønsketAntalTransportTyper
             this.parametre.UndtagneTransporttyper.forventetIndhold.push(A_Space)
 
@@ -135,9 +138,11 @@ class VognløbObj
     }
 
     udfyldKørerIkkeTransporttyperArray() {
-
         antalTransportTyper := this.parametre.KørerIkkeTransporttyper.forventetIndhold.Length
         ønsketAntalTransportTyper := 10
+        if antalTransportTyper > ønsketAntalTransportTyper
+            throw Error(Format("Fejl i parameter:`n{1}.`nKan maks. indeholde {2} kolonner. Er {3} kolonner.", "KørerIkkeTransportTyper", 10, antalTransportTyper))
+
 
         while this.parametre.KørerIkkeTransporttyper.forventetIndhold.Length != ønsketAntalTransportTyper
             this.parametre.KørerIkkeTransporttyper.forventetIndhold.push(A_Space)
