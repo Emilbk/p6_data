@@ -1,14 +1,26 @@
 #Requires AutoHotkey v2.0
 
-#Include ../include.ahk
+; #Include ../include.ahk
 
-excelfil := "C:\Users\ebk\makro\p6_data\assets\VL.xlsx"
-excel := excelIndlæsVlData(excelfil, 1)
-vlFraExcel := excel.getVlArray()
+tid1 := A_Now
+tid2 := DateAdd(tid1, 39, "Minutes")
+tid2 := DateAdd(tid2, 43, "Seconds")
 
-vlConstruct := VognløbConstructor(vlFraExcel)
-vlContainer := vlConstruct.getBehandletVognløbsArray()
+MsgBox FormatTime(tid2, "mm:ss")
 
+tidforskel := DateDiff(tid2, tid1, "Minutes")
+tidforskelsec := DateDiff(tid2, tid1, "Seconds")
 
+tidmin := tidforskelsec/60
+tidsecrem := Mod(tidforskelsec,60)
+
+MsgBox tidsecrem
+MsgBox(Floor(tidforskelsec/60) ":" tidsecrem)
+; forskelTid := tid1 - tid1
+; forskelTidSecond := Round(forskelTid/1000, 1)
+
+; MsgBox forskelTidSecond
+; MsgBox tidslutdateTime
+; MsgBox FormatTime(tidslut, "HH:mm:ss")
 
 return

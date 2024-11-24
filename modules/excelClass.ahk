@@ -156,7 +156,7 @@ class excelIndlæsVlData extends excel {
 
     dataVerificerInputTidspunkt() {
 
-        if !this.gyldigeKolonneNavnOgNummer.Starttid.iBrug or !this.gyldigeKolonneNavnOgNummer.Sluttid.iBrug
+               if !this.gyldigeKolonneNavnOgNummer.Starttid.iBrug or !this.gyldigeKolonneNavnOgNummer.Sluttid.iBrug
             return
 
         datestr := "20241116"
@@ -170,6 +170,9 @@ class excelIndlæsVlData extends excel {
 
             celleStartTid := this.aktivWorksheet.SheetArray[rækkeNummer, kolonneStartTid]
             celleSlutTid := this.aktivWorksheet.SheetArray[rækkeNummer, kolonneSluttTid]
+
+            if !celleSlutTid or !celleStartTid
+                return
 
             if !InStr(celleStartTid, ":") or !InStr(celleSlutTid, ":")
                 throw Error("Forkert format i række " A_Index " - tidspunkt skal angives tt:mm")

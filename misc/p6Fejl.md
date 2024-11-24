@@ -82,6 +82,19 @@ Du kan ikke vælge samme transporttype flere gange.
 ---------------------------
 OK   
 ---------------------------
+
+### Fejl i vognløbstidspunk
+---------------------------
+Vognløb
+---------------------------
+Forkert tidspunkt
+---------------------------
+OK   
+---------------------------
+
+
+
+
 ### Inaktiv timeout
 ---------------------------
 
