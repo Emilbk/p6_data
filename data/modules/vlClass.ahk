@@ -1,5 +1,4 @@
 #Requires AutoHotkey v2.0
-#Include ../deepCopy.ahk
 
 class VognløbConstructor {
     __New(pExcelInput, pGyldigeKolonner) {
@@ -66,7 +65,7 @@ class VognløbConstructor {
         for enkeltVognløbInput in vognløbsarray
         {
             ugedagArrayCount := 0
-            
+
             outerIndex := A_Index
             masterVL := vognløbOutput.masterVognløb := VognløbObj()
             masterVL.setVognløbsDataTilIndlæsning(enkeltVognløbInput, this.gyldigeKolonner)
@@ -106,6 +105,7 @@ class VognløbConstructor {
 class VognløbObj
 {
 
+    indskrevet := 0
     parametre := parameterClass()
     fejlLog := fejlLogObj()
     gyldigeKolonner := {}
