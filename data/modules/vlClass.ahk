@@ -154,8 +154,19 @@ class VognløbObj
 
     setVognløbsdato(pVognløbsdato) {
         for parameterNavn, parameterObj in this.parametre.OwnProps()
+        {
+            if parameterObj.maxLængde
+                if StrLen(ParameterObj.forventetIndhold) > ParameterObj.maxLængde
+                    throw Error(Format("Fejl i parameter:`n{1} - {3}.`nKan maks. være {2} karakterer langt.", parameterObj.kolonneNavn, parameterObj.maxLængde, parameterObj.forventetIndhold))
+
+            if parameterObj.kolonneNavn = "UndtagneTransportTyper"
+                or parameterObj.kolonneNavn = "kørerIkkeTransporttyyper"
+                if parameterObj.forventetIndhold.Length > parameterObj.maxArray
+                    throw Error(Format("Fejl i parameter:`n{1}.`nKan maks. indeholde {2} kolonner.", parameterObj.kolonneNavn, parameterObj.maxArray))
+
             if (parameterObj.kolonneNavn = "Ugedage")
                 parameterObj.forventetIndhold := pVognløbsdato
+        }
     }
 
     tjekSlutTidOverMidnat() {

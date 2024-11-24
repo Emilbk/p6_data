@@ -1133,47 +1133,47 @@ class P6 extends class {
 
 class parameterClass {
 
-    Budnummer := { parameterNavn: "Budnummer", kolonneNavn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Vognløbsnummer := { parameterNavn: "Vognløbsnummer", kolonneNavn: "Vognløbsnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Vognløbsdato := { parameterNavn: "Vognløbsdato", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognløbsdatoStart := { parameterNavn: "VognløbsdatoStart", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognløbsdatoSlut := { parameterNavn: "VognløbsdatoSlut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognløbsdatoNormalSlut := { parameterNavn: "VognløbsdatoNormalslut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognløbsdatoSidsteSlut := { parameterNavn: "VognløbsdatoSidsteSlut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Kørselsaftale := { parameterNavn: "Kørselsaftale", kolonneNavn: "Kørselsaftale", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Styresystem := { parameterNavn: "Styresystem", kolonneNavn: "Styresystem", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Starttid := { parameterNavn: "Starttid", kolonneNavn: "Starttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Sluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    NormalSluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    SidsteSluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Hjemzone := { parameterNavn: "Hjemzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Startzone := { parameterNavn: "Startzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Slutzone := { parameterNavn: "Slutzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    NormalHjemzone := { parameterNavn: "NormalHjemzone", kolonneNavn: "Hjemzone", forventetIndhold: this.Hjemzone.forventetIndhold, eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    chfKontaktNummer := { parameterNavn: "chfKontaktNummer", kolonneNavn: "chfKontaktNummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Vognløbskategori := { parameterNavn: "Vognløbskategori", kolonneNavn: "Vognløbskategori", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Planskema := { parameterNavn: "Planskema", kolonneNavn: "Planskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Økonomiskema := { parameterNavn: "Økonomiskema", kolonneNavn: "Økonomiskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Statistikgruppe := { parameterNavn: "Statistikgruppe", kolonneNavn: "Statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    StatistikgruppeKørselsaftale := { parameterNavn: "StatistikgruppeKørselsaftale", kolonneNavn: "Statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Vognløbsnotering := { parameterNavn: "Vognløbsnotering", kolonneNavn: "Vognløbsnotering", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognmandLinie1 := { parameterNavn: "VognmandLinie1", kolonneNavn: "VognmandLinie1", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognmandLinie2 := { parameterNavn: "VognmandLinie2", kolonneNavn: "VognmandLinie2", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognmandLinie3 := { parameterNavn: "VognmandLinie3", kolonneNavn: "VognmandLinie3", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognmandLinie4 := { parameterNavn: "VognmandLinie4", kolonneNavn: "VognmandLinie4", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    VognmandKontaktnummer := { parameterNavn: "VognmandKontaktnummer", kolonneNavn: "VognmandKontaktnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    ObligatoriskVognmand := { parameterNavn: "ObligatoriskVognmand", kolonneNavn: "ObligatoriskVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    KørselsaftaleVognmand := { parameterNavn: "KørselsaftaleVognmand", kolonneNavn: "KørselsaftaleVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    Ugedage := { parameterNavn: "Ugedage", kolonneNavn: "Ugedage", forventetIndhold: Array(), eksisterendeIndhold: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    UndtagneTransporttyper := { parameterNavn: "UndtagneTransporttyper", kolonneNavn: "UndtagneTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    KørerIkkeTransporttyper := { parameterNavn: "KørerIkkeTransporttyper", kolonneNavn: "KørerIkkeTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    Budnummer := { parameterNavn: "Budnummer", kolonneNavn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    Vognløbsnummer := { parameterNavn: "Vognløbsnummer", kolonneNavn: "Vognløbsnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 5 }
+    Vognløbsdato := { parameterNavn: "Vognløbsdato", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    VognløbsdatoStart := { parameterNavn: "VognløbsdatoStart", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    VognløbsdatoSlut := { parameterNavn: "VognløbsdatoSlut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    VognløbsdatoNormalSlut := { parameterNavn: "VognløbsdatoNormalslut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    VognløbsdatoSidsteSlut := { parameterNavn: "VognløbsdatoSidsteSlut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    Kørselsaftale := { parameterNavn: "Kørselsaftale", kolonneNavn: "Kørselsaftale", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 4 }
+    Styresystem := { parameterNavn: "Styresystem", kolonneNavn: "Styresystem", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 2 }
+    Starttid := { parameterNavn: "Starttid", kolonneNavn: "Starttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    Sluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    NormalSluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 6 }
+    SidsteSluttid := { parameterNavn: "Sluttid", kolonneNavn: "Sluttid", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 6 }
+    Hjemzone := { parameterNavn: "Hjemzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 6 }
+    Startzone := { parameterNavn: "Startzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 6 }
+    Slutzone := { parameterNavn: "Slutzone", kolonneNavn: "Hjemzone", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 6 }
+    NormalHjemzone := { parameterNavn: "NormalHjemzone", kolonneNavn: "Hjemzone", forventetIndhold: this.Hjemzone.forventetIndhold, eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 6 }
+    chfKontaktNummer := { parameterNavn: "chfKontaktNummer", kolonneNavn: "chfKontaktNummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 8 }
+    Vognløbskategori := { parameterNavn: "Vognløbskategori", kolonneNavn: "Vognløbskategori", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 6 }
+    Planskema := { parameterNavn: "Planskema", kolonneNavn: "Planskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 10 }
+    Økonomiskema := { parameterNavn: "Økonomiskema", kolonneNavn: "Økonomiskema", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 10 }
+    Statistikgruppe := { parameterNavn: "Statistikgruppe", kolonneNavn: "Statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 10 }
+    StatistikgruppeKørselsaftale := { parameterNavn: "StatistikgruppeKørselsaftale", kolonneNavn: "Statistikgruppe", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 10 }
+    Vognløbsnotering := { parameterNavn: "Vognløbsnotering", kolonneNavn: "Vognløbsnotering", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 240 }
+    VognmandLinie1 := { parameterNavn: "VognmandLinie1", kolonneNavn: "VognmandLinie1", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 25 }
+    VognmandLinie2 := { parameterNavn: "VognmandLinie2", kolonneNavn: "VognmandLinie2", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 24 }
+    VognmandLinie3 := { parameterNavn: "VognmandLinie3", kolonneNavn: "VognmandLinie3", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 29 }
+    VognmandLinie4 := { parameterNavn: "VognmandLinie4", kolonneNavn: "VognmandLinie4", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 20 }
+    VognmandKontaktnummer := { parameterNavn: "VognmandKontaktnummer", kolonneNavn: "VognmandKontaktnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 11 }
+    ObligatoriskVognmand := { parameterNavn: "ObligatoriskVognmand", kolonneNavn: "ObligatoriskVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 5 }
+    KørselsaftaleVognmand := { parameterNavn: "KørselsaftaleVognmand", kolonneNavn: "KørselsaftaleVognmand", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    Ugedage := { parameterNavn: "Ugedage", kolonneNavn: "Ugedage", forventetIndhold: Array(), eksisterendeIndhold: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    UndtagneTransporttyper := { parameterNavn: "UndtagneTransporttyper", kolonneNavn: "UndtagneTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "", maxArray: 20 }
+    KørerIkkeTransporttyper := { parameterNavn: "KørerIkkeTransporttyper", kolonneNavn: "KørerIkkeTransporttyper", forventetIndhold: Array(), eksisterendeIndhold: Array(), ForventetMenIkkeIEksisterende: Array(), EksisterendeMenIkkeIForventet: Array(), fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "", maxArray: 10 }
 
 
     ; kun i P6
-    PauseRegel := { parameterNavn: "PauseRegel", kolonneNavn: "PauseRegel", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    PauseDynamisk := { parameterNavn: "PauseDynamisk", kolonneNavn: "PauseDynamisk", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    PauseStart := { parameterNavn: "PauseStart", kolonneNavn: "PauseStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
-    PauseSlut := { parameterNavn: "PauseSlut", kolonneNavn: "PauseSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0 }
+    PauseRegel := { parameterNavn: "PauseRegel", kolonneNavn: "PauseRegel", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    PauseDynamisk := { parameterNavn: "PauseDynamisk", kolonneNavn: "PauseDynamisk", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    PauseStart := { parameterNavn: "PauseStart", kolonneNavn: "PauseStart", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+    PauseSlut := { parameterNavn: "PauseSlut", kolonneNavn: "PauseSlut", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
 
 
     danParameterObj(pParameterNavn) {
