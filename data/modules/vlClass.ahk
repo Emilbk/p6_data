@@ -1,5 +1,5 @@
 #Requires AutoHotkey v2.0
-#Include ../Lib/deepCopy.ahk
+#Include ../deepCopy.ahk
 
 class VognløbConstructor {
     __New(pExcelInput, pGyldigeKolonner) {
