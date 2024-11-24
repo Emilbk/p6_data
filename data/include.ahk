@@ -9,3 +9,5 @@
 #Include modules\config.ahk
 #Include modules\GUIny.ahk
 #Include static\gyldigeKolonner.ahk
+#Include lib\JSON.ahk
+#Include lib\deepCopy.ahk

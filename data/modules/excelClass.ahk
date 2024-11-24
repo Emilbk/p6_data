@@ -412,7 +412,7 @@ class udfyldTestExcelArk extends excel {
     testVl.parametre.Vognløbskategori.eksisterendeIndhold := "FG9"
     testVl.parametre.UndtagneTransporttyper.eksisterendeIndhold := ["Nja", "CrosSER", "Barn1", "Barn2", "TTJHjul", A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space, A_Space]
     testVl.parametre.KørerIkkeTransporttyper.eksisterendeIndhold := ["Crosser", "Barn3," "NJA", "Barn1", A_Space, A_Space, A_Space, A_Space, A_Space, A_Space]
-    testVl.parametre.ugedage.eksisterendeIndhold := ["24-12-2024", "MA", "TI", "ON", "TO", "FR", "LØ"]
+    testVl.parametre.ugedage.eksisterendeIndhold := ["30-11-2024", "MA", "TI", "ON", "TO", "FR", "LØ", "SØ"]
 
 
     TestKolonneNavnOgNummer := {

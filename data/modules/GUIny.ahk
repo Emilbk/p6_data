@@ -21,6 +21,8 @@ goo.pauseStatus := 0
 
 ; Objs
 goo.excel := {}
+goo.excel.indlæst := 0
+goo.excel.gemtdata := 0
 goo.excel.obj := Object()
 goo.vognløb := {}
 
@@ -36,27 +38,33 @@ goo.p6.vinduehandle := ""
 gooMenuBar := MenuBar()
 
 filMenu := Menu()
+omMenu := Menu()
 dataMenu := Menu()
 excelMenu := Menu()
-databehandlingMenu := Menu()
+p6DatabehandlingMenu := Menu()
+dataFilMenu := Menu()
 ændrDataMenu := Menu()
 tjekDataMenu := Menu()
 p6Menu := Menu()
 
-
+omMenu.Add("Tjek for nyeste version", (*) => tjekVersion())
+omMenu.Add()
+omMenu.Add("Hjælp", (*) => visHjælp())
 ; filMenu.Add "&Open`tCtrl+O", (*) => FileSelect()  ; See remarks below about Ctrl+O.
 filMenu.Add
 filMenu.Add "E&xit", (*) => ExitApp()
 
 dataMenu.Add("&Excel", excelMenu)
-dataMenu.Add "&P6-data", databehandlingMenu
+dataMenu.Add "&P6-handilinger", p6DatabehandlingMenu
+; dataMenu.add()
+; dataMenu.Add("&Datafil", dataFilMenu)
 
 excelMenu.Add("&Indlæs Excel-fil`tCtrl+E", (*) => indlæsExcel())
 excelMenu.Add("&Dan Excel-skabelon", (*) => danExcelSkabelon())
 
-databehandlingMenu.Add("Ændr data", ændrDataMenu)
-databehandlingMenu.Add("Indhent data", tjekDataMenu)
-databehandlingMenu.Add("Fejlcheck data", (*) =>)
+p6DatabehandlingMenu.Add("Ændr data", ændrDataMenu)
+p6DatabehandlingMenu.Add("Indhent data", tjekDataMenu)
+p6DatabehandlingMenu.Add("Fejlcheck data", (*) =>)
 
 
 ændrDataMenu.Add("Ændr hjemzone", (*) => ændrVognløbHjemzone())
@@ -66,12 +74,16 @@ databehandlingMenu.Add("Fejlcheck data", (*) =>)
 
 tjekDataMenu.Add("Tjek hjemzone", (*) => indhentOgTjekVognløbHjemzone())
 
+dataFilMenu.Add("Indlæs data fra fil", (*) => hentVognløbsdata())
+dataFilMenu.Add("Gem data til fil", (*) => gemVognløbsdata())
+
 
 p6Menu.Add("Vælg P6-Vindue`tctrl+P", (*) => vælgP6Vindue())
 
 gooMenuBar.Add("&Fil", filMenu)
 gooMenuBar.Add("&Data", dataMenu)
 gooMenuBar.Add("&P6", p6Menu)
+gooMenuBar.Add("&Om", omMenu, "Right")
 
 goo.MenuBar := gooMenuBar
 
@@ -79,12 +91,12 @@ goo.MenuBar := gooMenuBar
 excelfilTekst := "Ingen fil                               "
 goo.tekst.valgtP6Vindue := goo.Add("Text", , "Aktivt P6-vindue: ")
 goo.knap.valgtP6VindueKnap := goo.Add("Button", "XP+80 YP-5", "Aktiver valgt")
-goo.tekst.indlæstExcelFil := goo.Add("Text", "XM", "Indlæst Excel-fil: " excelfilTekst)
+goo.tekst.indlæstExcelFil := goo.Add("Text", "XM", "Indlæst data-fil: " excelfilTekst)
 goo.tekst.PauseTekst := goo.Add("Text", "XM W100", "")
 ; goo.tekst.indlæstExcelRækkerTekst := goo.Add("Text", , "Antal Rækker: ")
 goo.knap.valgtP6VindueKnap.OnEvent("Click", (*) => goo.p6.obj.navAktiverP6Vindue())
 
-goo.tekst.indlæstExcelFil.text := "Indlæst Excel-fil: " excelfilTekst
+goo.tekst.indlæstExcelFil.text := "Indlæst data-fil: " excelfilTekst
 
 
 goo.OnEvent("Close", guiLuk)
@@ -107,7 +119,7 @@ vælgP6Vindue() {
 
     goo.knap.valgtP6VindueKnap.text := "Aktiver Valgt"
     sleep 100
-    MsgBox("P6-vindue valgt:`n" WinGetTitle(), "P6-vindue", "iconi" )
+    MsgBox("P6-vindue valgt:`n" WinGetTitle(), "P6-vindue", "iconi")
 
     goo.p6.obj.setP6Vindue(goo.p6.vindueHandle)
     ; goo.p6.obj.setP6Vindue()
@@ -129,14 +141,14 @@ indlæsExcel() {
     goo.excel.obj := excelIndlæsVlData(goo.excel.valgtExcelFil, 1)
     goo.excel.vlArray := goo.excel.obj.getVlArray()
     goo.excel.gyldigeKolonner := goo.excel.obj.getGyldigeKolonner()
-    MsgBox "Indlæst!", "Excel"
-    ; goo.Show()
 
     goo.vognløb.constr := VognløbConstructor(goo.excel.vlArray, goo.excel.gyldigeKolonner)
     goo.vognløb.vlArray := goo.vognløb.constr.getBehandletVognløbsArray()
 
-    goo.tekst.indlæstExcelFil.text := "Indlæst Excel-fil: " excelFil
+    goo.tekst.indlæstExcelFil.text := "Indlæst data-fil: " excelFil
+    goo.excel.indlæst := 1
 
+    MsgBox "Indlæst!", "Excel"
     return
 }
 
@@ -156,7 +168,7 @@ danExcelSkabelon() {
     if svar != "OK"
         return
     p6Obj := goo.p6.obj
-    tjekEksisterendeVindueHandle(p6obj.vindueHandle)
+    tjekEksisterendeVindueHandle()
     p6obj.navAktiverP6Vindue()
     p6Obj.navLukAlleVinduer()
     for vlSamling in goo.vognløb.vlArray.vognløbsListe
@@ -188,7 +200,7 @@ danExcelSkabelon() {
 
 
     p6Obj := goo.p6.obj
-    tjekEksisterendeVindueHandle(p6obj.vindueHandle)
+    tjekEksisterendeVindueHandle()
     vlKørselaftale := goo.vognløb.vlArray.masterVognløb
 
     p6obj.setVognløb(vlKørselaftale)
@@ -349,7 +361,7 @@ indhentOgTjekVognløbHjemzone() {
 
     p6Obj := goo.p6.obj
     vlKørselaftale := goo.vognløb.vlArray.masterVognløb
-    tjekEksisterendeVindueHandle(p6obj.vindueHandle)
+    tjekEksisterendeVindueHandle()
 
     p6obj.setVognløb(vlKørselaftale)
     p6obj.navAktiverP6Vindue()
@@ -423,9 +435,9 @@ indhentOgTjekVognløbHjemzone() {
 
 }
 
-tjekEksisterendeVindueHandle(pVindueHandle){
+tjekEksisterendeVindueHandle() {
 
-    if pVindueHandle = ""
+    if goo.p6.obj.vindueHandle = ""
     {
         MsgBox("P6-vindue er ikke valgt endnu!")
         return
@@ -443,7 +455,11 @@ setPauseStatus() {
         goo.pauseStatus := 0
         Pause 0
         goo.tekst.PauseTekst.text := ""
-        goo.P6.obj.navAktiverP6Vindue()
+        if goo.p6.obj.vindueHandle
+        {
+            goo.P6.obj.navAktiverP6Vindue()
+            sleep 200
+        }
         ; FileAppend(Format("Sat på pause {1}", FormatTime(,"HH:mm:ss"), goo.indskrivningFilpath))
     }
     else
@@ -452,4 +468,113 @@ setPauseStatus() {
         goo.tekst.PauseTekst.text := "På pause!"
         ; FileAppend(Format("Genoptaget {1}", FormatTime(,"HH:mm:ss"), goo.indskrivningFilpath))
     }
+}
+
+tjekOmOpdatering() {
+
+    hentJaNej := 0
+
+    HTTP := ComObject("WinHttp.WinHttpRequest.5.1")
+    endPoint := "https://api.github.com/repos/emilbk/p6_data/releases/latest"
+
+    http.open("GET", endPoint)
+    http.Send()
+
+    result := JSON.Load(http.ResponseText)
+
+    gitV := result["tag_name"]
+    localV := programVersion
+
+    testVer := VerCompare(localV, gitV)
+
+    if testVer < 0
+        hentJaNej := MsgBox(Format("Ny version: {1}`n`n{2}`n`nHent nyeste version?", gitv, result["body"]), "Ny version tilgængelig", 0x1)
+
+    if hentJaNej = "OK"
+        Run result["zipball_url"]
+
+}
+tjekVersion() {
+
+    hentJaNej := 0
+
+    HTTP := ComObject("WinHttp.WinHttpRequest.5.1")
+    endPoint := "https://api.github.com/repos/emilbk/p6_data/releases/latest"
+
+    http.open("GET", endPoint)
+    http.Send()
+
+    result := JSON.Load(http.ResponseText)
+
+    gitV := result["tag_name"]
+    localV := programVersion
+
+    testVer := VerCompare(localV, gitV)
+
+    if testVer = 0
+        MsgBox("Nyeste version er installeret!", "Versionstjek", "iconi")
+    if testVer < 0
+        hentJaNej := MsgBox(Format("Ny version: {1}`n`n{2}`n`nHent nyeste version?", gitv, result["body"]), "Ny version tilgængelig", 0x1)
+    if testVer > 0
+        MsgBox "?"
+
+    if hentJaNej = "OK"
+        Run result["zipball_url"]
+
+}
+
+visHjælp() {
+
+    hjælpStr := "
+    (
+    Genveje:
+    Ctrl+Escape: Stop og luk makro
+    F12: Pause/Sæt igang
+    )"
+
+    MsgBox(hjælpStr, "Hjælp", "iconi")
+
+}
+
+gemVognløbsdata(){
+
+    ; if !goo.excel.indlæst
+    ; {
+    ;     MsgBox("Er ikke indlæst")
+    ;     return
+    ; }
+
+    valgtDatafil := ""
+
+    valgtDatafil := FileSelect("S 24", "vognløbsdata", "titel", "json")
+    if !valgtDatafil
+        return
+    jsonData := {}
+    jsonData.excelGyldigeKolonner := goo.excel.gyldigeKolonner
+    jsonData.vognløbsArray := goo.vognløb.vlArray
+    jsonOutput := JSON.Dump(jsonData)
+    if FileExist(valgtDatafil)
+        FileDelete(valgtDatafil)
+    FileAppend(jsonOutput, valgtDatafil)
+    ; MsgBox valgtDatafil
+}
+
+hentVognløbsdata(){
+    valgtDatafil := ""
+
+    valgtDatafil := FileSelect()
+
+    if !valgtDatafil
+        return
+
+    jsonInput := FileRead(valgtDatafil)
+    try {
+     jsonObj := JSON.Load(jsonInput)
+    } catch Error as e {
+        MsgBox e.Message
+    }
+
+    goo.excel.gyldigeKolonner := jsonObj["excelGyldigeKolonner"]
+    goo.vognløb.vlArray := jsonObj["vognløbsArray"]
+    
 }
