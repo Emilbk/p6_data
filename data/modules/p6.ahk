@@ -83,12 +83,13 @@ class P6 extends class {
         {
             A_Clipboard := ""
             SendInput muligeKlipGenveje[pKlipGenvej]
+            tidSatIgang := A_Now
             sleep 100
-            this.tryClipwait clipwaitTidMsgbox
-            sleep 100
+            sekunderGået := 0
             while a_clipboard = ""
             {
-                if a_index > 1
+                sekunderGået := DateDiff(A_Now, tidSatIgang, "Seconds")
+                if sekunderGået > 1
                     return
                 else
                 {
@@ -114,9 +115,11 @@ class P6 extends class {
                 sleep 100
                 this.tryClipwait clipwaitTid
                 sleep 100
+                tidSatIgang := A_Now
                 while a_clipboard = ""
                 {
-                    if a_index > 2
+                    sekunderGået := DateDiff(A_Now, tidSatIgang, "Seconds")
+                    if sekunderGået > 1
                         return
                     else
                     {
@@ -143,10 +146,13 @@ class P6 extends class {
             sleep 100
             this.tryClipwait clipwaitTid
             sleep 100
+            tidSatIgang := A_Now
             while a_clipboard = ""
             {
-                if a_index > 50
-                    throw (Error("Clipboard-timeout, P6 i korrekt felt og er Citrix-udkllipsholderen tilgængelig? "))
+                sleep 200
+                sekunderGået := DateDiff(A_Now, tidSatIgang, "Seconds")
+                if sekunderGået > 10
+                    throw (Error("Clipboard-timeout efter 10 sekunder, er P6 aktiveret i korrekt felt og er Citrix-udkllipsholderen tilgængelig? "))
                 else
                 {
                     if IsSet(pNavigeringsSekvens)
@@ -155,7 +161,7 @@ class P6 extends class {
                         sleep 20
                     }
                     SendInput muligeKlipGenveje[pKlipGenvej]
-                    sleep 100
+                    sleep 200
                     this.tryClipwait clipwaitTidLoop
                     sleep 100
                 }
