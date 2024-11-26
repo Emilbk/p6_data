@@ -996,7 +996,6 @@ class P6 extends class {
     }
 
     tjekP6Msgbox(pMsgbox) {
-
         if (InStr(pMsgBox, "eksistere ikke"))
             throw P6MsgboxError(this.vognløb.parametre.Vognløbsnummer.forventetIndhold " - " this.vognløb.parametre.vognløbsdato.forventetIndhold ": Vognløb findes ikke på dato.")
         if (InStr(pMsgBox, "Kan ikke nå frem til første opgave"))
@@ -1027,6 +1026,8 @@ class P6 extends class {
             throw (P6MsgboxError("Økonomiskema findes ikke i P6"))
         if InStr(pMsgBox, "Økonomiskema skal angives")
             throw (P6MsgboxError("Økonomiskema kan ikke angives tomt"))
+        if InStr(pMsgBox, "Vognens kapacitet")
+            throw (P6MsgboxError("Kapacitetfejl på vognløb"))
 
         if (InStr(pMsgBox, "----"))
             throw P6MsgboxError(this.vognløb.parametre.Vognløbsnummer.ForventetIndhold " - " this.vognløb.parametre.vognløbsdato.ForventetIndhold ": Ikke-kategoriseret fejl på vognløb.")
