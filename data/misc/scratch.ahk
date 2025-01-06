@@ -1,11 +1,10 @@
+#Include ../test/lib/json.ahk
 
-SetWorkingDir "../.."
+
+Budnummer := { parameterNavn: "Budnummer", kolonneNavn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+
+jstr := jsongo.Stringify(Budnummer)
+jobj := jsongo.Parse(jstr)
 
 
-test := 300.00
-
-MsgBox IsFloat(test)
-
-test2 := Floor(test)
-
-MsgBox test2
+return
