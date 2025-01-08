@@ -114,11 +114,11 @@ class excelStrukturerData {
                 kolonnenavn := excelarray[1][kolonneindex]
                 if dataVerificering.erGyldigKolonne(kolonnenavn)
                 {
-                    raekkearray[rækkeindex].set(kolonnenavn, Object())
-                    raekkearray[rækkeindex][kolonnenavn].kolonneNavn := kolonnenavn
-                    raekkearray[rækkeindex][kolonnenavn].parameterNavn := kolonnenavn
-                    raekkearray[rækkeindex][kolonnenavn].forventetIndhold := celle
-                    raekkearray[rækkeindex][kolonnenavn].forventetIndholdArray := false
+                    raekkearray[rækkeindex].set(kolonnenavn, excelParameter.ny)
+                    raekkearray[rækkeindex][kolonnenavn]["kolonneNavn"] := kolonnenavn
+                    raekkearray[rækkeindex][kolonnenavn]["parameterNavn"] := kolonnenavn
+                    raekkearray[rækkeindex][kolonnenavn]["forventetIndhold"] := celle
+                    raekkearray[rækkeindex][kolonnenavn]["forventetIndholdArray"] := false
 
                 }
             }
@@ -127,12 +127,12 @@ class excelStrukturerData {
 
         for kolonneNavn in raekkeArray
         {
-            kolonneNavn["Ugedage"] := Object()
-            kolonneNavn["Ugedage"].forventetIndholdArray := Array()
-            kolonneNavn["UndtagneTransporttyper"] := Object()
-            kolonneNavn["UndtagneTransporttyper"].forventetIndholdArray := Array()
-            kolonneNavn["KørerIkkeTransporttyper"] := Object()
-            kolonneNavn["KørerIkkeTransporttyper"].forventetIndholdArray := Array()
+            kolonneNavn["Ugedage"] := excelParameter.ny
+            kolonneNavn["Ugedage"]["forventetIndholdArray"] := Array()
+            kolonneNavn["UndtagneTransporttyper"] := excelParameter.ny
+            kolonneNavn["UndtagneTransporttyper"]["forventetIndholdArray"] := Array()
+            kolonneNavn["KørerIkkeTransporttyper"] := excelParameter.ny
+            kolonneNavn["KørerIkkeTransporttyper"]["forventetIndholdArray"] := Array()
         }
 
         for rækkeIndex, raekke in excelArray
@@ -142,26 +142,26 @@ class excelStrukturerData {
                 kolonnenavn := excelArray[1][kolonneindex]
                 if kolonnenavn = "Ugedage"
                 {
-                    raekkeArray[rækkeIndex]["Ugedage"].forventetIndholdArray.Push(celle)
-                    raekkeArray[rækkeIndex]["Ugedage"].forventetIndhold := false
-                    raekkeArray[rækkeIndex]["Ugedage"].kolonneNavn := kolonnenavn
-                    raekkeArray[rækkeIndex]["Ugedage"].parameterNavn := kolonnenavn
+                    raekkeArray[rækkeIndex]["Ugedage"]["forventetIndholdArray"].Push(celle)
+                    raekkeArray[rækkeIndex]["Ugedage"]["forventetIndhold"] := false
+                    raekkeArray[rækkeIndex]["Ugedage"]["kolonneNavn"] := kolonnenavn
+                    raekkeArray[rækkeIndex]["Ugedage"]["parameterNavn"] := kolonnenavn
 
                 }
                 if kolonnenavn = "UndtagneTransporttyper"
                 {
 
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"].forventetIndholdArray.Push(celle)
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"].forventetIndhold := false
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"].kolonneNavn := kolonnenavn
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"].parameterNavn := kolonnenavn
+                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndholdArray"].Push(celle)
+                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndhold"] := false
+                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNavn"] := kolonnenavn
+                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["parameterNavn"] := kolonnenavn
                 }
                 if kolonnenavn = "KørerIkkeTransporttyper"
                 {
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"].forventetIndholdArray.Push(celle)
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"].forventetIndhold := false
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"].kolonneNavn := kolonnenavn
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"].parameterNavn := kolonnenavn
+                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndholdArray"].Push(celle)
+                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndhold"] := false
+                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNavn"] := kolonnenavn
+                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["parameterNavn"] := kolonnenavn
 
                 }
             }
@@ -214,22 +214,49 @@ class excelVerificerData {
         gyldigeParametre := parameter.data
         testParameter := pParameterObj
 
-        testParameterNavn := testParameter.parameterNavn
-        testParameterIndholdString := testParameter.forventetIndhold
-        testParameterIndholdArray := testParameter.forventetIndholdArray
+        testParameterNavn := testParameter["parameterNavn"]
+        testParameterIndholdString := testParameter["forventetIndhold"]
+        testParameterIndholdArray := testParameter["forventetIndholdArray"]
 
 
         if testParameterIndholdString
             if StrLen(testParameterIndholdString) != gyldigeParametre[testParameterNavn]["maxLængde"]
-                MsgBox testParameterIndholdString "passer ike"
+            {}
+                ; MsgBox testParameterIndholdString "passer ike"
 
         if testParameterIndholdArray
             for parameterIndhold in testParameterIndholdArray
                 if StrLen(parameterIndhold) != gyldigeParametre[testParameterNavn]["maxLængde"]
-                    MsgBox parameterIndhold "passer ike array"
+                {}
+                    ; MsgBox parameterIndhold "passer ike array"
 
     }
 
+}
+
+class excelParameter {
+
+    static ny {
+
+        get{
+            data := Map()
+            data.Default := 0
+
+            data["kolonneNavn"] := 0
+            data["parameterNavn"] := 0
+            data["forventetIndhold"] := 0
+            data["forventetIndholdArray"] := 0
+            data["faktiskIndhold"] := 0
+            data["faktiskIndholdArray"] := 0
+            data["fejl"] := 0
+            data["fejlBesked"] := 0
+            data["kolonneNavn"] := 0
+            
+            return data
+        }
+
+
+    }
 }
 
 arr := excelStrukturerData(mock).danRækkeArray()
