@@ -160,24 +160,6 @@ class _excelStrukturerData {
                         raekkeArray[rækkeIndex][arr]["parameterNavn"] := kolonnenavn
 
                     }
-                    ; if kolonnenavn = "UndtagneTransporttyper"
-                    ; {
-
-                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndholdArray"].Push(celle)
-                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
-                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndhold"] := false
-                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNavn"] := kolonnenavn
-                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["parameterNavn"] := kolonnenavn
-                    ; }
-                    ; if kolonnenavn = "KørerIkkeTransporttyper"
-                    ; {
-                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndholdArray"].Push(celle)
-                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
-                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndhold"] := false
-                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNavn"] := kolonnenavn
-                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["parameterNavn"] := kolonnenavn
-
-                    ; }
                 }
         }
         raekkeArray.RemoveAt(1)
@@ -292,6 +274,7 @@ class _excelParameter {
             data["fejlParameterArray"] := false
             data["maxParameterLængde"] := false
             data["maxArrayLængde"] := false
+            data["vognløbsdato"] := false
 
             return data
         }
@@ -300,7 +283,7 @@ class _excelParameter {
     }
 }
 
-class excelBehandlData {
+class excelDataBehandler {
 
     __New(pExcelFil, pArkNavnEllerNummer, excelApp := "") {
         this.excelFil := pExcelFil
@@ -316,11 +299,14 @@ class excelBehandlData {
 
         for arrayRække, arrayIndhold in this.rækkeArray
             for mapKey, mapObj in arrayIndhold
+            {
                 _excelVerificerData.erGyldigParameterLængde(mapObj)
-
-        for arrayRække, arrayIndhold in this.rækkeArray
-            for mapKey, mapObj in arrayIndhold
                 _excelVerificerData.erGyldigArrayLængde(mapObj)
+
+            }
+
+        ; for arrayRække, arrayIndhold in this.rækkeArray
+        ;     for mapKey, mapObj in arrayIndhold
 
         this.excel._quit()
 
@@ -339,6 +325,6 @@ class excelBehandlData {
 
 }
 
-excelArray := excelBehandlData(excelPath, excelArk)
+excelArray := excelDataBehandler(excelPath, excelArk)
 fArray := excelArray.behandledeRækker
 return
