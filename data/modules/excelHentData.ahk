@@ -1,8 +1,10 @@
 #Include includeModules.ahk
 
-mock := excelDataUgyldigMock
+mock := excelMock.excelDataUgyldigMock
+excelPath := "C:\Users\nixVM\Documents\ahk\p6_data\data\test\assets\VLMock.xlsx"
+excelArk := 1
 
-class excelHentData {
+class _excelHentData {
 
     __New(pExcelFil, pArkNavnEllerNummer, excelApp := "") {
         if excelApp
@@ -64,7 +66,7 @@ class excelHentData {
 
 }
 
-class excelStrukturerData {
+class _excelStrukturerData {
 
     __New(excelArray) {
         this.excelArray := excelArray
@@ -73,28 +75,30 @@ class excelStrukturerData {
 
     danKolonneNavneOgNummer() {
         excelArray := this.excelArray
-        kolonneNavne := Map()
+        kolonneNavne := { gyldigeKolonner: map(), ugyldigeKolonner: map() }
 
-        dataVerificering := excelVerificerData
+        dataVerificering := _excelVerificerData
         for rækkeIndex, kolonne in excelArray
             for kolonneIndex, kolonneNavn in kolonne
             {
                 if (rækkeIndex = 1 and dataVerificering.erGyldigKolonne(kolonneNavn))
-                    kolonneNavne.Set(kolonneNavn, kolonneIndex)
+                    kolonneNavne.gyldigeKolonner.Set(kolonneNavn, kolonneIndex)
+                if (rækkeIndex = 1 and !dataVerificering.erGyldigKolonne(kolonneNavn))
+                    kolonneNavne.ugyldigeKolonner.Set(kolonneNavn, kolonneIndex)
             }
 
-        kolonneNavne["Ugedage"] := Array()
-        kolonneNavne["UndtagneTransporttyper"] := Array()
-        kolonneNavne["KørerIkkeTransporttyper"] := Array()
+        kolonneNavne.gyldigeKolonner["Ugedage"] := Array()
+        kolonneNavne.gyldigeKolonner["UndtagneTransporttyper"] := Array()
+        kolonneNavne.gyldigeKolonner["KørerIkkeTransporttyper"] := Array()
 
         for kolonne in excelArray[1]
         {
             if kolonne = "Ugedage"
-                kolonneNavne["Ugedage"].Push(A_Index)
+                kolonneNavne.gyldigeKolonner["Ugedage"].Push(A_Index)
             if kolonne = "UndtagneTransporttyper"
-                kolonneNavne["UndtagneTransporttyper"].Push(A_Index)
+                kolonneNavne.gyldigeKolonner["UndtagneTransporttyper"].Push(A_Index)
             if kolonne = "KørerIkkeTransporttyper"
-                kolonneNavne["KørerIkkeTransporttyper"].Push(A_Index)
+                kolonneNavne.gyldigeKolonner["KørerIkkeTransporttyper"].Push(A_Index)
         }
         return kolonneNavne
     }
@@ -103,7 +107,7 @@ class excelStrukturerData {
     danRækkeArray() {
         excelArray := this.excelArray
         raekkeArray := Array()
-        dataVerificering := excelVerificerData
+        dataVerificering := _excelVerificerData
         outputArray := Array()
 
         for rækkeindex, raekke in excelarray
@@ -114,25 +118,30 @@ class excelStrukturerData {
                 kolonnenavn := excelarray[1][kolonneindex]
                 if dataVerificering.erGyldigKolonne(kolonnenavn)
                 {
-                    raekkearray[rækkeindex].set(kolonnenavn, excelParameter.ny)
+                    raekkearray[rækkeindex].set(kolonnenavn, _excelParameter.ny)
                     raekkearray[rækkeindex][kolonnenavn]["kolonneNavn"] := kolonnenavn
                     raekkearray[rækkeindex][kolonnenavn]["parameterNavn"] := kolonnenavn
                     raekkearray[rækkeindex][kolonnenavn]["forventetIndhold"] := celle
-                    raekkearray[rækkeindex][kolonnenavn]["forventetIndholdArray"] := false
+                    raekkearray[rækkeindex][kolonnenavn]["kolonneNummer"] := kolonneindex
 
                 }
             }
         }
+        ; TODO
+        ; kopier dobbelt parametre
 
 
         for kolonneNavn in raekkeArray
         {
-            kolonneNavn["Ugedage"] := excelParameter.ny
+            kolonneNavn["Ugedage"] := _excelParameter.ny
             kolonneNavn["Ugedage"]["forventetIndholdArray"] := Array()
-            kolonneNavn["UndtagneTransporttyper"] := excelParameter.ny
+            kolonneNavn["Ugedage"]["kolonneNummerArray"] := Array()
+            kolonneNavn["UndtagneTransporttyper"] := _excelParameter.ny
             kolonneNavn["UndtagneTransporttyper"]["forventetIndholdArray"] := Array()
-            kolonneNavn["KørerIkkeTransporttyper"] := excelParameter.ny
+            kolonneNavn["UndtagneTransporttyper"]["kolonneNummerArray"] := Array()
+            kolonneNavn["KørerIkkeTransporttyper"] := _excelParameter.ny
             kolonneNavn["KørerIkkeTransporttyper"]["forventetIndholdArray"] := Array()
+            kolonneNavn["KørerIkkeTransporttyper"]["kolonneNummerArray"] := Array()
         }
 
         for rækkeIndex, raekke in excelArray
@@ -143,6 +152,7 @@ class excelStrukturerData {
                 if kolonnenavn = "Ugedage"
                 {
                     raekkeArray[rækkeIndex]["Ugedage"]["forventetIndholdArray"].Push(celle)
+                    raekkeArray[rækkeIndex]["Ugedage"]["kolonneNummerArray"].Push(kolonneindex)
                     raekkeArray[rækkeIndex]["Ugedage"]["forventetIndhold"] := false
                     raekkeArray[rækkeIndex]["Ugedage"]["kolonneNavn"] := kolonnenavn
                     raekkeArray[rækkeIndex]["Ugedage"]["parameterNavn"] := kolonnenavn
@@ -152,6 +162,7 @@ class excelStrukturerData {
                 {
 
                     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndholdArray"].Push(celle)
+                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
                     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndhold"] := false
                     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNavn"] := kolonnenavn
                     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["parameterNavn"] := kolonnenavn
@@ -159,6 +170,7 @@ class excelStrukturerData {
                 if kolonnenavn = "KørerIkkeTransporttyper"
                 {
                     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndholdArray"].Push(celle)
+                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
                     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndhold"] := false
                     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNavn"] := kolonnenavn
                     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["parameterNavn"] := kolonnenavn
@@ -173,44 +185,44 @@ class excelStrukturerData {
 
     }
 
+
 }
 
-class excelVerificerData {
+class _excelVerificerData {
 
     static _gyldigeKolonner := gyldigeKolonner.data
     static _ugyldigeKolonner := Map()
 
-
     static _verificerKolonner(pKolonner) {
         for kolonne in pKolonner
-            if !excelVerificerData._gyldigeKolonner.has(kolonne)
-                excelVerificerData._ugyldigeKolonner.Set(kolonne, A_Index)
+            if !_excelVerificerData._gyldigeKolonner.has(kolonne)
+                _excelVerificerData._ugyldigeKolonner.Set(kolonne, A_Index)
             else
-                excelVerificerData._gyldigeKolonner[kolonne] := true
+                _excelVerificerData._gyldigeKolonner[kolonne] := true
     }
 
     static ugyldigeKolonner[pKolonner] {
         get {
-            excelVerificerData._verificerKolonner(pKolonner)
-            return excelVerificerData._ugyldigeKolonner
+            _excelVerificerData._verificerKolonner(pKolonner)
+            return _excelVerificerData._ugyldigeKolonner
         }
     }
 
     static gyldigeKolonner[pKolonner] {
         get {
-            excelVerificerData._verificerKolonner(pKolonner)
-            return excelVerificerData._gyldigeKolonner
+            _excelVerificerData._verificerKolonner(pKolonner)
+            return _excelVerificerData._gyldigeKolonner
         }
     }
 
     static erGyldigKolonne(kolonneNavn) {
 
-        if excelVerificerData._gyldigeKolonner.Has(kolonneNavn)
+        if _excelVerificerData._gyldigeKolonner.Has(kolonneNavn)
             return true
 
     }
-;; TODO
-    static erGyldigParameter(pParameterObj) {
+    ;; TODO
+    static erGyldigParameterLængde(pParameterObj) {
         gyldigeParametre := parameter.data
         testParameter := pParameterObj
 
@@ -219,39 +231,66 @@ class excelVerificerData {
         testParameterIndholdArray := testParameter["forventetIndholdArray"]
 
 
-        if testParameterIndholdString
-            if StrLen(testParameterIndholdString) != gyldigeParametre[testParameterNavn]["maxLængde"]
-            {}
-                ; MsgBox testParameterIndholdString "passer ike"
+        if testParameterIndholdString and gyldigeParametre[testParameterNavn]["maxLængde"]
+            if StrLen(testParameterIndholdString) > gyldigeParametre[testParameterNavn]["maxLængde"]
+            {
+                testParameter["fejl"] := 1
+                testParameter["fejlBesked"] := "for mange tegn i parameter"
+                testParameter["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
+            }
+
+        if testParameterIndholdArray and gyldigeParametre[testParameterNavn]["maxLængde"]
+            for parameterIndhold in testParameterIndholdArray
+                if StrLen(parameterIndhold) > gyldigeParametre[testParameterNavn]["maxLængde"]
+                {
+                    testParameter["fejl"] := 1
+                    testParameter["fejlBesked"] := "for mange tegn i parameter"
+                    testParameter["fejlParameterArray"] := parameterIndhold
+                    testParameter["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
+                }
+    }
+    static erGyldigArrayLængde(pParameterObj) {
+
+        gyldigeParametre := parameter.data
+        testParameter := pParameterObj
+
+        testParameterNavn := testParameter["parameterNavn"]
+        testParameterIndholdArray := testParameter["forventetIndholdArray"]
 
         if testParameterIndholdArray
-            for parameterIndhold in testParameterIndholdArray
-                if StrLen(parameterIndhold) != gyldigeParametre[testParameterNavn]["maxLængde"]
-                {}
-                    ; MsgBox parameterIndhold "passer ike array"
-
+            if testParameterIndholdArray.length > gyldigeParametre[testParameterNavn]["maxArray"]
+            {
+                testParameter["fejl"] := 1
+                testParameter["fejlBesked"] := "for mange kolonner i kategori"
+                testParameter["fejlParameterArray"] := testParameter["kolonneNavn"]
+                testParameter["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxArray"]
+            }
     }
 
 }
 
-class excelParameter {
+class _excelParameter {
 
     static ny {
 
-        get{
+        get {
             data := Map()
             data.Default := 0
 
-            data["kolonneNavn"] := 0
-            data["parameterNavn"] := 0
-            data["forventetIndhold"] := 0
-            data["forventetIndholdArray"] := 0
-            data["faktiskIndhold"] := 0
-            data["faktiskIndholdArray"] := 0
-            data["fejl"] := 0
-            data["fejlBesked"] := 0
-            data["kolonneNavn"] := 0
-            
+            data["kolonneNavn"] := false
+            data["kolonneNummer"] := false
+            data["kolonneNummerArray"] := false
+            data["parameterNavn"] := false
+            data["forventetIndhold"] := false
+            data["forventetIndholdArray"] := false
+            data["faktiskIndhold"] := false
+            data["faktiskIndholdArray"] := false
+            data["fejl"] := false
+            data["fejlBesked"] := false
+            data["fejlParameterArray"] := false
+            data["maxParameterLængde"] := false
+            data["maxArrayLængde"] := false
+
             return data
         }
 
@@ -259,13 +298,45 @@ class excelParameter {
     }
 }
 
-arr := excelStrukturerData(mock).danRækkeArray()
-koll := excelStrukturerData(mock).danKolonneNavneOgNummer()
-test := excelVerificerData.gyldigeKolonner[koll]
+class excelBehandlData {
 
-for arrayRække, arrayIndhold in arr
-    for mapKey, mapObj in arrayIndhold
-        excelVerificerData.erGyldigParameter(mapObj)
+    __New(pExcelFil, pArkNavnEllerNummer, excelApp := "") {
+        this.excelFil := pExcelFil
+        this.arkNavnEllerNummer := pArkNavnEllerNummer
+        if excelApp
+            this.app := excelApp
 
+        this.excel := _excelHentData(pExcelFil, pArkNavnEllerNummer, excelApp)
+        this.excelArray := excelMock.excelDataUgyldigMock
+        ; this.excelArray := this.excel.excelDataArray
+        this.rækkeArray := _excelStrukturerData(this.excelArray).danRækkeArray()
+        this.kolonner := _excelStrukturerData(this.excelArray).danKolonneNavneOgNummer()
 
+        for arrayRække, arrayIndhold in this.rækkeArray
+            for mapKey, mapObj in arrayIndhold
+                _excelVerificerData.erGyldigParameterLængde(mapObj)
+
+        for arrayRække, arrayIndhold in this.rækkeArray
+            for mapKey, mapObj in arrayIndhold
+                _excelVerificerData.erGyldigArrayLængde(mapObj)
+                
+        this.excel._quit()
+                
+    }
+    
+    behandledeRækker{
+        get{
+            return this.rækkeArray
+        }
+    }
+    gyldigeKolonner{
+        get{
+            return this.kolonner
+        }
+    }
+
+}
+
+excelArray := excelBehandlData(excelPath, excelArk)
+fArray := excelArray.behandledeRækker
 return

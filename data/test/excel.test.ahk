@@ -13,7 +13,7 @@ class testExcelHentData extends AutoHotUnitSuite {
 
         testFil := A_WorkingDir "\assets\VLMock.xlsx"
 
-        actual := excelHentData(testFil, 1).excelDataArray
+        actual := _excelHentData(testFil, 1).excelDataArray
         this.assert.equal(actual[1][1], "Budnummer")
         this.assert.equal(actual[2][2], "31400")
         jstring := jsongo.Stringify(actual)
@@ -26,7 +26,7 @@ class testExcelHentData extends AutoHotUnitSuite {
 
         A_WorkingDir := "../"
         testFil := A_WorkingDir "\assets\150vl.xlsx"
-        app := excelHentData(testFil, 1)
+        app := _excelHentData(testFil, 1)
         loop 30 {
             Timer.add("exceltest")
             actual := app.excelDataArray
@@ -43,7 +43,7 @@ class testExcelDataStruktur extends AutoHotUnitSuite {
 
         jsonMock := FileRead("json/excelDataMockArray.txt", "UTF-8")
         
-        actual := jsongo.Stringify(excelStrukturerData(mock).danRækkeArray())
+        actual := jsongo.Stringify(_excelStrukturerData(mock).danRækkeArray())
         
         this.assert.equal(jsonMock, actual)
 
@@ -55,7 +55,7 @@ class testExcelVerificerData extends AutoHotUnitSuite {
    
     testVerificerUgyldigeKolonner(){
 
-        ugyldigeKolonner := excelVerificerData(excelDataUgyldigMock).ugyldigeKolonner
+        ugyldigeKolonner := _excelVerificerData(excelDataUgyldigMock).ugyldigeKolonner
         expectedLength := 2
         actualLength := ugyldigeKolonner.Count
         
