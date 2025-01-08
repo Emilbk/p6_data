@@ -1,5 +1,11 @@
 #Include includeModules.ahk
 
+; TODO
+; anden parameterGyldighed objec
+; Hvordan dobbelte parametre?
+; parameterFactory?
+
+
 mock := excelMock.excelDataUgyldigMock
 excelPath := "C:\Users\nixVM\Documents\ahk\p6_data\data\test\assets\VLMock.xlsx"
 excelArk := 1
@@ -38,7 +44,7 @@ class _excelHentData {
         this.app.quit()
     }
 
-    excelDataArray {
+    getDataArray {
         get {
             this._åbenWorkbookReadonly()
             this._indlæsAktivRangeTilArray()
@@ -130,53 +136,49 @@ class _excelStrukturerData {
         ; TODO
         ; kopier dobbelt parametre
 
-
+        arrayKolonne := ["Ugedage", "UndtagneTransporttyper", "KørerIkkeTransporttyper"]
         for kolonneNavn in raekkeArray
-        {
-            kolonneNavn["Ugedage"] := _excelParameter.ny
-            kolonneNavn["Ugedage"]["forventetIndholdArray"] := Array()
-            kolonneNavn["Ugedage"]["kolonneNummerArray"] := Array()
-            kolonneNavn["UndtagneTransporttyper"] := _excelParameter.ny
-            kolonneNavn["UndtagneTransporttyper"]["forventetIndholdArray"] := Array()
-            kolonneNavn["UndtagneTransporttyper"]["kolonneNummerArray"] := Array()
-            kolonneNavn["KørerIkkeTransporttyper"] := _excelParameter.ny
-            kolonneNavn["KørerIkkeTransporttyper"]["forventetIndholdArray"] := Array()
-            kolonneNavn["KørerIkkeTransporttyper"]["kolonneNummerArray"] := Array()
-        }
+            for arr in arrayKolonne
+            {
+                kolonneNavn[arr] := _excelParameter.ny
+                kolonneNavn[arr]["forventetIndholdArray"] := Array()
+                kolonneNavn[arr]["kolonneNummerArray"] := Array()
+            }
 
         for rækkeIndex, raekke in excelArray
         {
             for kolonneindex, celle in raekke
-            {
-                kolonnenavn := excelArray[1][kolonneindex]
-                if kolonnenavn = "Ugedage"
+                for arr in arrayKolonne
                 {
-                    raekkeArray[rækkeIndex]["Ugedage"]["forventetIndholdArray"].Push(celle)
-                    raekkeArray[rækkeIndex]["Ugedage"]["kolonneNummerArray"].Push(kolonneindex)
-                    raekkeArray[rækkeIndex]["Ugedage"]["forventetIndhold"] := false
-                    raekkeArray[rækkeIndex]["Ugedage"]["kolonneNavn"] := kolonnenavn
-                    raekkeArray[rækkeIndex]["Ugedage"]["parameterNavn"] := kolonnenavn
+                    kolonnenavn := excelArray[1][kolonneindex]
+                    if kolonnenavn = arr
+                    {
+                        raekkeArray[rækkeIndex][arr]["forventetIndholdArray"].Push(celle)
+                        raekkeArray[rækkeIndex][arr]["kolonneNummerArray"].Push(kolonneindex)
+                        raekkeArray[rækkeIndex][arr]["forventetIndhold"] := false
+                        raekkeArray[rækkeIndex][arr]["kolonneNavn"] := kolonnenavn
+                        raekkeArray[rækkeIndex][arr]["parameterNavn"] := kolonnenavn
 
-                }
-                if kolonnenavn = "UndtagneTransporttyper"
-                {
+                    }
+                    ; if kolonnenavn = "UndtagneTransporttyper"
+                    ; {
 
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndholdArray"].Push(celle)
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndhold"] := false
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNavn"] := kolonnenavn
-                    raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["parameterNavn"] := kolonnenavn
-                }
-                if kolonnenavn = "KørerIkkeTransporttyper"
-                {
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndholdArray"].Push(celle)
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndhold"] := false
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNavn"] := kolonnenavn
-                    raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["parameterNavn"] := kolonnenavn
+                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndholdArray"].Push(celle)
+                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
+                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["forventetIndhold"] := false
+                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["kolonneNavn"] := kolonnenavn
+                    ;     raekkeArray[rækkeIndex]["UndtagneTransporttyper"]["parameterNavn"] := kolonnenavn
+                    ; }
+                    ; if kolonnenavn = "KørerIkkeTransporttyper"
+                    ; {
+                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndholdArray"].Push(celle)
+                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNummerArray"].Push(kolonneindex)
+                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["forventetIndhold"] := false
+                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["kolonneNavn"] := kolonnenavn
+                    ;     raekkeArray[rækkeIndex]["KørerIkkeTransporttyper"]["parameterNavn"] := kolonnenavn
 
+                    ; }
                 }
-            }
         }
         raekkeArray.RemoveAt(1)
 
@@ -308,7 +310,7 @@ class excelBehandlData {
 
         this.excel := _excelHentData(pExcelFil, pArkNavnEllerNummer, excelApp)
         this.excelArray := excelMock.excelDataUgyldigMock
-        ; this.excelArray := this.excel.excelDataArray
+        ; this.excelArray := this.excel.getDataArray
         this.rækkeArray := _excelStrukturerData(this.excelArray).danRækkeArray()
         this.kolonner := _excelStrukturerData(this.excelArray).danKolonneNavneOgNummer()
 
@@ -319,18 +321,18 @@ class excelBehandlData {
         for arrayRække, arrayIndhold in this.rækkeArray
             for mapKey, mapObj in arrayIndhold
                 _excelVerificerData.erGyldigArrayLængde(mapObj)
-                
+
         this.excel._quit()
-                
+
     }
-    
-    behandledeRækker{
-        get{
+
+    behandledeRækker {
+        get {
             return this.rækkeArray
         }
     }
-    gyldigeKolonner{
-        get{
+    gyldigeKolonner {
+        get {
             return this.kolonner
         }
     }
