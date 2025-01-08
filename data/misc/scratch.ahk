@@ -1,10 +1,9 @@
 #Include ../test/lib/json.ahk
+; #Include ../modules/includeModules.ahk
 
 
-Budnummer := { parameterNavn: "Budnummer", kolonneNavn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
+m := Map("baseObj", Object())
 
-jstr := jsongo.Stringify(Budnummer)
-jobj := jsongo.Parse(jstr)
-
+m["baseObj"].test := "test"
 
 return

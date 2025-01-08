@@ -1,6 +1,7 @@
-#Include ../modules/excelHentData.ahk
+﻿#Include ../modules/excelHentData.ahk
 #Include ../modules/excelVerificerData.ahk
 #Include tests.ahk
+FileEncoding "UTF-8"
 ; #Include ../modules/excelClass.ahk
 ; #Include excel.mock.ahk
 
@@ -32,6 +33,20 @@ class testExcelHentData extends AutoHotUnitSuite {
         }
         app._quit()
         Timer.show()
+    }
+
+}
+
+class testExcelDataStruktur extends AutoHotUnitSuite {
+    
+    arrayTest(){
+
+        jsonMock := FileRead("json/excelDataMockArray.txt", "UTF-8")
+        
+        actual := jsongo.Stringify(excelStrukturerData(mock).danRækkeArray())
+        
+        this.assert.equal(jsonMock, actual)
+
     }
 
 }

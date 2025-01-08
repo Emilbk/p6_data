@@ -10,4 +10,4 @@ class data {
 }
 
 test := data()
-test.hentExcelData(excelDataMock)
+test.hentExcelData(excelData)

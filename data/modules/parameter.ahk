@@ -17,7 +17,7 @@ class parameter {
         "Startzone", map("parameterNavn", "Startzone", "kolonneNavn", "Hjemzone", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 6),
         "Slutzone", map("parameterNavn", "Slutzone", "kolonneNavn", "Hjemzone", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 6),
         "NormalHjemzone", map("parameterNavn", "NormalHjemzone", "kolonneNavn", "Hjemzone", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 6),
-        "chfKontaktNummer", map("parameterNavn", "chfKontaktNummer", "kolonneNavn", "chfKontaktNummer", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 8),
+        "ChfKontaktNummer", map("parameterNavn", "chfKontaktNummer", "kolonneNavn", "chfKontaktNummer", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 8),
         "Vognløbskategori", map("parameterNavn", "Vognløbskategori", "kolonneNavn", "Vognløbskategori", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 6),
         "Planskema", map("parameterNavn", "Planskema", "kolonneNavn", "Planskema", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 10),
         "Økonomiskema", map("parameterNavn", "Økonomiskema", "kolonneNavn", "Økonomiskema", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 10),
