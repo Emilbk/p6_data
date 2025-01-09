@@ -125,4 +125,17 @@ class excel extends AutoHotUnitSuite {
         this.assert.equal(actual,expected)
 
     }
+    testParameterFejlArrayStørrelse(){
+
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test[1]["KørerIkkeTransporttyper"].data["forventetIndholdArray"] := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        test[1]["KørerIkkeTransporttyper"].tjekGyldighed()
+
+        expected := "For mange mange kolonner i kategori. Maks 10, nuværende 11"
+        actual := test[1]["KørerIkkeTransporttyper"].data["fejlBesked"]
+        
+        
+        this.assert.equal(actual,expected)
+
+    }
 }

@@ -162,6 +162,7 @@ class _excelStrukturerData {
                         raekkeArray[rækkeIndex][kolonneNavn].data["forventetIndhold"] := false
                         raekkeArray[rækkeIndex][kolonneNavn].data["kolonneNavn"] := parameterNavn
                         raekkeArray[rækkeIndex][kolonneNavn].data["parameterNavn"] := parameterNavn
+                        raekkeArray[rækkeIndex][kolonneNavn].data["maxArrayLængde"] := gyldigeParametre[kolonneNavn]["maxArray"]
 
                     }
                 }
@@ -210,33 +211,6 @@ class _excelVerificerData {
 
     }
     ;; TODO
-    static erGyldigParameterLængde(pParameterObj) {
-        gyldigeParametre := parameter.data
-        testParameter := pParameterObj
-
-        testParameterNavn := testParameter.data["parameterNavn"]
-        testParameterIndholdString := testParameter.data["forventetIndhold"]
-        testParameterIndholdArray := testParameter.data["forventetIndholdArray"]
-
-
-        if testParameterIndholdString and gyldigeParametre[testParameterNavn]["maxLængde"]
-            if StrLen(testParameterIndholdString) > gyldigeParametre[testParameterNavn]["maxLængde"]
-            {
-                testParameter.data["fejl"] := 1
-                testParameter.data["fejlBesked"] := "for mange tegn i parameter"
-                testParameter.data["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
-            }
-
-        if testParameterIndholdArray and gyldigeParametre[testParameterNavn]["maxLængde"]
-            for parameterIndhold in testParameterIndholdArray
-                if StrLen(parameterIndhold) > gyldigeParametre[testParameterNavn]["maxLængde"]
-                {
-                    testParameter.data["fejl"] := 1
-                    testParameter.data["fejlBesked"] := "for mange tegn i parameter"
-                    testParameter.data["fejlParameterArray"] := parameterIndhold
-                    testParameter.data["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
-                }
-    }
     static erGyldigArrayLængde(pParameterObj) {
 
         gyldigeParametre := parameter.data
@@ -255,23 +229,6 @@ class _excelVerificerData {
             }
     }
 
-    static erGyldigDato(pParameterObj) {
-        datoArray := pParameterObj["Ugedage"]["forventetIndholdArray"]
-        gyldigeUgedage := ["ma", "ti", "on", "to", "fr", "lø", "sø"]
-
-        for dato in datoArray
-        {
-            if !InStr(dato, "/")
-                for gyldigUgedag in gyldigeUgedage
-                    if gyldigUgedag = dato
-                        break
-                    else
-                        MsgBox "nje"
-
-        }
-
-
-    }
 }
 
 
@@ -317,10 +274,17 @@ class excelDataBehandler {
 class parameterAlm {
     static forKolonneNavn(pKolonnenavn) {
 
-        if pKolonnenavn = "Ugedage"
-            return parameterUgedage()
-        else
-            return parameterAlm()
+        switch pKolonnenavn
+        {
+            case "Ugedage":
+                return parameterUgedage()
+            case "KørerIkkeTransporttyper":
+                return parameterTransportType()
+            case "UndtagneTransporttyper":
+                return parameterTransportType()
+            default:
+                return parameterAlm()
+        }
     }
     __New() {
 
@@ -355,7 +319,7 @@ class parameterAlm {
             this._danFejl(Format("For mange tegn i parameter."))
             return
         }
-            
+
         if RegExMatch(this.data["forventetIndhold"], "[\!\*\@]", &matchObj)
         {
             this._danFejl(Format("Ulovligt tegn (`"{1}`") i parameter.", matchObj[0]))
@@ -444,6 +408,48 @@ class parameterUgedage {
 
     }
 }
+class parameterTransportType {
+
+    __new() {
+
+        this.data := Map()
+        this.data.Default := 0
+
+        this.data["kolonneNavn"] := false
+        this.data["kolonneNummer"] := false
+        this.data["kolonneNummerArray"] := false
+        this.data["parameterNavn"] := false
+        this.data["forventetIndhold"] := false
+        this.data["forventetIndholdArray"] := false
+        this.data["faktiskIndhold"] := false
+        this.data["faktiskIndholdArray"] := false
+        this.data["fejl"] := false
+        this.data["fejlBesked"] := false
+        this.data["fejlParameterArray"] := false
+        this.data["maxParameterLængde"] := false
+        this.data["maxArrayLængde"] := false
+
+    }
+    _erUnderMaxArray() {
+
+        if this.data["forventetIndholdArray"].length > this.data["maxArrayLængde"]
+        {
+            this._danfejl(Format("For mange mange kolonner i kategori. Maks {1}, nuværende {2}", this.data["maxArrayLængde"], this.data["forventetIndholdArray"].length))
+            return
+        }
+
+    }
+    _danfejl(pFejlbesked) {
+
+        this.data["fejl"] := 1
+        this.data["fejlBesked"] := pFejlbesked
+    }
+
+    tjekGyldighed() {
+        this._erUnderMaxArray()
+    }
+
+}
 class excelParameterInterface {
 
     __new() {
@@ -467,8 +473,10 @@ class excelParameterInterface {
 
     }
 
-    _danfejl() {
+    _danfejl(pFejlbesked) {
 
+        this.data["fejl"] := 1
+        this.data["fejlBesked"] := pFejlbesked
     }
 
     tjekGyldighed() {

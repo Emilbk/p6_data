@@ -5,11 +5,6 @@
 
 
 
-needle := ["a", "b", "c"]
-
-hayst := "a"
-
-MsgBox InStr(hayst, needle*)
 
 
 return
