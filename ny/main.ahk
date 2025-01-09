@@ -1,5 +1,8 @@
 #Include data\modules\includeModules.ahk
 
-data := excelDataBehandler(excelMock.excelMockfil, 1).behandledeRækker
+
+; excelData := _excelHentData(excelMock.excelMockfil, 1)
+data := excelDataBehandler(excelMock.excelDataUgyldigFlere, parameterAlm).behandledeRækker
+
 
 return

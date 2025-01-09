@@ -1,0 +1,6 @@
+
+
+class vltest extends AutoHotUnitSuite{
+
+
+}

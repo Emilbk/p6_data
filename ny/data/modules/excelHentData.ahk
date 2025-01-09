@@ -1,12 +1,13 @@
 #Include includeModules.ahk
 
+
 ; TODO
 ; anden parameterGyldighed objec
 ; Hvordan dobbelte parametre?
 ; parameterFactory?
 
 
-mock := excelMock.excelDataUgyldigMock
+mock := excelMock.excelDataUgyldigFlere
 excelPath := "C:\Users\nixVM\Documents\ahk\p6_data\data\test\assets\VLMock.xlsx"
 excelArk := 1
 
@@ -74,8 +75,9 @@ class _excelHentData {
 
 class _excelStrukturerData {
 
-    __New(excelArray) {
+    __New(excelArray, parameterObj) {
         this.excelArray := excelArray
+        this.parameterObj := parameterObj
 
     }
 
@@ -115,20 +117,22 @@ class _excelStrukturerData {
         raekkeArray := Array()
         dataVerificering := _excelVerificerData
         outputArray := Array()
+        gyldigeParametre := parameter.data
 
         for rækkeindex, raekke in excelarray
         {
             raekkearray.push(map())
             for kolonneindex, celle in raekke
             {
-                kolonnenavn := excelarray[1][kolonneindex]
-                if dataVerificering.erGyldigKolonne(kolonnenavn)
+                parameterNavn := excelarray[1][kolonneindex]
+                if dataVerificering.erGyldigKolonne(parameterNavn)
                 {
-                    raekkearray[rækkeindex].set(kolonnenavn, _excelParameter.ny)
-                    raekkearray[rækkeindex][kolonnenavn]["kolonneNavn"] := kolonnenavn
-                    raekkearray[rækkeindex][kolonnenavn]["parameterNavn"] := kolonnenavn
-                    raekkearray[rækkeindex][kolonnenavn]["forventetIndhold"] := celle
-                    raekkearray[rækkeindex][kolonnenavn]["kolonneNummer"] := kolonneindex
+                    raekkearray[rækkeindex].set(parameterNavn, this.parameterObj.forKolonneNavn(parameterNavn))
+                    raekkearray[rækkeindex][parameterNavn].data["kolonneNavn"] := parameterNavn
+                    raekkearray[rækkeindex][parameterNavn].data["parameterNavn"] := parameterNavn
+                    raekkearray[rækkeindex][parameterNavn].data["forventetIndhold"] := celle
+                    raekkearray[rækkeindex][parameterNavn].data["kolonneNummer"] := kolonneindex
+                    raekkearray[rækkeindex][parameterNavn].data["maxLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
 
                 }
             }
@@ -137,27 +141,27 @@ class _excelStrukturerData {
         ; kopier dobbelt parametre
 
         arrayKolonne := ["Ugedage", "UndtagneTransporttyper", "KørerIkkeTransporttyper"]
-        for kolonneNavn in raekkeArray
-            for arr in arrayKolonne
+        for parameterNavn in raekkeArray
+            for kolonneNavn in arrayKolonne
             {
-                kolonneNavn[arr] := _excelParameter.ny
-                kolonneNavn[arr]["forventetIndholdArray"] := Array()
-                kolonneNavn[arr]["kolonneNummerArray"] := Array()
+                parameterNavn[kolonneNavn] := this.parameterObj.forKolonneNavn(kolonnenavn)
+                parameterNavn[kolonneNavn].data["forventetIndholdArray"] := Array()
+                parameterNavn[kolonneNavn].data["kolonneNummerArray"] := Array()
             }
 
         for rækkeIndex, raekke in excelArray
         {
             for kolonneindex, celle in raekke
-                for arr in arrayKolonne
+                for kolonneNavn in arrayKolonne
                 {
-                    kolonnenavn := excelArray[1][kolonneindex]
-                    if kolonnenavn = arr
+                    parameterNavn := excelArray[1][kolonneindex]
+                    if parameterNavn = kolonneNavn
                     {
-                        raekkeArray[rækkeIndex][arr]["forventetIndholdArray"].Push(celle)
-                        raekkeArray[rækkeIndex][arr]["kolonneNummerArray"].Push(kolonneindex)
-                        raekkeArray[rækkeIndex][arr]["forventetIndhold"] := false
-                        raekkeArray[rækkeIndex][arr]["kolonneNavn"] := kolonnenavn
-                        raekkeArray[rækkeIndex][arr]["parameterNavn"] := kolonnenavn
+                        raekkeArray[rækkeIndex][kolonneNavn].data["forventetIndholdArray"].Push(celle)
+                        raekkeArray[rækkeIndex][kolonneNavn].data["kolonneNummerArray"].Push(kolonneindex)
+                        raekkeArray[rækkeIndex][kolonneNavn].data["forventetIndhold"] := false
+                        raekkeArray[rækkeIndex][kolonneNavn].data["kolonneNavn"] := parameterNavn
+                        raekkeArray[rækkeIndex][kolonneNavn].data["parameterNavn"] := parameterNavn
 
                     }
                 }
@@ -210,27 +214,27 @@ class _excelVerificerData {
         gyldigeParametre := parameter.data
         testParameter := pParameterObj
 
-        testParameterNavn := testParameter["parameterNavn"]
-        testParameterIndholdString := testParameter["forventetIndhold"]
-        testParameterIndholdArray := testParameter["forventetIndholdArray"]
+        testParameterNavn := testParameter.data["parameterNavn"]
+        testParameterIndholdString := testParameter.data["forventetIndhold"]
+        testParameterIndholdArray := testParameter.data["forventetIndholdArray"]
 
 
         if testParameterIndholdString and gyldigeParametre[testParameterNavn]["maxLængde"]
             if StrLen(testParameterIndholdString) > gyldigeParametre[testParameterNavn]["maxLængde"]
             {
-                testParameter["fejl"] := 1
-                testParameter["fejlBesked"] := "for mange tegn i parameter"
-                testParameter["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
+                testParameter.data["fejl"] := 1
+                testParameter.data["fejlBesked"] := "for mange tegn i parameter"
+                testParameter.data["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
             }
 
         if testParameterIndholdArray and gyldigeParametre[testParameterNavn]["maxLængde"]
             for parameterIndhold in testParameterIndholdArray
                 if StrLen(parameterIndhold) > gyldigeParametre[testParameterNavn]["maxLængde"]
                 {
-                    testParameter["fejl"] := 1
-                    testParameter["fejlBesked"] := "for mange tegn i parameter"
-                    testParameter["fejlParameterArray"] := parameterIndhold
-                    testParameter["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
+                    testParameter.data["fejl"] := 1
+                    testParameter.data["fejlBesked"] := "for mange tegn i parameter"
+                    testParameter.data["fejlParameterArray"] := parameterIndhold
+                    testParameter.data["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxLængde"]
                 }
     }
     static erGyldigArrayLængde(pParameterObj) {
@@ -238,77 +242,62 @@ class _excelVerificerData {
         gyldigeParametre := parameter.data
         testParameter := pParameterObj
 
-        testParameterNavn := testParameter["parameterNavn"]
-        testParameterIndholdArray := testParameter["forventetIndholdArray"]
+        testParameterNavn := testParameter.data["parameterNavn"]
+        testParameterIndholdArray := testParameter.data["forventetIndholdArray"]
 
         if testParameterIndholdArray
             if testParameterIndholdArray.length > gyldigeParametre[testParameterNavn]["maxArray"]
             {
-                testParameter["fejl"] := 1
-                testParameter["fejlBesked"] := "for mange kolonner i kategori"
-                testParameter["fejlParameterArray"] := testParameter["kolonneNavn"]
-                testParameter["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxArray"]
+                testParameter.data["fejl"] := 1
+                testParameter.data["fejlBesked"] := "for mange kolonner i kategori"
+                testParameter.data["fejlParameterArray"] := testParameter.data["kolonneNavn"]
+                testParameter.data["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxArray"]
             }
     }
 
-}
+    static erGyldigDato(pParameterObj) {
+        datoArray := pParameterObj["Ugedage"]["forventetIndholdArray"]
+        gyldigeUgedage := ["ma", "ti", "on", "to", "fr", "lø", "sø"]
 
-class _excelParameter {
+        for dato in datoArray
+        {
+            if !InStr(dato, "/")
+                for gyldigUgedag in gyldigeUgedage
+                    if gyldigUgedag = dato
+                        break
+                    else
+                        MsgBox "nje"
 
-    static ny {
-
-        get {
-            data := Map()
-            data.Default := 0
-
-            data["kolonneNavn"] := false
-            data["kolonneNummer"] := false
-            data["kolonneNummerArray"] := false
-            data["parameterNavn"] := false
-            data["forventetIndhold"] := false
-            data["forventetIndholdArray"] := false
-            data["faktiskIndhold"] := false
-            data["faktiskIndholdArray"] := false
-            data["fejl"] := false
-            data["fejlBesked"] := false
-            data["fejlParameterArray"] := false
-            data["maxParameterLængde"] := false
-            data["maxArrayLængde"] := false
-            data["vognløbsdato"] := false
-
-            return data
         }
 
 
     }
 }
 
+
 class excelDataBehandler {
 
-    __New(pExcelFil, pArkNavnEllerNummer, excelApp := "") {
-        this.excelFil := pExcelFil
-        this.arkNavnEllerNummer := pArkNavnEllerNummer
-        if excelApp
-            this.app := excelApp
+    __New(pInputArray, parameterObj) {
+        this.dataArray := pInputArray
+        this.parameterObj := parameterObj
 
-        this.excel := _excelHentData(pExcelFil, pArkNavnEllerNummer, excelApp)
-        this.excelArray := excelMock.excelDataUgyldigMock
-        ; this.excelArray := this.excel.getDataArray
-        this.rækkeArray := _excelStrukturerData(this.excelArray).danRækkeArray()
-        this.kolonner := _excelStrukturerData(this.excelArray).danKolonneNavneOgNummer()
+        this.rækkeArray := _excelStrukturerData(this.dataArray, this.parameterObj).danRækkeArray()
+        this.kolonner := _excelStrukturerData(this.dataArray, this.parameterObj).danKolonneNavneOgNummer()
 
         for arrayRække, arrayIndhold in this.rækkeArray
             for mapKey, mapObj in arrayIndhold
             {
-                _excelVerificerData.erGyldigParameterLængde(mapObj)
-                _excelVerificerData.erGyldigArrayLængde(mapObj)
+                mapObj.tjekGyldighed()
+                ; _excelVerificerData.erGyldigParameterLængde(mapObj)
+                ; _excelVerificerData.erGyldigArrayLængde(mapObj)
+                ; if map
+                ;     _excelVerificerData.erGyldigDato(mapObj)
 
             }
 
         ; for arrayRække, arrayIndhold in this.rækkeArray
         ;     for mapKey, mapObj in arrayIndhold
 
-        this.excel._quit()
 
     }
 
@@ -325,6 +314,172 @@ class excelDataBehandler {
 
 }
 
-; excelArray := excelDataBehandler(excelPath, excelArk)
-; fArray := excelArray.behandledeRækker
+class parameterAlm {
+    static forKolonneNavn(pKolonnenavn) {
+
+        if pKolonnenavn = "Ugedage"
+            return parameterUgedage()
+        else
+            return parameterAlm()
+    }
+    __New() {
+
+        this.data := Map()
+        this.data.Default := 0
+
+        this.data["kolonneNavn"] := false
+        this.data["kolonneNummer"] := false
+        this.data["kolonneNummerArray"] := false
+        this.data["parameterNavn"] := false
+        this.data["forventetIndhold"] := false
+        this.data["forventetIndholdArray"] := false
+        this.data["faktiskIndhold"] := false
+        this.data["faktiskIndholdArray"] := false
+        this.data["fejl"] := false
+        this.data["fejlBesked"] := false
+        this.data["fejlParameterArray"] := false
+        this.data["maxParameterLængde"] := false
+        this.data["maxArrayLængde"] := false
+
+    }
+
+    _danFejl(pFejlbesked) {
+        this.data["fejl"] := 1
+        this.data["fejlBesked"] := pFejlbesked
+
+    }
+    tjekGyldighed() {
+
+        if StrLen(this.data["forventetIndhold"]) > this.data["maxLængde"]
+        {
+            this._danFejl(Format("For mange tegn i parameter."))
+            return
+        }
+            
+        if RegExMatch(this.data["forventetIndhold"], "[\!\*\@]", &matchObj)
+        {
+            this._danFejl(Format("Ulovligt tegn (`"{1}`") i parameter.", matchObj[0]))
+            return
+
+        }
+    }
+}
+class parameterUgedage {
+    __New() {
+
+        this.data := Map()
+        this.data.Default := 0
+
+        this.data["kolonneNavn"] := false
+        this.data["kolonneNummer"] := false
+        this.data["kolonneNummerArray"] := false
+        this.data["parameterNavn"] := false
+        this.data["forventetIndhold"] := false
+        this.data["forventetIndholdArray"] := false
+        this.data["faktiskIndhold"] := false
+        this.data["faktiskIndholdArray"] := false
+        this.data["fejl"] := false
+        this.data["fejlBesked"] := false
+        this.data["fejlParameterArray"] := false
+        this.data["maxParameterLængde"] := false
+        this.data["maxArrayLængde"] := false
+
+    }
+
+    static _erKalenderdag(pDag) {
+        ugedag := pDag
+        if RegExMatch(ugedag, "\w*\d\w*")
+            return true
+    }
+    static _erFastDag(pDag) {
+        ugedag := pDag
+
+        gyldigeUgedage := ["ma", "ti", "on", "to", "fr", "lø", "sø"]
+        erUgedag := false
+
+        for gyldigUgedag in gyldigeUgedage
+            if ugedag = gyldigUgedag
+                return erUgedag := true
+    }
+    static _erGyldigDato(pDato) {
+        dato := pDato
+
+        if !InStr(dato, "/")
+            return false
+
+        datoArry := StrSplit(dato, "/")
+        dag := datoArry[1]
+        måned := datoArry[2]
+        år := datoArry[3]
+
+        testStamp := år . måned . dag
+        return isTime(testStamp)
+
+    }
+    _danFejl(pFejlbesked) {
+
+        this.data["fejl"] := 1
+        this.data["fejlBesked"] := pFejlbesked
+    }
+    tjekGyldighed() {
+        ugedage := this.data["forventetIndholdArray"]
+
+        for ugedag in ugedage
+        {
+            if parameterUgedage._erKalenderdag(ugedag)
+            {
+                if !parameterUgedage._erGyldigDato(ugedag)
+                {
+                    this._danFejl(Format("Fejl i kalenderdato: {1}. Skal være gyldig dato i formatet mm/dd/åååå.", ugedag))
+                    return
+                }
+            }
+            else if !parameterUgedage._erFastDag(ugedag)
+            {
+                this._danFejl(Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", ugedag))
+                return
+            }
+        }
+
+
+    }
+}
+class excelParameterInterface {
+
+    __new() {
+
+        this.data := Map()
+        this.data.Default := 0
+
+        this.data["kolonneNavn"] := false
+        this.data["kolonneNummer"] := false
+        this.data["kolonneNummerArray"] := false
+        this.data["parameterNavn"] := false
+        this.data["forventetIndhold"] := false
+        this.data["forventetIndholdArray"] := false
+        this.data["faktiskIndhold"] := false
+        this.data["faktiskIndholdArray"] := false
+        this.data["fejl"] := false
+        this.data["fejlBesked"] := false
+        this.data["fejlParameterArray"] := false
+        this.data["maxParameterLængde"] := false
+        this.data["maxArrayLængde"] := false
+
+    }
+
+    _danfejl() {
+
+    }
+
+    tjekGyldighed() {
+
+    }
+
+}
+
+
+; test := excelDataBehandler(excelMock.excelDataUgyldigMock, parameterAlm).behandledeRækker
+
+; MsgBox test[1]["Ugedage"].data["fejlBesked"]
+; MsgBox test[2]["Ugedage"].data["fejlBesked"]
 ; return

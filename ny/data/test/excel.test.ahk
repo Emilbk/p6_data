@@ -61,3 +61,68 @@ class testExcelVerificerData extends AutoHotUnitSuite {
         this.assert.equal(actualLength, expectedLength)
     }
 }
+
+
+class excel extends AutoHotUnitSuite {
+
+    testUgedageFejlKalenderdagFormat(){
+
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test[1]["Ugedage"].data["forventetIndholdArray"][1] := "42/11/2024"
+        test[1]["Ugedage"].tjekGyldighed()
+
+        expected := "Fejl i kalenderdato: 42/11/2024. Skal være gyldig dato i formatet mm/dd/åååå."
+        actual := test[1]["Ugedage"].data["fejlBesked"]
+        
+        this.assert.equal(actual,expected)
+
+    }
+    testUgedageFejlKalenderdagDato(){
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test[1]["Ugedage"].data["forventetIndholdArray"][1] := "24-11-2024"
+        test[1]["Ugedage"].tjekGyldighed()
+
+        expected := "Fejl i kalenderdato: 24-11-2024. Skal være gyldig dato i formatet mm/dd/åååå."
+        actual := test[1]["Ugedage"].data["fejlBesked"]
+        
+        this.assert.equal(actual,expected)
+    }
+    testUgedageFejlfastdag(){
+
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test[1]["Ugedage"].data["forventetIndholdArray"][1] := "NO"
+        test[1]["Ugedage"].tjekGyldighed()
+
+        expected := "fejl i fast dag: NO. Skal være i formatet XX, f. eks MA"
+        actual := test[1]["Ugedage"].data["fejlBesked"]
+        
+        this.assert.equal(actual,expected)
+
+    }
+    testParameterFejlTegnLængde(){
+
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test[1]["Vognløbsnummer"].data["forventetIndhold"] := "ForMangeTegn"
+        test[1]["Vognløbsnummer"].tjekGyldighed()
+
+        expected := "For mange tegn i parameter."
+        actual := test[1]["Vognløbsnummer"].data["fejlBesked"]
+        
+        
+        this.assert.equal(actual,expected)
+
+    }
+    testParameterFejlUlovligtTegn(){
+
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test[1]["Vognløbsnummer"].data["forventetIndhold"] := "3!400"
+        test[1]["Vognløbsnummer"].tjekGyldighed()
+
+        expected := "Ulovligt tegn (`"!`") i parameter."
+        actual := test[1]["Vognløbsnummer"].data["fejlBesked"]
+        
+        
+        this.assert.equal(actual,expected)
+
+    }
+}
