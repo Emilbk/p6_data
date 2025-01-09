@@ -54,7 +54,7 @@ class testExcelVerificerData extends AutoHotUnitSuite {
    
     testVerificerUgyldigeKolonner(){
 
-        ugyldigeKolonner := _excelVerificerData(excelDataUgyldigMock).ugyldigeKolonner
+        ugyldigeKolonner := _excelVerificerData.ugyldigeKolonner
         expectedLength := 2
         actualLength := ugyldigeKolonner.Count
         

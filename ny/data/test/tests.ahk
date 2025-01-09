@@ -1,4 +1,4 @@
-#Include ../lib/AutoHotUnit/AutoHotUnit.ahk
+#Include lib/AutoHotUnit/AutoHotUnit.ahk
 #Include lib\ahktimer.ahk
 #Include lib\json.ahk
 #Include excel.test.ahk
