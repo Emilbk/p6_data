@@ -20,5 +20,12 @@ class excelMock {
         }
     }
 
+    static excelMockfil {
+
+        get{
+
+            return A_ScriptDir "\data\test\assets\VLMock.xlsx"
+        }
+    }
 
 }

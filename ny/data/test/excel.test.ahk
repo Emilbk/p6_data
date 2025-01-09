@@ -1,5 +1,4 @@
-﻿#Include ../modules/excelHentData.ahk
-#Include ../modules/excelVerificerData.ahk
+﻿#Include ../modules/includeModules.ahk
 #Include tests.ahk
 FileEncoding "UTF-8"
 ; #Include ../modules/excelClass.ahk

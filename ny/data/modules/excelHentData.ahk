@@ -325,6 +325,6 @@ class excelDataBehandler {
 
 }
 
-excelArray := excelDataBehandler(excelPath, excelArk)
-fArray := excelArray.behandledeRækker
-return
+; excelArray := excelDataBehandler(excelPath, excelArk)
+; fArray := excelArray.behandledeRækker
+; return
