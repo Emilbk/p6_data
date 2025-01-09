@@ -117,7 +117,7 @@ class _excelStrukturerData {
         raekkeArray := Array()
         dataVerificering := _excelVerificerData
         outputArray := Array()
-        gyldigeParametre := parameter.data
+        gyldigeParametre := parameterGyld.data
 
         for rækkeindex, raekke in excelarray
         {
@@ -213,7 +213,7 @@ class _excelVerificerData {
     ;; TODO
     static erGyldigArrayLængde(pParameterObj) {
 
-        gyldigeParametre := parameter.data
+        gyldigeParametre := parameterGyld.data
         testParameter := pParameterObj
 
         testParameterNavn := testParameter.data["parameterNavn"]
@@ -282,29 +282,16 @@ class parameterAlm {
                 return parameterTransportType()
             case "UndtagneTransporttyper":
                 return parameterTransportType()
+            case "Starttid":
+                return parameterKlokkeslæt()
+            case "Sluttid":
+                return parameterKlokkeslæt()
             default:
                 return parameterAlm()
         }
     }
     __New() {
-
-        this.data := Map()
-        this.data.Default := 0
-
-        this.data["kolonneNavn"] := false
-        this.data["kolonneNummer"] := false
-        this.data["kolonneNummerArray"] := false
-        this.data["parameterNavn"] := false
-        this.data["forventetIndhold"] := false
-        this.data["forventetIndholdArray"] := false
-        this.data["faktiskIndhold"] := false
-        this.data["faktiskIndholdArray"] := false
-        this.data["fejl"] := false
-        this.data["fejlBesked"] := false
-        this.data["fejlParameterArray"] := false
-        this.data["maxParameterLængde"] := false
-        this.data["maxArrayLængde"] := false
-
+        this.data := parameter().parameterSæt
     }
 
     _danFejl(pFejlbesked) {
@@ -330,24 +317,7 @@ class parameterAlm {
 }
 class parameterUgedage {
     __New() {
-
-        this.data := Map()
-        this.data.Default := 0
-
-        this.data["kolonneNavn"] := false
-        this.data["kolonneNummer"] := false
-        this.data["kolonneNummerArray"] := false
-        this.data["parameterNavn"] := false
-        this.data["forventetIndhold"] := false
-        this.data["forventetIndholdArray"] := false
-        this.data["faktiskIndhold"] := false
-        this.data["faktiskIndholdArray"] := false
-        this.data["fejl"] := false
-        this.data["fejlBesked"] := false
-        this.data["fejlParameterArray"] := false
-        this.data["maxParameterLængde"] := false
-        this.data["maxArrayLængde"] := false
-
+        this.data := parameter().parameterSæt
     }
 
     static _erKalenderdag(pDag) {
@@ -411,24 +381,7 @@ class parameterUgedage {
 class parameterTransportType {
 
     __new() {
-
-        this.data := Map()
-        this.data.Default := 0
-
-        this.data["kolonneNavn"] := false
-        this.data["kolonneNummer"] := false
-        this.data["kolonneNummerArray"] := false
-        this.data["parameterNavn"] := false
-        this.data["forventetIndhold"] := false
-        this.data["forventetIndholdArray"] := false
-        this.data["faktiskIndhold"] := false
-        this.data["faktiskIndholdArray"] := false
-        this.data["fejl"] := false
-        this.data["fejlBesked"] := false
-        this.data["fejlParameterArray"] := false
-        this.data["maxParameterLængde"] := false
-        this.data["maxArrayLængde"] := false
-
+        this.data := parameter().parameterSæt
     }
     _erUnderMaxArray() {
 
@@ -450,27 +403,39 @@ class parameterTransportType {
     }
 
 }
+class parameterKlokkeslæt {
+
+    __new() {
+        this.data := parameter().parameterSæt
+    }
+
+
+    _korrektFormat() {
+        if InStr(this.data["forventetIndhold"], "*")
+            MsgBox "5"
+
+        strArr := StrSplit(this.data["forventetIndhold"], ":")
+
+        time := strArr[1]
+        minut := strArr[2]
+
+        return
+    }
+
+    _danfejl(pFejlbesked) {
+
+        this.data["fejl"] := 1
+        this.data["fejlBesked"] := pFejlbesked
+    }
+
+    tjekGyldighed() {
+        this._korrektFormat()
+    }
+}
 class excelParameterInterface {
 
     __new() {
-
-        this.data := Map()
-        this.data.Default := 0
-
-        this.data["kolonneNavn"] := false
-        this.data["kolonneNummer"] := false
-        this.data["kolonneNummerArray"] := false
-        this.data["parameterNavn"] := false
-        this.data["forventetIndhold"] := false
-        this.data["forventetIndholdArray"] := false
-        this.data["faktiskIndhold"] := false
-        this.data["faktiskIndholdArray"] := false
-        this.data["fejl"] := false
-        this.data["fejlBesked"] := false
-        this.data["fejlParameterArray"] := false
-        this.data["maxParameterLængde"] := false
-        this.data["maxArrayLængde"] := false
-
+        this.data := parameter().parameterSæt
     }
 
     _danfejl(pFejlbesked) {
@@ -483,6 +448,32 @@ class excelParameterInterface {
 
     }
 
+}
+
+class parameter {
+    parameterSæt {
+        get {
+
+            this.data := Map()
+            this.data.Default := 0
+
+            this.data["kolonneNavn"] := false
+            this.data["kolonneNummer"] := false
+            this.data["kolonneNummerArray"] := false
+            this.data["parameterNavn"] := false
+            this.data["forventetIndhold"] := false
+            this.data["forventetIndholdArray"] := false
+            this.data["faktiskIndhold"] := false
+            this.data["faktiskIndholdArray"] := false
+            this.data["fejl"] := false
+            this.data["fejlBesked"] := false
+            this.data["fejlParameterArray"] := false
+            this.data["maxParameterLængde"] := false
+            this.data["maxArrayLængde"] := false
+
+            return this.data
+        }
+    }
 }
 
 

@@ -2,7 +2,9 @@
 
 
 ; excelData := _excelHentData(excelMock.excelMockfil, 1)
-data := excelDataBehandler(excelMock.excelDataUgyldigFlere, parameterAlm).behandledeRækker
+data := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
 
+
+data[1]["Vognløbskategori"].data["forventetIndhold"] := "testset"
 
 return

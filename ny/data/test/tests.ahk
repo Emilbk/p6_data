@@ -6,7 +6,7 @@
 ; ahu.RegisterSuite(testExcelHentData)
 ; ahu.RegisterSuite(testExcelDataStruktur)
 ; ahu.RegisterSuite(testExcelVerificerData)
-ahu.RegisterSuite(excel)
+ahu.RegisterSuite(excelParameter)
 
 
 ahu.RunSuites()

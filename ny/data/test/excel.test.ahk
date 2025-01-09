@@ -63,7 +63,7 @@ class testExcelVerificerData extends AutoHotUnitSuite {
 }
 
 
-class excel extends AutoHotUnitSuite {
+class excelParameter extends AutoHotUnitSuite {
 
     testUgedageFejlKalenderdagFormat(){
 
@@ -87,7 +87,7 @@ class excel extends AutoHotUnitSuite {
         
         this.assert.equal(actual,expected)
     }
-    testUgedageFejlfastdag(){
+    testUgedageFejlFastdag(){
 
         test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
         test[1]["Ugedage"].data["forventetIndholdArray"][1] := "NO"

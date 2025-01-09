@@ -1,4 +1,4 @@
-class parameter {
+class parameterGyld {
   static  _parameter := Map(
         "Budnummer", map("parameterNavn", "Budnummer", "kolonneNavn", "Budnummer", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 999),
         "Vognløbsnummer", map("parameterNavn", "Vognløbsnummer", "kolonneNavn", "Vognløbsnummer", "forventetIndhold", "", "eksisterendeIndhold", "", "fejl", 0, "iBrug", 0, "kolonneNummer", 0, "maxLængde", 5),
@@ -44,7 +44,7 @@ class parameter {
 
     static data{
         get{
-            return parameter._parameter
+            return parameterGyld._parameter
         }
     }
 }
