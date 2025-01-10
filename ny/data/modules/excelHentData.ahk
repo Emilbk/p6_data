@@ -2,14 +2,7 @@
 
 
 ; TODO
-; anden parameterGyldighed objec
 ; Hvordan dobbelte parametre?
-; parameterFactory?
-
-
-mock := excelMock.excelDataUgyldigFlere
-excelPath := "C:\Users\nixVM\Documents\ahk\p6_data\data\test\assets\VLMock.xlsx"
-excelArk := 1
 
 class _excelHentData {
 
@@ -75,9 +68,9 @@ class _excelHentData {
 
 class _excelStrukturerData {
 
-    __New(excelArray, parameterObj) {
+    __New(excelArray, parameterFactory) {
         this.excelArray := excelArray
-        this.parameterObj := parameterObj
+        this.parameterFactory := parameterFactory
 
     }
 
@@ -112,6 +105,7 @@ class _excelStrukturerData {
     }
 
 
+    ; lav factory
     danRækkeArray() {
         excelArray := this.excelArray
         raekkeArray := Array()
@@ -125,48 +119,17 @@ class _excelStrukturerData {
             for kolonneindex, celle in raekke
             {
                 parameterNavn := excelarray[1][kolonneindex]
+                excelParametre := {
+                    parameternavn: parameternavn,
+                    celle: celle,
+                    kolonneindex: kolonneindex,
+                    rækkeindex: rækkeindex
+                }
                 if dataVerificering.erGyldigKolonne(parameterNavn)
                 {
-                    raekkearray[rækkeindex].set(parameterNavn, this.parameterObj.forKolonneNavn(parameterNavn))
-                    raekkearray[rækkeindex][parameterNavn].data["kolonneNavn"] := parameterNavn
-                    raekkearray[rækkeindex][parameterNavn].data["parameterNavn"] := parameterNavn
-                    raekkearray[rækkeindex][parameterNavn].data["forventetIndhold"] := celle
-                    raekkearray[rækkeindex][parameterNavn].data["kolonneNummer"] := kolonneindex
-                    raekkearray[rækkeindex][parameterNavn].data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
-
+                    raekkearray[rækkeindex].set(parameterNavn, this.parameterFactory.forKolonneNavn(parameterNavn, excelParametre))
                 }
             }
-        }
-        ; TODO
-        ; kopier dobbelt parametre
-
-        arrayKolonne := ["Ugedage", "UndtagneTransporttyper", "KørerIkkeTransporttyper"]
-        for parameterNavn in raekkeArray
-            for kolonneNavn in arrayKolonne
-            {
-                parameterNavn[kolonneNavn] := this.parameterObj.forKolonneNavn(kolonnenavn)
-                parameterNavn[kolonneNavn].data["forventetIndholdArray"] := Array()
-                parameterNavn[kolonneNavn].data["kolonneNummerArray"] := Array()
-            }
-
-        for rækkeIndex, raekke in excelArray
-        {
-            for kolonneindex, celle in raekke
-                for kolonneNavn in arrayKolonne
-                {
-                    parameterNavn := excelArray[1][kolonneindex]
-                    if parameterNavn = kolonneNavn
-                    {
-                        raekkeArray[rækkeIndex][kolonneNavn].data["forventetIndholdArray"].Push(celle)
-                        raekkeArray[rækkeIndex][kolonneNavn].data["kolonneNummerArray"].Push(kolonneindex)
-                        raekkeArray[rækkeIndex][kolonneNavn].data["forventetIndhold"] := false
-                        raekkeArray[rækkeIndex][kolonneNavn].data["kolonneNavn"] := parameterNavn
-                        raekkeArray[rækkeIndex][kolonneNavn].data["parameterNavn"] := parameterNavn
-                        raekkeArray[rækkeIndex][kolonneNavn].data["maxArrayLængde"] := gyldigeParametre[kolonneNavn]["maxArray"]
-                        raekkearray[rækkeindex][parameterNavn].data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
-
-                    }
-                }
         }
         raekkeArray.RemoveAt(1)
 
@@ -242,21 +205,6 @@ class excelDataBehandler {
         this.rækkeArray := _excelStrukturerData(this.dataArray, this.parameterObj).danRækkeArray()
         this.kolonner := _excelStrukturerData(this.dataArray, this.parameterObj).danKolonneNavneOgNummer()
 
-        for arrayRække, arrayIndhold in this.rækkeArray
-            for mapKey, mapObj in arrayIndhold
-            {
-                mapObj.tjekGyldighed()
-                ; _excelVerificerData.erGyldigParameterLængde(mapObj)
-                ; _excelVerificerData.erGyldigArrayLængde(mapObj)
-                ; if map
-                ;     _excelVerificerData.erGyldigDato(mapObj)
-
-            }
-
-        ; for arrayRække, arrayIndhold in this.rækkeArray
-        ;     for mapKey, mapObj in arrayIndhold
-
-
     }
 
     behandledeRækker {
@@ -272,31 +220,81 @@ class excelDataBehandler {
 
 }
 
-class parameterAlm {
-    static forKolonneNavn(pKolonnenavn) {
+parameterSkabelon
+class parameterFactory {
+
+    static ugedageRække := Map()
+    static UgedageInstance := ""
+    static KørerIkkeTransporttyperRække := Map()
+    static KørerIkkeTransporttyperInstance := ""
+    static UndtagneTransporttyperRække := Map()
+    static UndtagneTransporttyperInstance := ""
+    
+    static forKolonneNavn(pKolonnenavn, excelParametre) {
+
+        rækkeindex := excelParametre.rækkeIndex
 
         switch pKolonnenavn
         {
             case "Ugedage":
-                return parameterUgedage()
+            {
+                if !parameterFactory.ugedageRække.Has(rækkeindex)
+                {
+                    parameterFactory.ugedageRække.Set(rækkeindex, 1)
+                    parameterFactory.UgedageInstance := parameterUgedage(excelParametre)
+                    return parameterFactory.UgedageInstance
+                }
+                else
+                {
+                    parameterFactory.UgedageInstance.tilføjParametre(parameterFactory.UgedageInstance, excelParametre)
+                    return parameterFactory.UgedageInstance
+                }
+            }
             case "KørerIkkeTransporttyper":
-                return parameterTransportType()
+                if !parameterFactory.KørerIkkeTransporttyperRække.Has(rækkeindex)
+                {
+                    parameterFactory.KørerIkkeTransporttyperRække.Set(rækkeindex, 1)
+                    parameterFactory.KørerIkkeTransporttyperInstance := parameterTransportType(excelParametre)
+                    return parameterFactory.KørerIkkeTransporttyperInstance
+                }
+                else
+                {
+                    parameterFactory.KørerIkkeTransporttyperInstance.tilføjParametre(parameterFactory.KørerIkkeTransporttyperInstance, excelParametre)
+                    return parameterFactory.KørerIkkeTransporttyperInstance
+                }
             case "UndtagneTransporttyper":
-                return parameterTransportType()
+                if !parameterFactory.UndtagneTransporttyperRække.Has(rækkeindex)
+                {
+                    parameterFactory.UndtagneTransporttyperRække.Set(rækkeindex, 1)
+                    parameterFactory.UndtagneTransporttyperInstance := parameterTransportType(excelParametre)
+                    return parameterFactory.UndtagneTransporttyperInstance
+                }
+                else
+                {
+                    parameterFactory.UndtagneTransporttyperInstance.tilføjParametre(parameterFactory.UndtagneTransporttyperInstance, excelParametre)
+                    return parameterFactory.UndtagneTransporttyperInstance
+                }
+                return parameterTransportType(excelParametre)
             case "Starttid":
-                return parameterKlokkeslæt()
+                return parameterKlokkeslæt(excelParametre)
             case "Sluttid":
-                return parameterKlokkeslæt()
+                return parameterKlokkeslæt(excelParametre)
             default:
-                return parameterAlm()
+                return parameterAlm(excelParametre)
         }
     }
-    __New() {
-        this.data := parameter().parameterSæt
+}
+
+class parameterAlm {
+    __New(excelParametre) {
+        this.data := parameterSkabelon().tomtParameterSæt
+        this.udfyldParameter(excelParametre)
+        this.tjekGyldighed()
+
     }
 
     _forMangeTegnIParameter() {
-
+        
         if StrLen(this.data["forventetIndhold"]) > this.data["maxParameterLængde"]
         {
             this._danfejl(Format("For mange tegn i parameter `"{1}`". Nuværende {2}, maks {3}.", this.data["forventetIndhold"], StrLen(this.data["forventetIndhold"]), this.data["maxParameterLængde"]))
@@ -310,7 +308,7 @@ class parameterAlm {
             return
 
         }
-
+        
     }
     _danFejl(pFejlbesked) {
         this.data["fejl"] := 1
@@ -320,15 +318,36 @@ class parameterAlm {
     tjekGyldighed() {
         this._forMangeTegnIParameter()
         this._ulovligtTegnIParameter()
+    }
+
+    udfyldParameter(excelData) {
+        gyldigeParametre := parameterGyld.data
+        parameterNavn := excelData.parameterNavn
+        kolonneindex := excelData.kolonneindex
+        celle := excelData.celle
+
+        this.data["kolonneNavn"] := parameterNavn
+        this.data["parameterNavn"] := parameterNavn
+        this.data["forventetIndhold"] := celle
+        this.data["kolonneNummer"] := kolonneindex
+        this.data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
 
 
     }
+
 }
 class parameterUgedage {
-    __New() {
-        this.data := parameter().parameterSæt
+    __New(excelParametre) {
+        this.data := parameterSkabelon().tomtParameterSæt
+        this.data["forventetIndholdArray"] := Array()
+        this.data["kolonneNummerArray"] := Array()
+        this.udfyldParameter(excelParametre)
+        this.tjekGyldighed()
     }
-
+    tilføjParametre(parameterOjb, excelParametre) {
+        parameterOjb.data["forventetIndholdArray"].Push(excelParametre.celle)
+        parameterOjb.data["kolonneNummerArray"].Push(excelParametre.kolonneIndex)
+    }
     _erKalenderdag(ugedag) {
         if RegExMatch(ugedag, "\w*\d\w*")
             return true
@@ -385,11 +404,35 @@ class parameterUgedage {
                 return
             }
     }
+    udfyldParameter(excelData) {
+        gyldigeParametre := parameterGyld.data
+        parameterNavn := excelData.parameterNavn
+        kolonneindex := excelData.kolonneindex
+        celle := excelData.celle
+
+        this.data["kolonneNavn"] := parameterNavn
+        this.data["parameterNavn"] := parameterNavn
+        this.data["forventetIndholdArray"].push(celle)
+        this.data["kolonneNummerArray"].push(kolonneindex)
+        this.data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
+        this.data["maxArrayLængde"] := gyldigeParametre[parameterNavn]["maxArray"]
+
+
+    }
 }
 class parameterTransportType {
 
-    __new() {
-        this.data := parameter().parameterSæt
+    __new(excelParametre) {
+        this.data := parameterSkabelon().tomtParameterSæt
+        this.data["forventetIndholdArray"] := Array()
+        this.data["kolonneNummerArray"] := Array()
+        this.udfyldParameter(excelParametre)
+        this.tjekGyldighed()
+    }
+
+    tilføjParametre(parameterOjb, excelParametre) {
+        parameterOjb.data["forventetIndholdArray"].Push(excelParametre.celle)
+        parameterOjb.data["kolonneNummerArray"].Push(excelParametre.kolonneIndex)
     }
     _erOverMaxArray() {
 
@@ -425,11 +468,29 @@ class parameterTransportType {
             return
     }
 
+    udfyldParameter(excelData) {
+        gyldigeParametre := parameterGyld.data
+        parameterNavn := excelData.parameterNavn
+        kolonneindex := excelData.kolonneindex
+        celle := excelData.celle
+
+        this.data["kolonneNavn"] := parameterNavn
+        this.data["parameterNavn"] := parameterNavn
+        this.data["forventetIndhold"] := celle
+        this.data["kolonneNummer"] := kolonneindex
+        this.data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
+        this.data["maxArrayLængde"] := gyldigeParametre[parameterNavn]["maxArray"]
+
+
+
+    }
 }
 class parameterKlokkeslæt {
 
-    __new() {
-        this.data := parameter().parameterSæt
+    __new(excelParametre) {
+        this.data := parameterSkabelon().tomtParameterSæt
+        this.udfyldParameter(excelParametre)
+        this.tjekGyldighed()
     }
 
 
@@ -483,11 +544,29 @@ class parameterKlokkeslæt {
         this._harKolon()
         this._korrektFormat()
     }
+
+    udfyldParameter(excelData) {
+        gyldigeParametre := parameterGyld.data
+        parameterNavn := excelData.parameterNavn
+        kolonneindex := excelData.kolonneindex
+        celle := excelData.celle
+
+        this.data["kolonneNavn"] := parameterNavn
+        this.data["parameterNavn"] := parameterNavn
+        this.data["forventetIndhold"] := celle
+        this.data["kolonneNummer"] := kolonneindex
+        this.data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
+
+
+    }
+
 }
 class excelParameterInterface {
 
-    __new() {
-        this.data := parameter().parameterSæt
+    __new(excelParametre) {
+        this.data := parameterSkabelon().tomtParameterSæt
+        this.udfyldParameter(excelParametre)
+        this.tjekGyldighed()
     }
 
     _danfejl(pFejlbesked) {
@@ -496,14 +575,24 @@ class excelParameterInterface {
         this.data["fejlBesked"] := pFejlbesked
     }
 
+
+    tilføjParametre(){
+    ; til array-klasser
+
+        
+    }
+
     tjekGyldighed() {
 
     }
 
+    udfyldParameter(excelParameter) {
+
+    }
 }
 
-class parameter {
-    parameterSæt {
+class parameterSkabelon {
+    tomtParameterSæt {
         get {
 
             this.data := Map()

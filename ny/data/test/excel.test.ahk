@@ -40,11 +40,11 @@ class testExcelDataStruktur extends AutoHotUnitSuite {
 
     arrayTest() {
 
-        jsonMock := FileRead("json/excelDataMockArray.txt", "UTF-8")
+        ; jsonMock := FileRead("json/excelDataMockArray.txt", "UTF-8")
 
-        actual := jsongo.Stringify(_excelStrukturerData(mock).danRækkeArray())
+        ; actual := jsongo.Stringify(_excelStrukturerData(mock).danRækkeArray())
 
-        this.assert.equal(jsonMock, actual)
+        ; this.assert.equal(jsonMock, actual)
 
     }
 
@@ -63,11 +63,11 @@ class testExcelVerificerData extends AutoHotUnitSuite {
 }
 
 
-class excelParameter extends AutoHotUnitSuite {
+class parameterTest extends AutoHotUnitSuite {
 
     testUgedageFejlKalenderdagFormat() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         test[1]["Ugedage"].data["forventetIndholdArray"][1] := "42/11/2024"
         test[1]["Ugedage"].tjekGyldighed()
 
@@ -78,7 +78,7 @@ class excelParameter extends AutoHotUnitSuite {
 
     }
     testUgedageFejlKalenderdagDato() {
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         for testUgedag in ["24-11-2024", "24.11.2024", "24112024", "24/11/24", "11/24/2024", "24/11"]
         {
             test[1]["Ugedage"].data["forventetIndholdArray"][1] := testUgedag
@@ -92,7 +92,7 @@ class excelParameter extends AutoHotUnitSuite {
     }
     testUgedageFejlFastdag() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         for testFastDag in ["NO", "ONSDAG", "ONS"]
         {
             test[1]["Ugedage"].data["forventetIndholdArray"][1] := testFastDag
@@ -106,9 +106,10 @@ class excelParameter extends AutoHotUnitSuite {
     }
     testParameterFejlTegnLængde() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         test[1]["Vognløbsnummer"].data["forventetIndhold"] := "ForMangeTegn"
         test[1]["Vognløbsnummer"].tjekGyldighed()
+
 
         expected := "For mange tegn i parameter `"ForMangeTegn`". Nuværende 12, maks 5."
         actual := test[1]["Vognløbsnummer"].data["fejlBesked"]
@@ -119,7 +120,7 @@ class excelParameter extends AutoHotUnitSuite {
     }
     testParameterFejlUlovligtTegn() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         test[1]["Vognløbsnummer"].data["forventetIndhold"] := "3!400"
         test[1]["Vognløbsnummer"].tjekGyldighed()
 
@@ -132,7 +133,7 @@ class excelParameter extends AutoHotUnitSuite {
     }
     testParameterFejlArrayStørrelse() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         test[1]["KørerIkkeTransporttyper"].data["forventetIndholdArray"] := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         test[1]["KørerIkkeTransporttyper"].tjekGyldighed()
 
@@ -146,7 +147,7 @@ class excelParameter extends AutoHotUnitSuite {
 
     testParameterKlokkeslætFormat() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         for testKlokkeslæt in ["2359", "23.59", "23:83", "1:30"]
         {
         test[1]["Starttid"].data["forventetIndhold"] := testKlokkeslæt
@@ -171,17 +172,17 @@ class excelParameter extends AutoHotUnitSuite {
     }
     testParameterKlokkeslætAsterisk() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
+        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         test[1]["Sluttid"].data["forventetIndhold"] := "22:22*"
         test[1]["Sluttid"].tjekGyldighed()
 
-        expected := "22:22"
         actual := test[1]["Sluttid"].data["forventetIndhold"]
+        expected := "22:22"
 
         this.assert.equal(actual, expected)
 
-        expected := true
         actual := test[1]["Sluttid"].data["sluttidspunktErNæsteDag"]
+        expected := true
 
         this.assert.equal(actual, expected)
 
