@@ -132,7 +132,7 @@ class _excelStrukturerData {
                     raekkearray[rækkeindex][parameterNavn].data["parameterNavn"] := parameterNavn
                     raekkearray[rækkeindex][parameterNavn].data["forventetIndhold"] := celle
                     raekkearray[rækkeindex][parameterNavn].data["kolonneNummer"] := kolonneindex
-                    raekkearray[rækkeindex][parameterNavn].data["maxLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
+                    raekkearray[rækkeindex][parameterNavn].data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
 
                 }
             }
@@ -163,6 +163,7 @@ class _excelStrukturerData {
                         raekkeArray[rækkeIndex][kolonneNavn].data["kolonneNavn"] := parameterNavn
                         raekkeArray[rækkeIndex][kolonneNavn].data["parameterNavn"] := parameterNavn
                         raekkeArray[rækkeIndex][kolonneNavn].data["maxArrayLængde"] := gyldigeParametre[kolonneNavn]["maxArray"]
+                        raekkearray[rækkeindex][parameterNavn].data["maxParameterLængde"] := gyldigeParametre[parameterNavn]["maxLængde"]
 
                     }
                 }
@@ -294,25 +295,33 @@ class parameterAlm {
         this.data := parameter().parameterSæt
     }
 
-    _danFejl(pFejlbesked) {
-        this.data["fejl"] := 1
-        this.data["fejlBesked"] := pFejlbesked
+    _forMangeTegnIParameter() {
 
-    }
-    tjekGyldighed() {
-
-        if StrLen(this.data["forventetIndhold"]) > this.data["maxLængde"]
+        if StrLen(this.data["forventetIndhold"]) > this.data["maxParameterLængde"]
         {
-            this._danFejl(Format("For mange tegn i parameter."))
+            this._danfejl(Format("For mange tegn i parameter `"{1}`". Nuværende {2}, maks {3}.", this.data["forventetIndhold"], StrLen(this.data["forventetIndhold"]), this.data["maxParameterLængde"]))
             return
         }
-
+    }
+    _ulovligtTegnIParameter() {
         if RegExMatch(this.data["forventetIndhold"], "[\!\*\@]", &matchObj)
         {
             this._danFejl(Format("Ulovligt tegn (`"{1}`") i parameter.", matchObj[0]))
             return
 
         }
+
+    }
+    _danFejl(pFejlbesked) {
+        this.data["fejl"] := 1
+        this.data["fejlBesked"] := pFejlbesked
+
+    }
+    tjekGyldighed() {
+        this._forMangeTegnIParameter()
+        this._ulovligtTegnIParameter()
+
+
     }
 }
 class parameterUgedage {
@@ -320,31 +329,34 @@ class parameterUgedage {
         this.data := parameter().parameterSæt
     }
 
-    static _erKalenderdag(pDag) {
-        ugedag := pDag
+    _erKalenderdag(ugedag) {
         if RegExMatch(ugedag, "\w*\d\w*")
             return true
     }
-    static _erFastDag(pDag) {
-        ugedag := pDag
+    _erGyldigFastDag(ugedag) {
 
         gyldigeUgedage := ["ma", "ti", "on", "to", "fr", "lø", "sø"]
-        erUgedag := false
 
         for gyldigUgedag in gyldigeUgedage
-            if ugedag = gyldigUgedag
-                return erUgedag := true
+            if ugedag = gyldigeUgedage
+                return true
     }
-    static _erGyldigDato(pDato) {
-        dato := pDato
+    _harSkråstreg(ugedag) {
+        if InStr(ugedag, "/")
+            return true
+    }
+    _erGyldigDato(ugedag) {
 
-        if !InStr(dato, "/")
+        if !this._harSkråstreg(ugedag)
             return false
 
-        datoArry := StrSplit(dato, "/")
-        dag := datoArry[1]
-        måned := datoArry[2]
-        år := datoArry[3]
+        datoArr := StrSplit(ugedag, "/")
+        if datoArr.Length != 3
+            return false
+
+        dag := datoArr[1]
+        måned := datoArr[2]
+        år := datoArr[3]
 
         testStamp := år . måned . dag
         return isTime(testStamp)
@@ -359,23 +371,19 @@ class parameterUgedage {
         ugedage := this.data["forventetIndholdArray"]
 
         for ugedag in ugedage
-        {
-            if parameterUgedage._erKalenderdag(ugedag)
+            if !this._erKalenderdag(ugedag)
             {
-                if !parameterUgedage._erGyldigDato(ugedag)
+                if !this._erGyldigFastDag(ugedag)
                 {
-                    this._danFejl(Format("Fejl i kalenderdato: {1}. Skal være gyldig dato i formatet mm/dd/åååå.", ugedag))
+                    this._danFejl(Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", ugedag))
                     return
                 }
             }
-            else if !parameterUgedage._erFastDag(ugedag)
+            else if !this._erGyldigDato(ugedag)
             {
-                this._danFejl(Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", ugedag))
+                this._danFejl(Format("Fejl i kalenderdato: {1}. Skal være gyldig dato i formatet mm/dd/åååå.", ugedag))
                 return
             }
-        }
-
-
     }
 }
 class parameterTransportType {
@@ -383,13 +391,25 @@ class parameterTransportType {
     __new() {
         this.data := parameter().parameterSæt
     }
-    _erUnderMaxArray() {
+    _erOverMaxArray() {
 
         if this.data["forventetIndholdArray"].length > this.data["maxArrayLængde"]
         {
             this._danfejl(Format("For mange mange kolonner i kategori. Maks {1}, nuværende {2}", this.data["maxArrayLængde"], this.data["forventetIndholdArray"].length))
-            return
+            return true
         }
+
+    }
+
+    _forMangeTegnIParameter() {
+
+
+        for tjekParameter in this.data["forventetIndholdArray"]
+            if StrLen(tjekParameter) > this.data["maxLængde"]
+            {
+                this._danfejl(Format("For mange tegn i parameter {1} Nuværende {2}, maks {3}", tjekParameter, StrLen(tjekParameter), this.data["maxLængde"]))
+                return true
+            }
 
     }
     _danfejl(pFejlbesked) {
@@ -399,7 +419,10 @@ class parameterTransportType {
     }
 
     tjekGyldighed() {
-        this._erUnderMaxArray()
+        if this._erOverMaxArray()
+            return
+        if this._forMangeTegnIParameter()
+            return
     }
 
 }
@@ -410,14 +433,41 @@ class parameterKlokkeslæt {
     }
 
 
-    _korrektFormat() {
+    _tjekOgRensAsterisk() {
+
         if InStr(this.data["forventetIndhold"], "*")
-            MsgBox "5"
+        {
+            this.data["forventetIndhold"] := SubStr(this.data["forventetIndhold"], 1, 5)
+            this.data["sluttidspunktErNæsteDag"] := true
+
+        }
+    }
+
+    _harKolon() {
+        if !InStr(this.data["forventetIndhold"], ":")
+        {
+            this._danfejl(Format("Fejl i format, skal være gyldigt klokkeslæt i formatet `"TT:MM`", med afsluttende asterisk hvis sluttid over midnat"))
+            return
+        }
+    }
+    _korrektFormat() {
+
 
         strArr := StrSplit(this.data["forventetIndhold"], ":")
 
+        if strArr.Length != 2
+        {
+            this._danfejl(Format("Fejl i format, skal være gyldigt klokkeslæt i formatet `"TT:MM`", med afsluttende asterisk hvis sluttid over midnat"))
+            return
+
+        }
+
+
         time := strArr[1]
         minut := strArr[2]
+
+        if !IsTime("20241212" time minut)
+            this._danfejl(Format("Fejl i format, skal være gyldigt klokkeslæt i formatet `"TT:MM`", med afsluttende asterisk hvis sluttid over midnat"))
 
         return
     }
@@ -429,6 +479,8 @@ class parameterKlokkeslæt {
     }
 
     tjekGyldighed() {
+        this._tjekOgRensAsterisk()
+        this._harKolon()
         this._korrektFormat()
     }
 }
@@ -470,6 +522,7 @@ class parameter {
             this.data["fejlParameterArray"] := false
             this.data["maxParameterLængde"] := false
             this.data["maxArrayLængde"] := false
+            this.data["tidspunktErNæsteDag"] := false
 
             return this.data
         }

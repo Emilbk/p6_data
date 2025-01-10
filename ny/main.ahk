@@ -5,6 +5,6 @@
 data := excelDataBehandler(excelMock.excelDataGyldig, parameterAlm).behandledeRækker
 
 
-data[1]["Vognløbskategori"].data["forventetIndhold"] := "testset"
+data[1]["Ugedage"].data["forventetIndholdArray"] := ["11/24"]
 
 return
