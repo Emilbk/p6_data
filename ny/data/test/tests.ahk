@@ -3,10 +3,13 @@
 #Include lib\json.ahk
 #Include excel.test.ahk
 #Include vl.test.ahk
-; ahu.RegisterSuite(testExcelHentData)
-; ahu.RegisterSuite(testExcelDataStruktur)
+ahu.RegisterSuite(testExcelHentData)
+ahu.RegisterSuite(testExcelDataStruktur)
 ; ahu.RegisterSuite(testExcelVerificerData)
 ahu.RegisterSuite(parameterTest)
+ahu.RegisterSuite(vltest)
 
 
+ 
 ahu.RunSuites()
+

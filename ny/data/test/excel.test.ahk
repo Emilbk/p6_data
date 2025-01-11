@@ -12,7 +12,7 @@ class testExcelHentData extends AutoHotUnitSuite {
 
         testFil := A_WorkingDir "\assets\VLMock.xlsx"
 
-        actual := _excelHentData(testFil, 1).excelDataArray
+        actual := _excelHentData(testFil, 1).getDataArray
         this.assert.equal(actual[1][1], "Budnummer")
         this.assert.equal(actual[2][2], "31400")
         jstring := jsongo.Stringify(actual)
@@ -23,12 +23,11 @@ class testExcelHentData extends AutoHotUnitSuite {
 
     _excelSpeedTest() {
 
-        A_WorkingDir := "../"
         testFil := A_WorkingDir "\assets\150vl.xlsx"
         app := _excelHentData(testFil, 1)
         loop 30 {
             Timer.add("exceltest")
-            actual := app.excelDataArray
+            actual := app.getDataArray
         }
         app._quit()
         Timer.show()
@@ -38,14 +37,28 @@ class testExcelHentData extends AutoHotUnitSuite {
 
 class testExcelDataStruktur extends AutoHotUnitSuite {
 
-    arrayTest() {
+  _arrayTest() {
 
-        ; jsonMock := FileRead("json/excelDataMockArray.txt", "UTF-8")
+        jsonMock := FileRead("json/excelDataMockArray.json", "UTF-8")
 
-        ; actual := jsongo.Stringify(_excelStrukturerData(mock).danRækkeArray())
+        
+        actual := jsongo.Stringify(_excelStrukturerData(excelMock.excelDataGyldig, parameterFactory).danRækkeArray())
 
-        ; this.assert.equal(jsonMock, actual)
+        this.assert.equal(jsonMock, actual)
 
+    }
+    
+    antalUgedageTest(){
+
+        data := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
+        
+        actual := data[1]["Ugedage"].forventet.length
+        expected := 8
+        this.assert.equal(actual, expected)
+        actual := data[2]["Ugedage"].forventet[1]
+        expected := "18/11/2024"
+        this.assert.equal(actual, expected)
+        
     }
 
 }
@@ -62,7 +75,6 @@ class testExcelVerificerData extends AutoHotUnitSuite {
     }
 }
 
-
 class parameterTest extends AutoHotUnitSuite {
 
     testUgedageFejlKalenderdagFormat() {
@@ -70,11 +82,12 @@ class parameterTest extends AutoHotUnitSuite {
         test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         test[1]["Ugedage"].data["forventetIndholdArray"][1] := "42/11/2024"
         test[1]["Ugedage"].tjekGyldighed()
-
+        
         expected := "Fejl i kalenderdato: 42/11/2024. Skal være gyldig dato i formatet mm/dd/åååå."
         actual := test[1]["Ugedage"].data["fejlBesked"]
 
         this.assert.equal(actual, expected)
+        
 
     }
     testUgedageFejlKalenderdagDato() {
@@ -185,7 +198,6 @@ class parameterTest extends AutoHotUnitSuite {
         expected := true
 
         this.assert.equal(actual, expected)
-
 
     }
 }
