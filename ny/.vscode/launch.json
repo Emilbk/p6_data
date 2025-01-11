@@ -4,11 +4,19 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "AutoHotkey Debug Test",
             "type": "autohotkey",
             "request": "launch",
             "program": "C:\\Users\\nixVM\\Documents\\ahk\\p6_data\\ny\\data\\test\\tests.ahk",
+            "args": []
+        },
+        {
+            "name": "AutoHotkey Debug Main",
+            "type": "autohotkey",
+            "request": "launch",
+            "program": "C:\\Users\\nixVM\\Documents\\ahk\\p6_data\\ny\\main.ahk",
             "args": []
         }
 

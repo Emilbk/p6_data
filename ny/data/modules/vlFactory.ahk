@@ -9,19 +9,19 @@ class vlFactory {
             {
 
                 vlArray.Push([])
-                vlArray[vlIndex].vognløbsnummer := vl["Vognløbsnummer"].forventet
                 ugedageArray := vl["Ugedage"].forventet
                 for ugedagIndex, ugedag in ugedageArray {
                     dc := DeepCopy(vl)
                     vlKopi := dc()
-                    vlArray[vlIndex].push(vlKopi)
-                    vlArray[vlIndex][ugedagIndex]["Vognløbsdato"].forventet := ugedag
+                    vlArray[vlIndex].push(vognløb(vlkopi))
+                    vlArray[vlIndex][ugedagIndex].parametre["Vognløbsdato"].forventet := ugedag
+                    vlArray[vlIndex].master := vognløb(vlKopi)
+
                 }
 
             }
         }
         return vlArray
-    }   
+    }
 
 }
-
