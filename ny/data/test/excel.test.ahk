@@ -75,9 +75,10 @@ class parameterFactoryTest extends AutoHotUnitSuite {
 
     testAlm() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
+        
+        test := parameterFactory.forExcelParameter(excelParameter({kolonneNavn: "Vognløbsnummer"}))
 
-        actual := Type(test[1]["Vognløbsnummer"])
+        actual := Type(test)
         expected := "parameterAlm"
 
         this.assert.equal(actual, expected)
@@ -119,6 +120,7 @@ class parameterFactoryTest extends AutoHotUnitSuite {
         this.assert.equal(actual, expected)
     }
 }
+; TODO omskriv til direkte bruge af parameterfact.
 class parameterTest extends AutoHotUnitSuite {
 
     testUgedageFejlKalenderdagFormat() {
@@ -157,13 +159,17 @@ class parameterTest extends AutoHotUnitSuite {
 }
 testUgedageFejlFastdag() {
 
-    test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
     for testFastDag in ["NO", "ONSDAG", "ONS"] {
-        test[1]["Ugedage"].data["forventetIndholdArray"][1] := testFastDag
-        test[1]["Ugedage"].tjekGyldighed()
+    
+        parameterData := {}
+        parameterData.kolonneNavn := "Ugedage"
+        parameterData.rækkeIndex := 1
+        parameterData.parameterIndhold := [testFastDag]
+        testParameter := parameterFactory.forExcelParameter(excelParameter(parameterData))
+        testParameter.tjekGyldighed()
 
         expected := Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", testFastDag)
-        actual := test[1]["Ugedage"].data["fejl"].fejlbesked
+        actual := testParameter.data["fejl"].fejlbesked
 
         this.assert.equal(actual, expected)
     }

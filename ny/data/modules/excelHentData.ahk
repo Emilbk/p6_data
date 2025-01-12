@@ -78,8 +78,9 @@ class _excelStrukturerData {
 
     }
 
+    ; TODO lav dynamisk array-inddeling istf. hardcoded på kolonnenavn?
     danKolonneNavneOgNummer() {
-        excelArray := this.excelArray
+        excelArray := this.excelArray 
         kolonneNavne := { gyldigeKolonner: Array(), ugyldigeKolonner: Array() }
         r := []
 
@@ -134,7 +135,6 @@ class _excelStrukturerData {
         return kolonnerMedArray
     }
 
-    ; lav factory
 
     danRækkeArray() {
         this.kolonneInfo := this.danKolonneNavneOgNummer()
@@ -242,71 +242,6 @@ class parameterFactory {
             case "KørerIkkeTransportTyper":
                 return parameterTransportType(excelParametre)
             case "UndtagneTransportTyper":
-                return parameterTransportType(excelParametre)
-            case "Starttid":
-                return parameterKlokkeslæt(excelParametre)
-            case "Sluttid":
-                return parameterKlokkeslæt(excelParametre)
-            default:
-                return parameterAlm(excelParametre)
-        }
-    }
-}
-
-class parameterFactoryG {
-    static ugedageRække := Map()
-    static UgedageInstance := ""
-    static KørerIkkeTransporttyperRække := Map()
-    static KørerIkkeTransporttyperInstance := ""
-    static UndtagneTransporttyperRække := Map()
-    static UndtagneTransporttyperInstance := ""
-
-    static reset() {
-        parameterFactory.ugedageRække := map()
-        parameterFactory.UgedageInstance := ""
-        parameterFactory.UndtagneTransporttyperRække := map()
-        parameterFactory.UndtagneTransporttyperInstance := ""
-        parameterFactory.KørerIkkeTransporttyperRække := map()
-        parameterFactory.KørerIkkeTransporttyperInstance := ""
-    }
-    static forExcelParameter(excelParametre) {
-
-        switch excelParametre.kolonneNavn {
-            case "Ugedage":
-            {
-                if !parameterFactory.ugedageRække.Has(excelParametre.rækkeIndex) {
-                    parameterFactory.ugedageRække.Set(excelParametre.rækkeIndex, 1)
-                    parameterFactory.UgedageInstance := parameterUgedage(excelParametre)
-                    return parameterFactory.UgedageInstance
-                }
-                else {
-                    parameterFactory.UgedageInstance.tilføjParametreTilArray(parameterFactory.UgedageInstance,
-                        excelParametre)
-                    return parameterFactory.UgedageInstance
-                }
-            }
-            case "KørerIkkeTransportTyper":
-                if !parameterFactory.KørerIkkeTransporttyperRække.Has(excelParametre.rækkeIndex) {
-                    parameterFactory.KørerIkkeTransporttyperRække.Set(excelParametre.rækkeIndex, 1)
-                    parameterFactory.KørerIkkeTransporttyperInstance := parameterTransportType(excelParametre)
-                    return parameterFactory.KørerIkkeTransporttyperInstance
-                }
-                else {
-                    parameterFactory.KørerIkkeTransporttyperInstance.tilføjParametreTilArray(parameterFactory.KørerIkkeTransporttyperInstance,
-                        excelParametre)
-                    return parameterFactory.KørerIkkeTransporttyperInstance
-                }
-            case "UndtagneTransportTyper":
-                if !parameterFactory.UndtagneTransporttyperRække.Has(excelParametre.rækkeIndex) {
-                    parameterFactory.UndtagneTransporttyperRække.Set(excelParametre.rækkeIndex, 1)
-                    parameterFactory.UndtagneTransporttyperInstance := parameterTransportType(excelParametre)
-                    return parameterFactory.UndtagneTransporttyperInstance
-                }
-                else {
-                    parameterFactory.UndtagneTransporttyperInstance.tilføjParametreTilArray(parameterFactory.UndtagneTransporttyperInstance,
-                        excelParametre)
-                    return parameterFactory.UndtagneTransporttyperInstance
-                }
                 return parameterTransportType(excelParametre)
             case "Starttid":
                 return parameterKlokkeslæt(excelParametre)
