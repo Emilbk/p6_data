@@ -103,15 +103,16 @@ class _excelStrukturerData {
         kolonnerMedArray := []
         for rIndex, rækker in r {
             kolonnerMedArray.Push([])
-            kolonnerMedArray[rIndex].Push({kolonneIndex: [], parameterIndhold: [], kolonneNavn: ""}, {kolonneIndex: [], parameterIndhold: [], kolonneNavn: ""}, {kolonneIndex: [], parameterIndhold: [], kolonneNavn: ""})
+            kolonnerMedArray[rIndex].Push({ kolonneIndex: [], parameterIndhold: [], kolonneNavn: "" }, { kolonneIndex: [],
+                parameterIndhold: [], kolonneNavn: "" }, { kolonneIndex: [], parameterIndhold: [], kolonneNavn: "" })
             for celle in rækker
                 switch celle.kolonneNavn {
                     case "Ugedage":
-                        {
+                    {
                         kolonnerMedArray[rIndex][1].kolonneIndex.Push(celle.kolonneIndex)
                         kolonnerMedArray[rIndex][1].parameterIndhold.Push(celle.ParameterIndhold)
                         kolonnerMedArray[rIndex][1].kolonneNavn := celle.kolonneNavn
-                        }
+                    }
                     case "UndtagneTransportTyper":
                         kolonnerMedArray[rIndex][2].kolonneIndex.Push(celle.kolonneIndex)
                         kolonnerMedArray[rIndex][2].parameterIndhold.Push(celle.ParameterIndhold)
@@ -122,15 +123,13 @@ class _excelStrukturerData {
                         kolonnerMedArray[rIndex][3].kolonneNavn := celle.kolonneNavn
                     default:
                     {
-                        kolonnerMedArray[rIndex].Push({kolonneIndex: celle.kolonneIndex, parameterIndhold: celle.ParameterIndhold, kolonneNavn: celle.kolonneNavn})
-                        ; kolonnerMedArray[kolonnerMedArray.Length][2] := [kolonner[2]] ; for at standardisere arrayet
+                        kolonnerMedArray[rIndex].Push({ kolonneIndex: celle.kolonneIndex, parameterIndhold: celle.ParameterIndhold,
+                            kolonneNavn: celle.kolonneNavn })
 
                     }
 
                 }
         }
-        ;     for kolonneIndex in outer[2]
-        ;         MsgBox kolonneIndex
 
         return kolonnerMedArray
     }
@@ -140,20 +139,19 @@ class _excelStrukturerData {
     danRækkeArray() {
         this.kolonneInfo := this.danKolonneNavneOgNummer()
         this.rækkeMap := []
-        
+
         output := []
 
-
-        for rIndex, r in this.kolonneInfo
-        {
+        for rIndex, r in this.kolonneInfo {
             output.Push(map())
             for kIndex, parameter in r
                 output[rIndex].set(parameter.kolonneNavn, parameterFactory.forExcelParameter(excelParameter(parameter)))
                 
+            output[rIndex].set("Vognløbsdato", parameterFactory.forExcelParameter(excelParameter({kolonneNavn: "Vognløbsdato"})))
+
         }
         return output
     }
-
 
 }
 
@@ -405,20 +403,16 @@ class parameterAlm extends parameterInterface {
         this._ulovligtTegnIParameter()
     }
 
+    ; parameterAlm
     udfyldParameter(excelData) {
         gyldigeParametre := parameterGyld.data
 
-        if exceldata.hasOwnProp("kolonneNavn") {
-            this.data["kolonneNavn"] := exceldata.kolonneNavn
-            this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
-            this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
-        }
-        if exceldata.hasOwnProp("parameterNavn")
-            this.data["parameterNavn"] := exceldata.parameterNavn
-        if exceldata.hasOwnProp("parameterIndhold")
-            this.data["forventetIndhold"] := StrUpper(exceldata.parameterIndhold)
-        if exceldata.hasOwnProp("kolonneIndex")
-            this.data["kolonneNummer"] := exceldata.kolonneIndex
+        this.data["kolonneNavn"] := exceldata.kolonneNavn
+        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
+        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
+        this.data["parameterNavn"] := exceldata.parameterNavn
+        this.data["forventetIndhold"] := StrUpper(exceldata.parameterIndhold)
+        this.data["kolonneNummer"] := exceldata.kolonneIndex
     }
 
     forventet {
@@ -478,20 +472,23 @@ class parameterArray extends parameterAlm {
         this.data["forventetIndholdArray"] := Array()
         this.data["kolonneNummerArray"] := Array()
     }
-    udfyldParameter(excelData) {
+    
+    _stringUpperArray(par){
+        for ind, str in par
+            par[ind] := StrUpper(str)
+            
+        return par
+    }
+    ; parameterArr
+    udfyldParameter(exceldata) {
         gyldigeParametre := parameterGyld.data
 
-        if exceldata.hasOwnProp("kolonneNavn") {
-            this.data["kolonneNavn"] := exceldata.kolonneNavn
-            this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
-            this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
-        }
-        if exceldata.hasOwnProp("parameterNavn")
-            this.data["parameterNavn"] := exceldata.parameterNavn
-        if exceldata.hasOwnProp("parameterIndhold")
-            this.data["forventetIndholdArray"] := exceldata.parameterIndhold
-        if exceldata.hasOwnProp("kolonneIndex")
-            this.data["kolonneNummerArray"] := exceldata.kolonneIndex
+        this.data["kolonneNavn"] := exceldata.kolonneNavn
+        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
+        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
+        this.data["parameterNavn"] := exceldata.parameterNavn
+        this.data["forventetIndholdArray"] := this._stringUpperArray(exceldata.parameterIndhold)
+        this.data["kolonneNummerArray"] := exceldata.kolonneIndex
 
     }
 
@@ -500,14 +497,11 @@ class parameterArray extends parameterAlm {
     }
     forventet {
         get {
-
             return this.data["forventetIndholdArray"]
         }
     }
     faktisk {
-
         set {
-
             this.data["faktiskIndholdArray"] := Value
         }
     }
