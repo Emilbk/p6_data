@@ -9,12 +9,14 @@
             "name": "AutoHotkey Debug Test",
             "type": "autohotkey",
             "request": "launch",
+            "port": 9002,
             "program": "C:\\Users\\nixVM\\Documents\\ahk\\p6_data\\ny\\data\\test\\tests.ahk",
             "args": []
         },
         {
             "name": "AutoHotkey Debug Main",
             "type": "autohotkey",
+            "port": 9003,
             "request": "launch",
             "program": "C:\\Users\\nixVM\\Documents\\ahk\\p6_data\\ny\\main.ahk",
             "args": []

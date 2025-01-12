@@ -8,7 +8,7 @@ class vltest extends AutoHotUnitSuite{
         dataRække := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         vlRække := vlFactory.udrulVognløb(dataRække)
         
-        actual := vlRække[2][3]["Vognløbsdato"].forventet 
+        actual := vlRække[2][3].VognløbsdatoForventet 
         expected := "TI"
         
         

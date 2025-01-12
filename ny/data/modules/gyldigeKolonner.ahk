@@ -15,15 +15,15 @@ class gyldigeKolonner{
         "VognmandLinie3", "",
         "VognmandLinie4", "",
         "VognmandKontaktnummer", "",
-        "ChfKontaktNummer", "",
+        "ChfKontaktnummer", "",
         "Vognløbskategori", "",
         "Planskema", "",
         "Økonomiskema", "",
         "Statistikgruppe", "",
         "Vognløbsnotering", "",
         "Ugedage", "",
-        "UndtagneTransporttyper", "",
-        "KørerIkkeTransporttyper", "",
+        "UndtagneTransportTyper", "",
+        "KørerIkkeTransportTyper", "",
     )
     
     static data{

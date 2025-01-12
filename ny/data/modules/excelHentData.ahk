@@ -116,7 +116,7 @@ class _excelStrukturerData {
 
         for rækkeindex, raekke in excelarray {
             raekkearray.push(map())
-            raekkeArray[rækkeindex].set("Vognløbsdato", this.parameterFactory.forKolonneNavn(excelParameter({ parameterNavn: "Vognløbsdato"})))
+            raekkeArray[rækkeindex].set("Vognløbsdato", this.parameterFactory.forExcelParameter(excelParameter({ kolonneNavn: "Vognløbsdato"})))
             for kolonneindex, celle in raekke {
                 parameterNavn := excelarray[1][kolonneindex]
                 excelPar := excelParameter({
@@ -127,7 +127,7 @@ class _excelStrukturerData {
                     rækkeIndex: rækkeindex
                 })
                 if dataVerificering.erGyldigKolonne(parameterNavn) {
-                    raekkearray[rækkeindex].set(parameterNavn, this.parameterFactory.forKolonneNavn(excelPar))
+                    raekkearray[rækkeindex].set(parameterNavn, this.parameterFactory.forExcelParameter(excelPar))
                 }
             }
         }
@@ -232,7 +232,7 @@ class parameterFactory {
         parameterFactory.UndtagneTransporttyperRække := map()
         parameterFactory.KørerIkkeTransporttyperRække := map()
     }
-    static forKolonneNavn(excelParametre) {
+    static forExcelParameter(excelParametre) {
 
 
         switch excelParametre.kolonneNavn {
@@ -248,7 +248,7 @@ class parameterFactory {
                     return parameterFactory.UgedageInstance
                 }
             }
-            case "KørerIkkeTransporttyper":
+            case "KørerIkkeTransportTyper":
                 if !parameterFactory.KørerIkkeTransporttyperRække.Has(excelParametre.rækkeIndex) {
                     parameterFactory.KørerIkkeTransporttyperRække.Set(excelParametre.rækkeIndex, 1)
                     parameterFactory.KørerIkkeTransporttyperInstance := parameterTransportType(excelParametre)
@@ -259,7 +259,7 @@ class parameterFactory {
                         excelParametre)
                     return parameterFactory.KørerIkkeTransporttyperInstance
                 }
-            case "UndtagneTransporttyper":
+            case "UndtagneTransportTyper":
                 if !parameterFactory.UndtagneTransporttyperRække.Has(excelParametre.rækkeIndex) {
                     parameterFactory.UndtagneTransporttyperRække.Set(excelParametre.rækkeIndex, 1)
                     parameterFactory.UndtagneTransporttyperInstance := parameterTransportType(excelParametre)
@@ -349,8 +349,8 @@ class parameterAlm extends parameterInterface {
 
     }
     _danFejl(pFejlbesked) {
-        this.data["fejl"] := 1
-        this.data["fejlBesked"] := pFejlbesked
+        this.data["fejl"].status := 1
+        this.data["fejl"].fejlbesked := pFejlbesked
 
     }
     _hvisArray(){
@@ -364,12 +364,12 @@ class parameterAlm extends parameterInterface {
     udfyldParameter(excelData) {
         gyldigeParametre := parameterGyld.data
 
-        this.data["kolonneNavn"] := exceldata.parameterNavn
+        this.data["kolonneNavn"] := exceldata.kolonneNavn
         this.data["parameterNavn"] := exceldata.parameterNavn
         this.data["forventetIndhold"] := StrUpper(exceldata.parameterIndhold)
         this.data["kolonneNummer"] := exceldata.kolonneIndex
-        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.parameterNavn]["maxLængde"]
-        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.parameterNavn]["maxArray"]
+        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
+        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
     }
 
     forventet {
@@ -379,7 +379,22 @@ class parameterAlm extends parameterInterface {
         set {
             this.data["forventetIndhold"] := Value
         }
+        
     }
+    faktisk {
+    
+        set{
+    
+            this.data["faktiskIndhold"] := Value
+            
+            if value != this.data["forventetIndhold"]
+                throw Error("ikke ens")
+            
+            
+        }
+        
+        get => this.data["faktiskIndhold"]
+}
 }
 class parameterArray extends parameterAlm {
     tilføjParametreTilArray(parameterOjb, excelParametre) {
@@ -412,13 +427,13 @@ class parameterArray extends parameterAlm {
     udfyldParameter(excelData) {
         gyldigeParametre := parameterGyld.data
 
-        this.data["kolonneNavn"] := exceldata.parameterNavn
-        this.data["parameterNavn"] := exceldata.parameterNavn
-        this.data["forventetIndholdArray"].push(StrUpper(excelData.parameterIndhold))
+        this.data["kolonneNavn"] := exceldata.kolonneNavn
+        this.data["parameterNavn"] := exceldata.kolonneNavn
+        this.data["forventetIndholdArray"].push(StrUpper(exceldata.parameterIndhold))
         this.data["kolonneNummerArray"].push(excelData.kolonneIndex)
         
-        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.parameterNavn]["maxLængde"]
-        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.parameterNavn]["maxArray"]
+        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
+        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
 
 
     }
@@ -569,8 +584,7 @@ class parameterSkabelon {
             this.data["forventetIndholdArray"] := false
             this.data["faktiskIndhold"] := false
             this.data["faktiskIndholdArray"] := false
-            this.data["fejl"] := false
-            this.data["fejlBesked"] := false
+            this.data["fejl"] := {status: false, fejlbesked: false, iFunc: false}
             this.data["fejlParameterArray"] := false
             this.data["maxParameterLængde"] := false
             this.data["maxArrayLængde"] := false
@@ -590,20 +604,20 @@ class excelParameter {
     ; @param parameterObj {parameterNavn: string, parameterIndhold: string, kolonneNavn: stringOpt, kolonneIndex: stringOpt, rækkeIndex: stringOpt}
     __New(parameterObj) {
         this._parameterObj := parameterObj
-        if !parameterObj.parameterNavn
+        if !parameterObj.kolonneNavn
             throw UnsetError('parameterNavn er unset')
     }
 
-    kolonneIndex {
-        get {
-
-            return this._parameterObj.HasOwnProp("kolonneIndex") ? this._parameterObj.kolonneIndex : false
-        }
-    }
     kolonneNavn {
         get {
 
             return this._parameterObj.HasOwnProp("kolonneNavn") ? this._parameterObj.kolonneNavn : false
+        }
+    }
+    kolonneIndex {
+        get {
+
+            return this._parameterObj.HasOwnProp("kolonneIndex") ? this._parameterObj.kolonneIndex : false
         }
     }
     rækkeIndex {
@@ -621,7 +635,19 @@ class excelParameter {
     parameternavn {
         get {
 
-            return this._parameterObj.HasOwnProp("parameternavn") ? this._parameterObj.parameternavn : false
+            return this._parameterObj.HasOwnProp("parameterNavn") ? this._parameterObj.parameternavn : false
+        }
+    }
+    maxArrayLængde {
+        get {
+
+            return this._parameterObj.HasOwnProp("maxArrayLængde") ? this._parameterObj.maxArrayLængde : false
+        }
+    }
+    maxParameterLængdeLængde {
+        get {
+
+            return this._parameterObj.HasOwnProp("maxParameterLængdeLængde") ? this._parameterObj.maxParameterLængdeLængde : false
         }
     }
 

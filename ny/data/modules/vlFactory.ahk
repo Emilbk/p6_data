@@ -14,13 +14,13 @@ class vlFactory {
                     dc := DeepCopy(vl)
                     vlKopi := dc()
                     vlArray[vlIndex].push(vognløb(vlkopi))
-                    vlArray[vlIndex][ugedagIndex].parametre["Vognløbsdato"].forventet := ugedag
+                    vlArray[vlIndex][ugedagIndex].VognløbsdatoForventet := ugedag
                     vlArray[vlIndex].master := vognløb(vlKopi)
 
                 }
 
             }
-        }
+        } 
         return vlArray
     }
 

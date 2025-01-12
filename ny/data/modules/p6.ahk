@@ -9,7 +9,7 @@
 ; Aktiverer P6-vindue, hvis ikke aktivt
 /**
  */
-class P6 extends class {
+class P6 extends  {
 
     vognløb := Object()
     ; dannes undervejs i parametertjek

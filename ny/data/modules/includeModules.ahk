@@ -1,6 +1,7 @@
 #Include excelHentData.ahk
 #Include vlFactory.ahk
 #Include vl.ahk
+; #Include p6Mock.ahk
 #Include gyldigeKolonner.ahk
 #Include parameter.ahk
 #Include deepCopy.ahk
