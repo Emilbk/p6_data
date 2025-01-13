@@ -128,11 +128,11 @@ class jsongo {
         , xerr := 9, null := '', str_flag := Chr(5), tmp_q := Chr(6), tmp_bs:= Chr(7), fn := A_ThisFunc
         
         expect   := xval
-        , json   := []
-        , path   := [json]
+        , jsonGo   := []
+        , path   := [jsonGo]
         , key    := ''
         , is_key := 0
-        , remove := jsongo.JSON_Remove()
+        , remove := jsonGogo.jsonGo_Remove()
         this.error_log := ''
         if_rev := (reviver is Func && reviver.MaxParams > 2) ? 1 : 0
         
@@ -185,7 +185,7 @@ class jsongo {
                 ji++
             ; Process text
             else switch expect {
-                ; JSON value
+                ; jsonGo value
                 case xval:
                     valuelabel:
                     (char == '{')
@@ -219,28 +219,28 @@ class jsongo {
                             ? (rev(null) , ji += 4, expect := xend)
                         : err(28, ji + tfn_idx('null', SubStr(jtxt, ji, 4)), 'null' , SubStr(jtxt, ji, 4))
                     : err(29, ji, '`n`tArray: [ `n`tObject: { `n`tString: " `n`tNumber: -0123456789 `n`ttrue/false/null: tfn ', char)
-                ; JSON array
+                ; jsonGo array
                 case xarr:
                     if (char == ']')
                         path_pop(&char), expect := (path.Length = 1)
                             ? xeof
                         : xend, ji++
                     else goto('valuelabel')
-                ; JSON object
+                ; jsonGo object
                 case xobj: 
                     switch char {
                         case str_flag: goto((is_key := 1) ? 'valuelabel' : 0)
                         case '}': path_pop(&char), expect := (path.Length = 1) ? xeof : xend, ji++
                         default: err(31, ji, '"}', char)
                     }
-                ; JSON object key
+                ; jsonGo object key
                 case xkey:
                     if (char == str_flag)
                         goto((is_key := 1) ? 'valuelabel' : 0)
                     else err(32, ji, '"', char)
-                ; JSON object separator
+                ; jsonGo object separator
                 case xcln: (char == ':') ? (expect := xval, ji++) : err(33, ji, ':', char)
-                ; JSON end of element
+                ; jsonGo end of element
                 case xend: (char == ',') ? (ji++, expect := (path[path.Length] is Array) ? xval : xkey)
                     ; End of object
                     : (char == '}')
@@ -253,15 +253,15 @@ class jsongo {
                             ? path_pop(&char)
                         : err(35, ji, '}', char), (path.Length = 1) ? expect := xeof : 0)
                     : err(36, ji, '`nEnd of array: ]`nEnd of object: }`nNext value: ,`nWhitespace: [Space] [Tab] [Linefeed] [Carriage Return]', char)
-                ; JSON 
-                case xeof: err(40, ji, 'End of JSON', char)
-                ; JSON error
+                ; jsonGo 
+                case xeof: err(40, ji, 'End of jsonGo', char)
+                ; jsonGo error
                 case xerr: return ''
             }
         }
         
-        ; Ensure all objects and arrays were successfully closed and return the converted JSON data
-        return (path.Length != 1) ? err(37, ji, 'Size: 1', 'Actual size: ' path.Length) : json[1]
+        ; Ensure all objects and arrays were successfully closed and return the converted jsonGo data
+        return (path.Length != 1) ? err(37, ji, 'Size: 1', 'Actual size: ' path.Length) : jsonGo[1]
         
         ; Remove the current path
         path_pop(&char) => (path.Length > 1) ? path.Pop() : err(38, ji, 'Size > 0', 'Actual size: ' path.Length-1)

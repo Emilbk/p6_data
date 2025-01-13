@@ -1,4 +1,6 @@
 ﻿#Include ../modules/includeModules.ahk
+#Include ../lib/cJSON.ahk
+#include ../modules/gyldigeKolonner/gyldigeKolonnerJson.ahk
 ; #Include ../modules/excelHentData.ahk
 ;#Include ../test/exelarrayMock.ahk
 ;#Include ../modules/gyldigeKolonner.ahk
@@ -9,13 +11,11 @@
 
 ; actual := vlRække[2][3].Vognløbsdatoforventet
 ; expected := "TI"
+tIn := FileRead("../modules/gyldigeKolonner/gyldigeKolonner.json")
+t := jsongo.Parse(tin)
 
-test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
-for testFastDag in ["NO", "ONSDAG", "ONS"] {
-    test[1]["Ugedage"].data["forventetIndholdArray"][1] := testFastDag
-    test[1]["Ugedage"].tjekGyldighed()
+t2 := json.Load(tIn)
 
-    expected := Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", testFastDag)
-    actual := test[1]["Ugedage"].data["fejl"].fejlbesked
-}
+
+t3 := json.load(gyldigKolonneJson.data)
 return

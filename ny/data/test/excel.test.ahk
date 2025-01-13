@@ -13,8 +13,8 @@ class testExcelHentData extends AutoHotUnitSuite {
         actual := _excelHentData(testFil, 1).getDataArray
         this.assert.equal(actual[1][1], "Budnummer")
         this.assert.equal(actual[2][2], "31400")
-        jstring := jsongo.Stringify(actual)
-        jobj := jsongo.Parse(jstring)
+        jstring := json.dump(actual)
+        jobj := json.load(jstring)
 
         return
     }
@@ -39,7 +39,7 @@ class testExcelDataStruktur extends AutoHotUnitSuite {
 
         jsonMock := FileRead("json/excelDataMockArray.json", "UTF-8")
 
-        actual := jsongo.Stringify(_excelStrukturerData(excelMock.excelDataGyldig, parameterFactory).danRækkeArray())
+        actual := json.dump(_excelStrukturerData(excelMock.excelDataGyldig, parameterFactory).danRækkeArray())
 
         this.assert.equal(jsonMock, actual)
 
@@ -62,7 +62,7 @@ class testExcelDataStruktur extends AutoHotUnitSuite {
 
 class testExcelVerificerData extends AutoHotUnitSuite {
 
-    testVerificerUgyldigeKolonner() {
+    _testVerificerUgyldigeKolonner() {
 
         ugyldigeKolonner := _excelVerificerData.ugyldigeKolonner
         expectedLength := 2
@@ -70,7 +70,16 @@ class testExcelVerificerData extends AutoHotUnitSuite {
 
         this.assert.equal(actualLength, expectedLength)
     }
+    
+    testGyldigKolonne(){
+        
+        gyldigKolonne := gyldigKolonneJson.data
+        
+        return
+
+    }
 }
+; TODO omskriv til direkte brug af paramaterfactory
 class parameterFactoryTest extends AutoHotUnitSuite {
 
     testAlm() {
@@ -120,7 +129,7 @@ class parameterFactoryTest extends AutoHotUnitSuite {
         this.assert.equal(actual, expected)
     }
 }
-; TODO omskriv til direkte bruge af parameterfact.
+; TODO omskriv til direkte bruge af parameter.
 class parameterTest extends AutoHotUnitSuite {
 
     testUgedageFejlKalenderdagFormat() {

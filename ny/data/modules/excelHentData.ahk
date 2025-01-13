@@ -91,7 +91,7 @@ class _excelStrukturerData {
                 if rækkeIndex = 1 {
                     if (rækkeIndex = 1 and dataVerificering.erGyldigKolonne(celle))
                         kolonneNavne.gyldigeKolonner.push([celle, kolonneIndex])
-                    if (rækkeIndex = 1 and !dataVerificering.erGyldigKolonne(celle))
+                    else 
                         kolonneNavne.ugyldigeKolonner.push([celle, kolonneIndex])
                 }
                 else
@@ -155,16 +155,17 @@ class _excelStrukturerData {
 
 }
 
+; TODO omskriv, indarbjd i gyldigKolonne-object
 class _excelVerificerData {
-    static _gyldigeKolonner := gyldigeKolonner.data
+    static _gyldigeKolonner := Map()
     static _ugyldigeKolonner := Map()
 
     static _verificerKolonner(pKolonner) {
         for kolonne in pKolonner
-            if !_excelVerificerData._gyldigeKolonner.has(kolonne)
+            if !gyldigKolonneJson.erGyldigKolonne(kolonne)
                 _excelVerificerData._ugyldigeKolonner.Set(kolonne, A_Index)
             else
-                _excelVerificerData._gyldigeKolonner[kolonne] := true
+                _excelVerificerData._gyldigeKolonner[kolonne] := true ; ????
     }
 
     static ugyldigeKolonner[pKolonner] {
@@ -183,7 +184,7 @@ class _excelVerificerData {
 
     static erGyldigKolonne(kolonneNavn) {
 
-        if _excelVerificerData._gyldigeKolonner.Has(kolonneNavn)
+        if gyldigKolonneJson.erGyldigKolonne(kolonneNavn)
             return true
 
     }
@@ -340,11 +341,11 @@ class parameterAlm extends parameterInterface {
 
     ; parameterAlm
     udfyldParameter(excelData) {
-        gyldigeParametre := parameterGyld.data
+        gyldigeParametre := gyldigKolonneJson
 
         this.data["kolonneNavn"] := exceldata.kolonneNavn
-        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
-        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
+        this.data["maxParameterLængde"] := gyldigeParametre.maxParameterLængde(exceldata.kolonneNavn)
+        this.data["maxArrayLængde"] := gyldigeParametre.maxArrayLængde(exceldata.kolonneNavn)
         this.data["parameterNavn"] := exceldata.parameterNavn
         this.data["forventetIndhold"] := StrUpper(exceldata.parameterIndhold)
         this.data["kolonneNummer"] := exceldata.kolonneIndex
@@ -416,11 +417,11 @@ class parameterArray extends parameterAlm {
     }
     ; parameterArr
     udfyldParameter(exceldata) {
-        gyldigeParametre := parameterGyld.data
+        gyldigeParametre := gyldigKolonneJson
 
         this.data["kolonneNavn"] := exceldata.kolonneNavn
-        this.data["maxParameterLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxLængde"]
-        this.data["maxArrayLængde"] := gyldigeParametre[exceldata.kolonneNavn]["maxArray"]
+        this.data["maxParameterLængde"] := gyldigeParametre.maxParameterLængde(exceldata.kolonneNavn)
+        this.data["maxArrayLængde"] := gyldigeParametre.maxArrayLængde(exceldata.kolonneNavn)
         this.data["parameterNavn"] := exceldata.parameterNavn
         this.data["forventetIndholdArray"] := this._stringUpperArray(exceldata.parameterIndhold)
         this.data["kolonneNummerArray"] := exceldata.kolonneIndex
