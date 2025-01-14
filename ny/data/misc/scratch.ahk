@@ -11,11 +11,7 @@
 
 ; actual := vlRække[2][3].Vognløbsdatoforventet
 ; expected := "TI"
-tIn := FileRead("../modules/gyldigeKolonner/gyldigeKolonner.json")
-t := jsongo.Parse(tin)
+ugyldigKolonne := "test"
+actual := gyldigKolonneJson.erGyldigKolonne(ugyldigKolonne)
 
-t2 := json.Load(tIn)
-
-
-t3 := json.load(gyldigKolonneJson.data)
 return

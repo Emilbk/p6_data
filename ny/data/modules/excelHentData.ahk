@@ -80,18 +80,18 @@ class _excelStrukturerData {
 
     ; TODO lav dynamisk array-inddeling istf. hardcoded på kolonnenavn?
     danKolonneNavneOgNummer() {
-        excelArray := this.excelArray 
+        excelArray := this.excelArray
         kolonneNavne := { gyldigeKolonner: Array(), ugyldigeKolonner: Array() }
         r := []
 
-        dataVerificering := _excelVerificerData
+        dataVerificering := gyldigKolonneJson
         for rækkeIndex, kolonne in excelArray {
             r.Push([])
             for kolonneIndex, celle in kolonne {
                 if rækkeIndex = 1 {
                     if (rækkeIndex = 1 and dataVerificering.erGyldigKolonne(celle))
                         kolonneNavne.gyldigeKolonner.push([celle, kolonneIndex])
-                    else 
+                    else
                         kolonneNavne.ugyldigeKolonner.push([celle, kolonneIndex])
                 }
                 else
@@ -135,7 +135,6 @@ class _excelStrukturerData {
         return kolonnerMedArray
     }
 
-
     danRækkeArray() {
         this.kolonneInfo := this.danKolonneNavneOgNummer()
         this.rækkeMap := []
@@ -146,64 +145,11 @@ class _excelStrukturerData {
             output.Push(map())
             for kIndex, parameter in r
                 output[rIndex].set(parameter.kolonneNavn, parameterFactory.forExcelParameter(excelParameter(parameter)))
-                
-            output[rIndex].set("Vognløbsdato", parameterFactory.forExcelParameter(excelParameter({kolonneNavn: "Vognløbsdato"})))
+
+            output[rIndex].set("Vognløbsdato", parameterFactory.forExcelParameter(excelParameter({ kolonneNavn: "Vognløbsdato" })))
 
         }
         return output
-    }
-
-}
-
-; TODO omskriv, indarbjd i gyldigKolonne-object
-class _excelVerificerData {
-    static _gyldigeKolonner := Map()
-    static _ugyldigeKolonner := Map()
-
-    static _verificerKolonner(pKolonner) {
-        for kolonne in pKolonner
-            if !gyldigKolonneJson.erGyldigKolonne(kolonne)
-                _excelVerificerData._ugyldigeKolonner.Set(kolonne, A_Index)
-            else
-                _excelVerificerData._gyldigeKolonner[kolonne] := true ; ????
-    }
-
-    static ugyldigeKolonner[pKolonner] {
-        get {
-            _excelVerificerData._verificerKolonner(pKolonner)
-            return _excelVerificerData._ugyldigeKolonner
-        }
-    }
-
-    static gyldigeKolonner[pKolonner] {
-        get {
-            _excelVerificerData._verificerKolonner(pKolonner)
-            return _excelVerificerData._gyldigeKolonner
-        }
-    }
-
-    static erGyldigKolonne(kolonneNavn) {
-
-        if gyldigKolonneJson.erGyldigKolonne(kolonneNavn)
-            return true
-
-    }
-    ;; TODO
-    static erGyldigArrayLængde(pParameterObj) {
-
-        gyldigeParametre := parameterGyld.data
-        testParameter := pParameterObj
-
-        testParameterNavn := testParameter.data["parameterNavn"]
-        testParameterIndholdArray := testParameter.data["forventetIndholdArray"]
-
-        if testParameterIndholdArray
-            if testParameterIndholdArray.length > gyldigeParametre[testParameterNavn]["maxArray"] {
-                testParameter.data["fejl"] := 1
-                testParameter.data["fejlBesked"] := "for mange kolonner i kategori"
-                testParameter.data["fejlParameterArray"] := testParameter.data["kolonneNavn"]
-                testParameter.data["maxParameterLængde"] := gyldigeParametre[testParameterNavn]["maxArray"]
-            }
     }
 
 }
@@ -295,14 +241,27 @@ class parameterInterface {
             throw Error(Format("Funktion {1} skal implementeres", A_ThisFunc), A_ThisFunc)
         }
     }
+
 }
 class parameterAlm extends parameterInterface {
     __New(excelParametre := "") {
         this.data := parameterSkabelon().tomtParameterSæt
+        this._dataVerificering := gyldigKolonneJson
         this.data.kolonneNavn := excelParametre.kolonneNavn
         this.data.kolonneIndex := excelParametre.KolonneIndex
         this._hvisArray()
         this.setParametre(excelParametre)
+    }
+
+    maxParameterLængde {
+        get{
+        return this._dataVerificering.maxParameterLængde(this.data.kolonnenavn)
+        }
+    }
+    maxArrayLængde {
+        get{
+        return this._dataVerificering.maxArrayLængde(this.data.kolonnenavn)
+        }
     }
     setParametre(excelParametre) {
 
@@ -341,11 +300,10 @@ class parameterAlm extends parameterInterface {
 
     ; parameterAlm
     udfyldParameter(excelData) {
-        gyldigeParametre := gyldigKolonneJson
 
         this.data["kolonneNavn"] := exceldata.kolonneNavn
-        this.data["maxParameterLængde"] := gyldigeParametre.maxParameterLængde(exceldata.kolonneNavn)
-        this.data["maxArrayLængde"] := gyldigeParametre.maxArrayLængde(exceldata.kolonneNavn)
+        this.data["maxParameterLængde"] := this.maxParameterLængde
+        this.data["maxArrayLængde"] := this.maxArrayLængde
         this.data["parameterNavn"] := exceldata.parameterNavn
         this.data["forventetIndhold"] := StrUpper(exceldata.parameterIndhold)
         this.data["kolonneNummer"] := exceldata.kolonneIndex
@@ -408,11 +366,11 @@ class parameterArray extends parameterAlm {
         this.data["forventetIndholdArray"] := Array()
         this.data["kolonneNummerArray"] := Array()
     }
-    
-    _stringUpperArray(par){
+
+    _stringUpperArray(par) {
         for ind, str in par
             par[ind] := StrUpper(str)
-            
+
         return par
     }
     ; parameterArr

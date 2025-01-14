@@ -5,7 +5,7 @@
 ; parameterData.kolonneNavn := "Ugedage"
 ; parameterData.rækkeIndex := 1
 ; testParameter := parameterFactory.forExcelParameter(excelParameter(parameterData))
-; testParameter.tjekGyldighed()
+; testParameter.tjekGyldighed()P
 
 ; t := _excelStrukturerData(excelMock.excelDataGyldig, parameterFactory)
 ; t.danRækkeArray()

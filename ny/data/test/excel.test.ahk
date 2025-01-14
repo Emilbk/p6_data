@@ -62,13 +62,13 @@ class testExcelDataStruktur extends AutoHotUnitSuite {
 
 class testExcelVerificerData extends AutoHotUnitSuite {
 
-    _testVerificerUgyldigeKolonner() {
+    testVerificerUgyldigeKolonner() {
 
-        ugyldigeKolonner := _excelVerificerData.ugyldigeKolonner
-        expectedLength := 2
-        actualLength := ugyldigeKolonner.Count
+        ugyldigKolonne := "ikkeGyldig"
+        expected := false
+        actual := gyldigKolonneJson.erGyldigKolonne(ugyldigKolonne)
 
-        this.assert.equal(actualLength, expectedLength)
+        this.assert.equal(actual, expected)
     }
     
     testGyldigKolonne(){
