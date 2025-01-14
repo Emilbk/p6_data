@@ -142,7 +142,10 @@ class _excelStrukturerData {
         output := []
 
         for rIndex, r in this.kolonneInfo {
+        {
             output.Push(map())
+            output[rIndex].CaseSense := 0
+        }
             for kIndex, parameter in r
                 output[rIndex].set(parameter.kolonneNavn, parameterFactory.forExcelParameter(excelParameter(parameter)))
 
@@ -223,6 +226,13 @@ class parameterInterface {
         throw Error(Format("Funktion {1} skal implementeres", A_ThisFunc), A_ThisFunc)
 
     }
+    _upperCase() {
+
+        throw Error(Format("Funktion {1} skal implementeres", A_ThisFunc), A_ThisFunc)
+    }
+    _danFejlObj() {
+
+    }
     tjekGyldighed() {
         throw Error(Format("Funktion {1} skal implementeres", A_ThisFunc), A_ThisFunc)
     }
@@ -254,26 +264,29 @@ class parameterAlm extends parameterInterface {
     }
 
     maxParameterLængde {
-        get{
-        return this._dataVerificering.maxParameterLængde(this.data.kolonnenavn)
+        get {
+            return this._dataVerificering.maxParameterLængde(this.data.kolonnenavn)
         }
     }
     maxArrayLængde {
-        get{
-        return this._dataVerificering.maxArrayLængde(this.data.kolonnenavn)
+        get {
+            return this._dataVerificering.maxArrayLængde(this.data.kolonnenavn)
         }
     }
     setParametre(excelParametre) {
 
         this.udfyldParameter(excelParametre)
+        this._danFejlObj()
+        this._upperCase()
         this.tjekGyldighed()
     }
 
     _forMangeTegnIParameter() {
 
         if StrLen(this.data["forventetIndhold"]) > this.data["maxParameterLængde"] {
-            this._danfejl(Format("For mange tegn i parameter `"{1}`". Nuværende {2}, maks {3}.", this.data[
-                "forventetIndhold"], StrLen(this.data["forventetIndhold"]), this.data["maxParameterLængde"]))
+            this.fejlObj["fejlBesked"] := (Format("For mange tegn i parameter `"{1}`". Nuværende {2}, maks {3}.",
+                this.fejlObj["forventetIndhold"], StrLen(this.data["forventetIndhold"]), this.data["maxParameterLængde"]))
+                fejlRegister.registrerFejl(this.fejlObj)
             return
         }
     }
@@ -286,11 +299,32 @@ class parameterAlm extends parameterInterface {
 
     }
     _danFejl(pFejlbesked) {
-        this.data["fejl"].status := 1
-        this.data["fejl"].fejlbesked := pFejlbesked
+        this.fejlObj["Status"] := 1
+        ; this.fejlObj["fejl"].fejlbesked := pFejlbesked
 
     }
+    _danFejlObj() {
+
+        this.fejlObj := map(
+            "parameterNavn", this.data["parameterNavn"],
+            "kolonneNavn", this.data["kolonneNavn"],
+            "forventetIndhold", this.data["forventetIndhold"],
+            "faktiskIndhold", this.data["faktiskIndhold"],
+            "maxParameterLængde", this.data["maxParameterLængde"],
+            "fejlBesked", this.data["maxParameterLængde"],
+            "kolonneNummer", this.data["kolonneNummer"]
+        )
+    }
     _hvisArray() {
+
+    }
+    _upperCase() {
+        for undtagetKolonne in ["Vognløbsnotering", "VognmandLinie1", "VognmandLinie2", "VognmandLinie3",
+            "VognmandLinie4"]
+            if this.data["kolonneNavn"] = undtagetKolonne
+                return
+
+        this.data["forventetIndhold"] := StrUpper(this.data["forventetIndhold"])
 
     }
     tjekGyldighed() {
@@ -300,12 +334,13 @@ class parameterAlm extends parameterInterface {
 
     ; parameterAlm
     udfyldParameter(excelData) {
-
+        gyldigeParametre := gyldigKolonneJson
+        
         this.data["kolonneNavn"] := exceldata.kolonneNavn
-        this.data["maxParameterLængde"] := this.maxParameterLængde
-        this.data["maxArrayLængde"] := this.maxArrayLængde
+        this.data["maxParameterLængde"] := gyldigeParametre.maxParameterLængde(exceldata.kolonneNavn)
+        this.data["maxArrayLængde"] := gyldigeParametre.maxArrayLængde(exceldata.kolonneNavn)
         this.data["parameterNavn"] := exceldata.parameterNavn
-        this.data["forventetIndhold"] := StrUpper(exceldata.parameterIndhold)
+        this.data["forventetIndhold"] := exceldata.parameterIndhold
         this.data["kolonneNummer"] := exceldata.kolonneIndex
     }
 
@@ -336,6 +371,7 @@ class parameterArray extends parameterAlm {
     setParametre(excelParametre) {
 
         this.udfyldParameter(excelParametre)
+        this._danFejlObj()
         this.tjekGyldighed()
     }
     tilføjParametreTilArray(parameterOjb, excelParametre) {
@@ -372,6 +408,18 @@ class parameterArray extends parameterAlm {
             par[ind] := StrUpper(str)
 
         return par
+    }
+    _danFejlObj() {
+
+        this.fejlObj := map(
+            "parameterNavn", this.data["parameterNavn"],
+            "kolonneNavn", this.data["kolonneNavn"],
+            "forventetIndhold", this.data["forventetIndhold"],
+            "faktiskIndhold", this.data["faktiskIndhold"],
+            "maxParameterLængde", this.data["maxParameterLængde"],
+            "fejlBesked", this.data["maxParameterLængde"],
+            "kolonneNummer", this.data["kolonneNummer"]
+        )
     }
     ; parameterArr
     udfyldParameter(exceldata) {
@@ -440,6 +488,8 @@ class parameterUgedage extends parameterArray {
         for ugedag in ugedage
             if !this._erKalenderdag(ugedag) {
                 if !this._erGyldigFastDag(ugedag) {
+                    {
+                    }
                     this._danFejl(Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", ugedag))
                     return
                 }
@@ -517,6 +567,7 @@ class parameterSkabelon {
 
             this.data := Map()
             this.data.Default := 0
+            this.data.CaseSense := 0
 
             this.data["kolonneNavn"] := false
             this.data["kolonneNummer"] := false

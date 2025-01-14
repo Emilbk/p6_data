@@ -5,3 +5,4 @@
 #Include deepCopy.ahk
 #Include gyldigeKolonner\gyldigeKolonnerJson.ahk
 #Include ../test/exelarrayMock.ahk
+#Include Fejl.ahk

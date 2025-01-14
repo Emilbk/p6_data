@@ -13,6 +13,11 @@
 ; t := parameterFactory.forExcelParameter(excelParameter({ kolonneNavn: "Ugedage" }))
 
 ; test := excelDataB dataRække := exc ehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
-dataRække := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
 
+    test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
+    test[1]["Vognløbsnummer"].data["forventetIndhold"] := "ForMangeTegn"
+    test[1]["Vognløbsnummer"].tjekGyldighed()
+
+    expected := "For mange tegn i parameter `"ForMangeTegn`". Nuværende 12, maks 5."
+    actual := test[1]["Vognløbsnummer"].fejlObj["fejlBesked"]
 return
