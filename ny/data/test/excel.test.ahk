@@ -133,50 +133,47 @@ class parameterTest extends AutoHotUnitSuite {
 
     testUgedageFejlKalenderdagFormat() {
 
-        parameterData := {}
-        parameterData.kolonneNavn := "Ugedage"
-        parameterData.rækkeIndex := 1
-        parameterData.parameterIndhold := ["42/11/2024"]
-        testParameter := parameterFactory.forExcelParameter(excelParameter(parameterData))
-        testParameter.tjekGyldighed()
+        parametre := {
+            kolonneNavn: "Ugedage",
+            parameterNavn: "Ugedage",
+            parameterIndhold: ["42/11/2024"]
+        }
+        test := parameterFactory.forExcelParameter(excelParameter(parametre))
 
         expected := "Fejl i kalenderdato: 42/11/2024. Skal være gyldig dato i formatet mm/dd/åååå."
-        actual := testParameter.data["fejl"].fejlbesked
+        actual := test.fejlObj["fejlBesked"]
 
         this.assert.equal(actual, expected)
 
     }
     ; TODO lav testmodul, der samler i array, ikke blot sender seneste.
     testUgedageFejlKalenderdagDato() {
-        testDatoer := ["24-11-2024", "24.11.2024", "24112024", "24/11/24", "11/24/2024", "24/11"]
-        for dato in testDatoer {
-            parameterData := {}
-            parameterData.kolonneNavn := "Ugedage"
-            parameterData.rækkeIndex := 1
-            parameterData.parameterIndhold := [dato]
-            testParameter := parameterFactory.forExcelParameter(excelParameter(parameterData))
-            testParameter.tjekGyldighed()
+        for dato in [["24-11-2024"], ["24.11.2024"], ["24112024"], ["24/11/24"], ["11/24/2024"], ["24/11"]] {
+            parametre := {
+                kolonneNavn: "Ugedage",
+                parameterNavn: "Ugedage",
+                parameterIndhold: dato
+            }
+            test := parameterFactory.forExcelParameter(excelParameter(parametre))
 
-            expected := Format("Fejl i kalenderdato: {1}. Skal være gyldig dato i formatet mm/dd/åååå.", dato)
-            actual := testParameter.data["fejl"].fejlbesked
+            expected := Format("Fejl i kalenderdato: {1}. Skal være gyldig dato i formatet mm/dd/åååå.", dato[1])
+            actual := test.fejlObj["fejlBesked"]
         }
 
         this.assert.equal(actual, expected)
 
     }
     testUgedageFejlFastdag() {
+        for testFastDag in [["NO"], ["ONSDAG"], ["ONS"]] {
+            parametre := {
+                kolonneNavn: "Ugedage",
+                parameterNavn: "Ugedage",
+                parameterIndhold: testFastDag
+            }
+            test := parameterFactory.forExcelParameter(excelParameter(parametre))
 
-        for testFastDag in ["NO", "ONSDAG", "ONS"] {
-
-            parameterData := {}
-            parameterData.kolonneNavn := "Ugedage"
-            parameterData.rækkeIndex := 1
-            parameterData.parameterIndhold := [testFastDag]
-            testParameter := parameterFactory.forExcelParameter(excelParameter(parameterData))
-            testParameter.tjekGyldighed()
-
-            expected := Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", testFastDag)
-            actual := testParameter.data["fejl"].fejlbesked
+            expected := Format("fejl i fast dag: {1}. Skal være i formatet XX, f. eks MA", testFastDag[1])
+            actual := test.fejlObj["fejlBesked"]
 
             this.assert.equal(actual, expected)
         }
@@ -197,25 +194,30 @@ class parameterTest extends AutoHotUnitSuite {
 
     }
     testParameterFejlUlovligtTegn() {
-
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
-        test[1]["Vognløbsnummer"].data["forventetIndhold"] := "3!400"
-        test[1]["Vognløbsnummer"].tjekGyldighed()
+        parametre := {
+            kolonneNavn: "Vognløbsnummer",
+            parameterNavn: "Vognløbsnummer",
+            parameterIndhold: "3!400"
+        }
+        test := parameterFactory.forExcelParameter(excelParameter(parametre))
 
         expected := "Ulovligt tegn (`"!`") i parameter."
-        actual := test[1]["Vognløbsnummer"].data["fejl"].fejlbesked
+        actual := test.fejlObj["fejlBesked"]
 
         this.assert.equal(actual, expected)
 
     }
     testParameterFejlArrayStørrelse() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
-        test[1]["KørerIkkeTransportTyper"].data["forventetIndholdArray"] := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        test[1]["KørerIkkeTransportTyper"].tjekGyldighed()
+        parametre := {
+            kolonneNavn: "KørerIkkeTransportTyper",
+            parameterNavn: "KørerIkkeTransportTyper",
+            parameterIndhold: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        }
+        test := parameterFactory.forExcelParameter(excelParameter(parametre))
 
         expected := "For mange mange kolonner i kategori. Maks 10, nuværende 11"
-        actual := test[1]["KørerIkkeTransportTyper"].data["fejl"].fejlbesked
+        actual := test.fejlObj["fejlBesked"]
 
         this.assert.equal(actual, expected)
 
@@ -223,41 +225,40 @@ class parameterTest extends AutoHotUnitSuite {
 
     testParameterKlokkeslætFormat() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
         for testKlokkeslæt in ["2359", "23.59", "23:83", "1:30"] {
-            test[1]["Starttid"].data["forventetIndhold"] := testKlokkeslæt
-            test[1]["Starttid"].tjekGyldighed()
+
+            parametre := {
+                kolonneNavn: "Starttid",
+                parameterNavn: "Starttid",
+                parameterIndhold: testKlokkeslæt
+            }
+            test := parameterFactory.forExcelParameter(excelParameter(parametre))
 
             expected := Format(
                 "Fejl i format, skal være gyldigt klokkeslæt i formatet `"TT:MM`", med afsluttende asterisk hvis sluttid over midnat",
                 testKlokkeslæt)
-            actual := test[1]["Starttid"].data["fejl"].fejlbesked
+            actual := test.fejlObj["fejlBesked"]
 
             this.assert.equal(actual, expected)
         }
 
-        test[1]["Starttid"].data["fejl"].fejlbesked := 0
-        test[1]["Starttid"].data["forventetIndhold"] := "23:59"
-        test[1]["Starttid"].tjekGyldighed()
-
-        expected := 0
-        actual := test[1]["Starttid"].data["fejl"].fejlbesked
-
-        this.assert.equal(actual, expected)
-
     }
     testParameterKlokkeslætAsterisk() {
 
-        test := excelDataBehandler(excelMock.excelDataGyldig, parameterFactory).behandledeRækker
-        test[1]["Sluttid"].data["forventetIndhold"] := "22:22*"
-        test[1]["Sluttid"].tjekGyldighed()
+        parametre := {
+            kolonneNavn: "Starttid",
+            parameterNavn: "Starttid",
+            parameterIndhold: "04:00*"
+        }
 
-        actual := test[1]["Sluttid"].data["forventetIndhold"]
-        expected := "22:22"
+        test := parameterFactory.forExcelParameter(excelParameter(parametre))
+
+        actual := test.data["forventetIndhold"]
+        expected := "04:00"
 
         this.assert.equal(actual, expected)
 
-        actual := test[1]["Sluttid"].data["sluttidspunktErNæsteDag"]
+        actual := test.data["sluttidspunktErNæsteDag"]
         expected := true
 
         this.assert.equal(actual, expected)

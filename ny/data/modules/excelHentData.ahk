@@ -300,7 +300,7 @@ class parameterAlm extends parameterInterface {
     }
     _danFejl(pFejlbesked) {
         this.fejlObj["Status"] := 1
-        ; this.fejlObj["fejl"].fejlbesked := pFejlbesked
+        this.fejlObj["fejlBesked"] := pFejlbesked
 
     }
     _danFejlObj() {
@@ -311,7 +311,7 @@ class parameterAlm extends parameterInterface {
             "forventetIndhold", this.data["forventetIndhold"],
             "faktiskIndhold", this.data["faktiskIndhold"],
             "maxParameterLængde", this.data["maxParameterLængde"],
-            "fejlBesked", this.data["maxParameterLængde"],
+            "fejlBesked", "",
             "kolonneNummer", this.data["kolonneNummer"]
         )
     }
@@ -417,7 +417,7 @@ class parameterArray extends parameterAlm {
             "forventetIndhold", this.data["forventetIndhold"],
             "faktiskIndhold", this.data["faktiskIndhold"],
             "maxParameterLængde", this.data["maxParameterLængde"],
-            "fejlBesked", this.data["maxParameterLængde"],
+            "fejlBesked", "",
             "kolonneNummer", this.data["kolonneNummer"]
         )
     }
