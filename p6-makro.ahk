@@ -8,7 +8,7 @@
 #Requires AutoHotkey >= v2.0.18
 #Include data/include.ahk
 
-programVersion := "0.0.1-beta.0"
+programVersion := "0.0.1-beta.1"
 
 
 

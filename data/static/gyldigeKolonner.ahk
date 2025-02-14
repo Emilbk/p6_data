@@ -6,6 +6,7 @@
         Vognløbsdato: { kolonneNavn: "Vognløbsdato", kolonneNummer: 0, iBrug: 0 },
         Kørselsaftale: { kolonneNavn: "Kørselsaftale", kolonneNummer: 0, iBrug: 0 },
         Styresystem: { kolonneNavn: "Styresystem", kolonneNummer: 0, iBrug: 0 },
+        Vogntype: { kolonneNavn: "Vogntype", kolonneNummer: 0, iBrug: 0},
         Starttid: { kolonneNavn: "Starttid", kolonneNummer: 0, iBrug: 0 },
         Sluttid: { kolonneNavn: "Sluttid", kolonneNummer: 0, iBrug: 0, overMidnat: 0 },
         Startzone: { kolonneNavn: "Startzone", kolonneNummer: 0, iBrug: 0 },

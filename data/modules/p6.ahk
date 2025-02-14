@@ -731,21 +731,294 @@ class P6 extends class {
     }
 
     vognløbsbilledeIndtastTransporttyper() {
+        
+        ; fiks tjek, er altid aktiv når kolonnen er navngivet
+        ; if !this.vognløb.parametre.undtagneTransportTyper.iBrug
+        ;     return
+        vtype := this.vognløb.parametre.Vogntype.forventetIndhold
+        trType := []
 
-        if !this.vognløb.parametre.undtagneTransportTyper.iBrug
-            return
-
-        UndtagneTransporttyper := this.vognløb.parametre.UndtagneTransporttyper.forventetIndhold
-
-        if UndtagneTransporttyper
+        vogntype2 := [
+            "høj",
+            "NJA",
+            "barn1",
+            "barn2",
+            "barn3",
+            "liftnet",
+            "center",
+            "liggende",
+            "selepude",
+            "cykel"
+        ]
+        vogntype3 := [
+            "høj",
+            "NJA",
+            "barn1",
+            "barn2",
+            "barn3",
+            "liftnet",
+            "center",
+            "liggende",
+            "selepude",
+            "cykel"
+        ]
+        vogntype4 := [
+            "høj",
+            "lav",
+            "NJA",
+            "transport",
+            "tripstol",
+            "barn1",
+            "barn2",
+            "barn3",
+            "center",
+            "selepude"
+        ]
+        vogntype5 := [
+            "lav",
+            "NJA",
+            "barn1",
+            "barn2",
+            "barn3",
+            "liftnet",
+            "tmhjul",
+            "tmlarve",
+            "selepude",
+            "tripstol"
+        ]
+        vogntype6 := [
+            "lav",
+            "NJA",
+            "barn1",
+            "barn2",
+            "barn3",
+            "liftnet",
+            "tmhjul",
+            "tmlarve",
+            "selepude",
+            "tripstol"
+        ]
+        vogntype7 := [
+            "lav",
+            "NJA",
+            "barn1",
+            "barn2",
+            "barn3",
+            "liftnet",
+            "tmhjul",
+            "tmlarve",
+            "selepude",
+            "tripstol"
+        ]
+        if this.vognløb.parametre.Vogntype.forventetIndhold
         {
-            SendInput("!u")
 
-            for trtype in UndtagneTransporttyper
-                SendInput(trtype "{tab}"), sleep(10)
+        switch vtype
+        {
+            case 2:
+                trType := vogntype2
+            case 3:
+                trType := vogntype3
+            case 4:
+                trType := vogntype4
+            case 5:
+                trType := vogntype5
+            case 6:
+                trType := vogntype6
+            case 7:
+                trType := vogntype7
+        
+        }
+        
+            {
+                sendinput("!u")
+
+                for transtype in trType
+                    sendinput(transtype "{tab}"), sleep(10)
+            }
+
+        }
+        else
+        {
+            UndtagneTransporttyper := this.vognløb.parametre.UndtagneTransporttyper.forventetIndhold
+
+            if undtagnetransporttyper
+            {
+                sendinput("!u")
+
+                for trtype in undtagnetransporttyper
+                    sendinput(trtype "{tab}"), sleep(10)
+            }
+
         }
     }
+    vognløbsbilledeIndtastKapaciteter() {
+        if !this.vognløb.parametre.Vogntype.iBrug
+            return
+        vtype := this.vognløb.parametre.Vogntype.forventetIndhold
+        kap := {}
 
+        vogntype2 := {
+            fors: "1,2",
+            bags: "3,2",
+            bagage: "7,0",
+            højsæde: "0",
+            kplads: "0",
+            hkplads: "0",
+            liggende: "0",
+            rest: "0",
+            forshøj: "0",
+            a_fors: "0",
+            a_bags: "0",
+            a_bagage: "0",
+            a_højsæde: "0",
+            a_kplads: "0",
+            a_hkplads: "0",
+            a_liggende: "0",
+            a_rest: "0",
+            a_forshøj: "0",
+        }
+
+        vogntype3 := {
+            fors: "0",
+            bags: "0",
+            bagage: "7,0",
+            højsæde: "3,6",
+            kplads: "0",
+            hkplads: "0",
+            liggende: "0",
+            rest: "1",
+            forshøj: "1,2",
+            a_fors: "0",
+            a_bags: "0",
+            a_bagage: "0",
+            a_højsæde: "0",
+            a_kplads: "0",
+            a_hkplads: "0",
+            a_liggende: "0",
+            a_rest: "0",
+            a_forshøj: "0",
+        }
+
+        vogntype4 := {
+            fors: "1,2",
+            bags: "2,4",
+            bagage: "5,0",
+            højsæde: "0",
+            kplads: "0",
+            hkplads: "1,0",
+            liggende: "0",
+            rest: "0",
+            forshøj: "0",
+            a_fors: "0",
+            a_bags: "0",
+            a_bagage: "0",
+            a_højsæde: "0",
+            a_kplads: "0",
+            a_hkplads: "0",
+            a_liggende: "0",
+            a_rest: "0",
+            a_forshøj: "0",
+        }
+
+        vogntype5 := {
+            fors: "0",
+            bags: "0",
+            bagage: "7",
+            højsæde: "3,6",
+            kplads: "0",
+            hkplads: "2,4",
+            liggende: "0",
+            rest: "1,0",
+            forshøj: "1,2",
+            a_fors: "0",
+            a_bags: "0",
+            a_bagage: "0",
+            a_højsæde: "0",
+            a_kplads: "0",
+            a_hkplads: "0",
+            a_liggende: "0",
+            a_rest: "0",
+            a_forshøj: "0",
+        }
+        vogntype6 := {
+            fors: "0",
+            bags: "0",
+            bagage: "7,0",
+            højsæde: "3,6",
+            kplads: "0",
+            hkplads: "2,4",
+            liggende: "0",
+            rest: "1",
+            forshøj: "1,2",
+            a_fors: "0",
+            a_bags: "0",
+            a_bagage: "0",
+            a_højsæde: "0",
+            a_kplads: "0",
+            a_hkplads: "0",
+            a_liggende: "0",
+            a_rest: "0",
+            a_forshøj: "0",
+        }
+        vogntype7 := {
+            fors: "1,2",
+            bags: "0",
+            bagage: "7,0",
+            højsæde: "3,6",
+            kplads: "0",
+            hkplads: "1,9",
+            liggende: "0",
+            rest: "1",
+            forshøj: "1,2",
+            a_fors: "0",
+            a_bags: "0",
+            a_bagage: "7",
+            a_højsæde: "3,6",
+            a_kplads: "0",
+            a_hkplads: "1,9",
+            a_liggende: "8",
+            a_rest: "0",
+            a_forshøj: "1,9",
+        }
+
+        switch vtype
+        {
+            case 2:
+                kap := vogntype2
+            case 3:
+                kap := vogntype3
+            case 4:
+                kap := vogntype4
+            case 5:
+                kap := vogntype5
+            case 6:
+                kap := vogntype6
+            case 7:
+                kap := vogntype7
+        }
+
+        SendInput("!k")
+        sleep 40
+        SendInput(kap.fors "{tab}")
+        SendInput(kap.a_fors "{tab}")
+        SendInput(kap.bags "{tab}")
+        SendInput(kap.a_bags "{tab}")
+        SendInput(kap.bagage "{tab}")
+        SendInput(kap.a_bagage "{tab}")
+        SendInput(kap.højsæde "{tab}")
+        SendInput(kap.a_højsæde "{tab}")
+        SendInput(kap.kplads "{tab}")
+        SendInput(kap.a_kplads "{tab}")
+        SendInput(kap.hkplads "{tab}")
+        SendInput(kap.a_hkplads "{tab}")
+        SendInput(kap.liggende "{tab}")
+        SendInput(kap.a_liggende "{tab}")
+        SendInput(kap.rest "{tab}")
+        SendInput(kap.a_rest "{tab}")
+        SendInput(kap.forshøj "{tab}")
+        SendInput(kap.a_forshøj "{tab}")
+    }
     ændrVognløbsbilledeAfslut()
     {
         SendInput("{enter}")
@@ -1078,6 +1351,7 @@ class P6 extends class {
         this.vognløbsbilledeIndtastÅbningstiderOgZone()
         this.vognløbsbilledeIndtastØvrige()
         this.vognløbsbilledeIndtastTransporttyper()
+        this.vognløbsbilledeIndtastKapaciteter()
         this.ændrVognløbsbilledeAfslut()
         return
     }
@@ -1142,6 +1416,7 @@ class parameterClass {
 
     Budnummer := { parameterNavn: "Budnummer", kolonneNavn: "Budnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
     Vognløbsnummer := { parameterNavn: "Vognløbsnummer", kolonneNavn: "Vognløbsnummer", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 5 }
+    Vogntype := { parameterNavn: "Vogntype", kolonneNavn: "Vogntype", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: 1 }
     Vognløbsdato := { parameterNavn: "Vognløbsdato", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
     VognløbsdatoStart := { parameterNavn: "VognløbsdatoStart", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }
     VognløbsdatoSlut := { parameterNavn: "VognløbsdatoSlut", kolonneNavn: "Ugedage", forventetIndhold: "", eksisterendeIndhold: "", fejl: 0, iBrug: 0, kolonneNummer: 0, maxLængde: "" }

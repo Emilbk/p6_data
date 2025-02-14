@@ -20,6 +20,7 @@ class excelObjP6Data extends excelIndlæsVlData {
         "Vognløbsnummer", 0,
         "Kørselsaftale", 0,
         "Styresystem", 0,
+        "Vogntype", 0
         "Startzone", 0,
         "Slutzone", 0,
         "Hjemzone", 0,
@@ -63,19 +64,20 @@ class excelObjP6Data extends excelIndlæsVlData {
         "Vognløbsnummer", 2,
         "Kørselsaftale", 3,
         "Vognløbsdato", 4,
-        "Styresystem", 5,
-        "Startzone", 6,
-        "Slutzone", 7,
-        "Hjemzone", 8,
-        "MobilnrChf", 9,
-        "Starttid", 10,
-        "Sluttid", 11,
-        "Vognløbskategori", 12,
-        "Planskema", 13,
-        "Økonomiskema", 14,
-        "Statistikgruppe", 15,
-        "Vognløbsnotering", 16,
-        "UndtagneTransporttyper", 17
+        "Vogntype", 5,
+        "Styresystem", 6,
+        "Startzone", 7,
+        "Slutzone", 8,
+        "Hjemzone", 9,
+        "MobilnrChf", 10,
+        "Starttid", 11,
+        "Sluttid", 12,
+        "Vognløbskategori", 13,
+        "Planskema", 14,
+        "Økonomiskema", 15,
+        "Statistikgruppe", 16,
+        "Vognløbsnotering", 17,
+        "UndtagneTransporttyper", 18
     )
     kolonneNavnogNummerArray := Array()
 

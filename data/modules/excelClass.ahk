@@ -648,6 +648,7 @@ class mockExcelP6Data extends excel {
             "Vognløbsnummer", 1,
             "Kørselsaftale", 1,
             "Styresystem", 1,
+            "Vogntype", 1,
             "Startzone", 1,
             "Slutzone", 1,
             "Hjemzone", 1,
