@@ -74,6 +74,7 @@ p6DatabehandlingMenu.Add("Fejlcheck data", (*) =>)
 
 
 tjekDataMenu.Add("Tjek hjemzone", (*) => indhentOgTjekVognløbHjemzone())
+tjekDataMenu.Add("bladr vognløb", (*) => bladrVognløb())
 
 dataFilMenu.Add("Indlæs data fra fil", (*) => hentVognløbsdata())
 dataFilMenu.Add("Gem data til fil", (*) => gemVognløbsdata())
@@ -164,7 +165,7 @@ danExcelSkabelon() {
     MsgBox("Excelskabelon gemt som " excelpath, "Excel", "iconi")
 }
 
-indlægVognløb(){
+indlægVognløb() {
     svar := MsgBox("Ændrer data på vognløb", , "1")
     if svar != "OK"
         return
@@ -479,7 +480,36 @@ indlægVognløb(){
 
     return
 }
+bladrVognløb() {
+    svar := MsgBox("Indhenter hjemzone på vognløb og kørselsaftale", , "1")
+    if svar != "OK"
+        return
 
+
+    p6Obj := goo.p6.obj
+    vlKørselaftale := goo.vognløb.vlArray.masterVognløb
+    tjekEksisterendeVindueHandle()
+
+    p6obj.setVognløb(vlKørselaftale)
+    p6obj.navAktiverP6Vindue()
+    p6obj.navLukAlleVinduer()
+    p6Obj.navVindueVognløb()
+
+    for vlSamling in goo.vognløb.vlArray.vognløbsListe
+    {
+        for Vl in vlSamling
+        {
+            try {
+            tjekPauseStatus()
+            p6Obj.setVognløb(vl)
+            p6Obj.vognløbsbilledeIndtastVognløbOgDato()
+            KeyWait("Esc", "D")
+            } catch Error as e {
+                
+            }
+        }
+    }
+}
 indhentOgTjekVognløbHjemzone() {
 
     svar := MsgBox("Indhenter hjemzone på vognløb og kørselsaftale", , "1")

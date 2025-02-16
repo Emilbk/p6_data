@@ -65,7 +65,6 @@ class P6 extends class {
     tryClipRead() {
         try {
             clip := A_Clipboard
-            this.tryClipwait(1)
             return clip
 
         } catch Error as e {
@@ -73,7 +72,6 @@ class P6 extends class {
                 try {
                     sleep 40
                     clip := A_Clipboard
-                    this.tryClipwait(1)
                     if clip != ""
                         return clip
                 } catch Error as e {
@@ -116,8 +114,8 @@ class P6 extends class {
         /** @var {Integer} clipwaitTid waittid ved første forsøg  */
         clipwaitTid := 0.2
         /** @var {Integer} clipwaitTidLoop waittid ved loop, når første mislykkes  */
-        clipwaitTidLoop := 0.5
-        clipwaitTidMsgbox := 0.5
+        clipwaitTidLoop := 0.2
+        clipwaitTidMsgbox := 0.2
         muligeKlipGenveje := Map("appskey", "{appsKey}c", "ctrl", "^c")
         if (isset(pHentMsgbox) and pHentMsgbox != 0)
         {
@@ -126,7 +124,6 @@ class P6 extends class {
             this.tryClipwait(clipwaitTid)
             clip := this.tryClipRead()
             tidSatIgang := A_Now
-            sleep 100
             sekunderGået := 0
             while clip = ""
             {
@@ -136,10 +133,9 @@ class P6 extends class {
                 else
                 {
                     SendInput muligeKlipGenveje[pKlipGenvej]
-                    sleep 100
+                    sleep 20
                     this.tryClipwait clipwaitTidMsgbox
                     clip := this.tryClipRead()
-                    sleep 100
                 }
             }
             return clip
@@ -155,10 +151,9 @@ class P6 extends class {
             {
                 this.tryClipWrite("")
                 SendInput muligeKlipGenveje[pKlipGenvej]
-                sleep 100
+                sleep 20
                 this.tryClipwait clipwaitTid
                 clip := this.tryClipRead()
-                sleep 100
                 tidSatIgang := A_Now
                 while clip = ""
                 {
@@ -173,10 +168,9 @@ class P6 extends class {
                             sleep 20
                         }
                         SendInput muligeKlipGenveje[pKlipGenvej]
-                        sleep 100
+                        sleep 20
                         this.tryClipwait clipwaitTidLoop
                         clip := this.tryClipRead()
-                        sleep 100
                     }
                 }
                 return clip
@@ -205,7 +199,6 @@ class P6 extends class {
                     sleep 40
                     this.tryClipwait clipwaitTidLoop
                     clip := this.tryClipRead()
-                    sleep 100
                 }
             }
             return clip
@@ -618,7 +611,7 @@ class P6 extends class {
         this.navVindueVognløbvognløbsdato()
         SendInput(vognløbsdatoTilIndlæsning)
         SendInput("{enter}")
-        sleep 300
+        sleep 50
 
         mBoxFejl := this.kopierVærdi("ctrl", 1)
         this.tjekP6Msgbox(mBoxFejl)
