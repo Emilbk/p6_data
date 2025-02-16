@@ -502,8 +502,9 @@ bladrVognløb() {
             try {
             tjekPauseStatus()
             p6Obj.setVognløb(vl)
-            p6Obj.vognløbsbilledeIndtastVognløbOgDato()
+            p6Obj.vognløbsbilledeIndtastVognløbOgDatoIntetTjek()
             KeyWait("Esc", "D")
+            sleep 200
             } catch Error as e {
                 
             }

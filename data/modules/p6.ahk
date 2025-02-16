@@ -596,6 +596,22 @@ class P6 extends class {
     }
 
 
+    vognløbsbilledeIndtastVognløbOgDatoIntetTjek(){
+
+        vognløbsnummerTilindlæsning := this.vognløb.parametre.Vognløbsnummer.forventetIndhold
+        vognløbsdatoTilIndlæsning := this.vognløb.parametre.Vognløbsdato.forventetIndhold
+
+        this.navAktiverP6Vindue()
+
+        SendInput("^a")
+        this.navVindueVognløbvognløbsnummer()
+        SendInput(vognløbsnummerTilindlæsning)
+        ; this.kopierVærdi("ctrl", 0, "!l{tab}")
+        this.navVindueVognløbvognløbsdato()
+        SendInput(vognløbsdatoTilIndlæsning)
+        SendInput("{enter}")
+        sleep 50
+    }
     vognløbsbilledeIndtastVognløbOgDato()
     {
 
