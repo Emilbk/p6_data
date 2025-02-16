@@ -54,11 +54,51 @@ class P6 extends class {
             clipwait pWaitTid
         } catch Error as e {
 
-            filpath := A_ScriptDir "\clipWaitfejl" FormatTime(, "ddMM-HHmmss") ".txt"
-            sleep 100
-            FileAppend(Format("-----`nLine: {1}`nMessage: {2}`nWhat: {3}`nStack: {4}`n------", e.Line, e.Message, e.What, e.Stack))
+            ; filpath := A_ScriptDir "\clipWaitfejl" FormatTime(, "ddMM-HHmmss") ".txt"
+            ; sleep 100
+            ; FileAppend(Format("-----`nLine: {1}`nMessage: {2}`nWhat: {3}`nStack: {4}`n------", e.Line, e.Message, e.What, e.Stack))
             ClipWait pWaitTid
 
+        }
+    }
+
+    tryClipRead() {
+        try {
+            clip := A_Clipboard
+            this.tryClipwait(1)
+            return clip
+
+        } catch Error as e {
+            loop 20 {
+                try {
+                    sleep 40
+                    clip := A_Clipboard
+                    this.tryClipwait(1)
+                    if clip != ""
+                        return clip
+                } catch Error as e {
+                    continue
+                }
+            }
+            MsgBox "Fatal clipRead-fejl"
+        }
+    }
+    tryClipWrite(str) {
+        try {
+            A_Clipboard := str
+        } catch Error as e {
+            loop 20 {
+                try {
+                    sleep 40
+                    A_Clipboard := str
+                    clip := this.tryClipRead()
+                    if clip := str
+                        return
+                } catch Error as e {
+                    continue
+                }
+            }
+            MsgBox "Fatal clipWrite-fejl"
         }
     }
 
@@ -77,16 +117,18 @@ class P6 extends class {
         clipwaitTid := 0.2
         /** @var {Integer} clipwaitTidLoop waittid ved loop, når første mislykkes  */
         clipwaitTidLoop := 0.5
-        clipwaitTidMsgbox := 0.9
+        clipwaitTidMsgbox := 0.5
         muligeKlipGenveje := Map("appskey", "{appsKey}c", "ctrl", "^c")
         if (isset(pHentMsgbox) and pHentMsgbox != 0)
         {
-            A_Clipboard := ""
+            this.tryClipWrite("")
             SendInput muligeKlipGenveje[pKlipGenvej]
+            this.tryClipwait(clipwaitTid)
+            clip := this.tryClipRead()
             tidSatIgang := A_Now
             sleep 100
             sekunderGået := 0
-            while a_clipboard = ""
+            while clip = ""
             {
                 sekunderGået := DateDiff(A_Now, tidSatIgang, "Seconds")
                 if sekunderGået > 1
@@ -96,10 +138,11 @@ class P6 extends class {
                     SendInput muligeKlipGenveje[pKlipGenvej]
                     sleep 100
                     this.tryClipwait clipwaitTidMsgbox
+                    clip := this.tryClipRead()
                     sleep 100
                 }
             }
-            return a_clipboard
+            return clip
         }
         else
         {
@@ -110,13 +153,14 @@ class P6 extends class {
             }
             if IsSet(pVentIkkePåClipboard)
             {
-                A_Clipboard := ""
+                this.tryClipWrite("")
                 SendInput muligeKlipGenveje[pKlipGenvej]
                 sleep 100
                 this.tryClipwait clipwaitTid
+                clip := this.tryClipRead()
                 sleep 100
                 tidSatIgang := A_Now
-                while a_clipboard = ""
+                while clip = ""
                 {
                     sekunderGået := DateDiff(A_Now, tidSatIgang, "Seconds")
                     if sekunderGået > 1
@@ -131,25 +175,22 @@ class P6 extends class {
                         SendInput muligeKlipGenveje[pKlipGenvej]
                         sleep 100
                         this.tryClipwait clipwaitTidLoop
+                        clip := this.tryClipRead()
                         sleep 100
                     }
                 }
-                SendInput muligeKlipGenveje[pKlipGenvej]
-                sleep 100
-                this.tryClipwait clipwaitTid
-                sleep 100
-
-                return A_Clipboard
+                return clip
             }
-            A_Clipboard := ""
+            this.tryClipWrite("")
             SendInput muligeKlipGenveje[pKlipGenvej]
-            sleep 100
-            this.tryClipwait clipwaitTid
-            sleep 100
+            sleep 40
+            this.tryClipwait(clipwaitTid)
+            clip := this.tryClipRead()
+            sleep 40
             tidSatIgang := A_Now
-            while a_clipboard = ""
+            while clip = ""
             {
-                sleep 200
+                sleep 40
                 sekunderGået := DateDiff(A_Now, tidSatIgang, "Seconds")
                 if sekunderGået > 10
                     throw (Error("Clipboard-timeout efter 10 sekunder, er P6 aktiveret i korrekt felt og er Citrix-udkllipsholderen tilgængelig? "))
@@ -161,12 +202,13 @@ class P6 extends class {
                         sleep 20
                     }
                     SendInput muligeKlipGenveje[pKlipGenvej]
-                    sleep 200
+                    sleep 40
                     this.tryClipwait clipwaitTidLoop
+                    clip := this.tryClipRead()
                     sleep 100
                 }
             }
-            return a_clipboard
+            return clip
         }
     }
 
@@ -599,6 +641,74 @@ class P6 extends class {
         return
     }
 
+    vognløbsbilledeIndtastVognløbOgDatoTilIndlæg()
+    {
+
+        vognløbsnummerTilindlæsning := this.vognløb.parametre.Vognløbsnummer.forventetIndhold
+        vognløbsdatoTilIndlæsning := this.vognløb.parametre.Vognløbsdato.forventetIndhold
+
+        this.navAktiverP6Vindue()
+
+        SendInput("^a")
+        this.navVindueVognløbvognløbsnummer()
+        SendInput(vognløbsnummerTilindlæsning)
+        ; this.kopierVærdi("ctrl", 0, "!l{tab}")
+        this.navVindueVognløbvognløbsdato()
+        SendInput(vognløbsdatoTilIndlæsning)
+        SendInput("^i")
+        sleep 300
+
+        mBoxFejl := this.kopierVærdi("ctrl", 1)
+        this.tjekP6Msgbox(mBoxFejl)
+
+        ; TODO separat funk
+        tjekAfIndtastningVognløbsnummer := this.kopierVærdi("appsKey", 0, "!l")
+        tjekAfIndtastningVognløbsdato := this.kopierVærdi("ctrl", 0, "!l{tab}")
+
+        if (tjekAfIndtastningVognløbsnummer != vognløbsnummerTilindlæsning or tjekAfIndtastningVognløbsdato != vognløbsdatoTilIndlæsning)
+        {
+            indtastningObj := { indtastetVognløbsnummer: tjekAfIndtastningVognløbsnummer, indtastetVognløbsdato: tjekAfIndtastningVognløbsdato, fejlType: "Indtastning af kørselsaftale" }
+            throw (P6Indtastningsfejl("Fejl i indtastning, vognløbsnummer eller dato er ikke det forventede", , indtastningObj))
+
+        }
+
+        ; TODO omskriv når setparameter omskrevet
+        this.vognløb.parametre.Vognløbsnummer.eksisterendeIndhold := tjekAfIndtastningVognløbsnummer
+        this.vognløb.parametre.vognløbsdato.eksisterendeIndhold := tjekAfIndtastningVognløbsdato
+
+        return
+    }
+    vognløbsbilledeIndtastKørselsaftaleOgStyresystemTilIndlæg()
+    {
+        kørselsaftaleTilIndlæsning := this.vognløb.parametre.Kørselsaftale.forventetIndhold
+        styresystemTilIndlæsning := this.vognløb.parametre.Styresystem.forventetIndhold
+
+        SendInput("!k" kørselsaftaleTilIndlæsning)
+        SendInput("!k{tab}" styresystemTilIndlæsning)
+
+        kørselsaftaleEksisterende := this.kopierVærdi("appsKey", 0, "!k")
+        styresystemEksisterende := this.kopierVærdi("appsKey", 0, "!k{tab}")
+
+        if kørselsaftaleEksisterende != kørselsaftaleTilIndlæsning
+            throw p6ForkertDataError(
+                Format("Fejl i indlæsning af {3}`nForventet {3}: {1}`nEksisterende {3}: {2}", kørselsaftaleTilIndlæsning, kørselsaftaleEksisterende, "kørselsaftale")
+                , , , { forventetParameter: kørselsaftaleTilIndlæsning,
+                    fundetParameter: kørselsaftaleEksisterende,
+                    fejlIParameter: "kørselsaftaleVognløbsbillede" })
+        if styresystemEksisterende != styresystemTilIndlæsning
+            throw p6ForkertDataError(
+                Format("Fejl i indlæsning af {3}. Forventet {3}: {1}, Eksisterende {3}: {2}", styresystemTilIndlæsning, styresystemEksisterende, "styresystem")
+                , , , { forventetParameter: kørselsaftaleTilIndlæsning,
+                    fundetParameter: kørselsaftaleEksisterende,
+                    FejlIParameter: "KørselsaftaleVognløbsbillede" })
+
+
+        mBoxFejl := this.enterOgHentMsgboxFejl()
+        this.tjekP6Msgbox(mBoxFejl)
+
+        this.vognløb.parametre.Kørselsaftale.eksisterendeIndhold := kørselsaftaleEksisterende
+        this.vognløb.parametre.Styresystem.eksisterendeIndhold := styresystemEksisterende
+    }
     vognløbsbilledeÆndrVognløb()
     {
         SendInput ("^æ")
@@ -622,7 +732,7 @@ class P6 extends class {
 
         if kørselsaftaleEksisterende != kørselsaftaleTilIndlæsning
             throw p6ForkertDataError(
-                Format("Fejl i indlæsning af {3}`nForventet {3}: {1}`nEksisterende {3}: {2}", kørselsaftaleEksisterende, styresystemEksisterende, "kørselsaftale")
+                Format("Fejl i indlæsning af {3}`nForventet {3}: {1}`nEksisterende {3}: {2}", kørselsaftaleTilIndlæsning, kørselsaftaleEksisterende, "kørselsaftale")
                 , , , { forventetParameter: kørselsaftaleTilIndlæsning,
                     fundetParameter: kørselsaftaleEksisterende,
                     fejlIParameter: "kørselsaftaleVognløbsbillede" })
@@ -731,7 +841,7 @@ class P6 extends class {
     }
 
     vognløbsbilledeIndtastTransporttyper() {
-        
+
         ; fiks tjek, er altid aktiv når kolonnen er navngivet
         ; if !this.vognløb.parametre.undtagneTransportTyper.iBrug
         ;     return
@@ -748,7 +858,17 @@ class P6 extends class {
             "center",
             "liggende",
             "selepude",
-            "cykel"
+            "cykel",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " "
         ]
         vogntype3 := [
             "høj",
@@ -760,7 +880,17 @@ class P6 extends class {
             "center",
             "liggende",
             "selepude",
-            "cykel"
+            "cykel",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " "
         ]
         vogntype4 := [
             "høj",
@@ -772,7 +902,17 @@ class P6 extends class {
             "barn2",
             "barn3",
             "center",
-            "selepude"
+            "selepude",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " "
         ]
         vogntype5 := [
             "lav",
@@ -784,7 +924,17 @@ class P6 extends class {
             "tmhjul",
             "tmlarve",
             "selepude",
-            "tripstol"
+            "tripstol",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " "
         ]
         vogntype6 := [
             "lav",
@@ -796,7 +946,17 @@ class P6 extends class {
             "tmhjul",
             "tmlarve",
             "selepude",
-            "tripstol"
+            "tripstol",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " "
         ]
         vogntype7 := [
             "lav",
@@ -808,28 +968,38 @@ class P6 extends class {
             "tmhjul",
             "tmlarve",
             "selepude",
-            "tripstol"
+            "tripstol",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            " "
         ]
         if this.vognløb.parametre.Vogntype.forventetIndhold
         {
 
-        switch vtype
-        {
-            case 2:
-                trType := vogntype2
-            case 3:
-                trType := vogntype3
-            case 4:
-                trType := vogntype4
-            case 5:
-                trType := vogntype5
-            case 6:
-                trType := vogntype6
-            case 7:
-                trType := vogntype7
-        
-        }
-        
+            switch vtype
+            {
+                case 2:
+                    trType := vogntype2
+                case 3:
+                    trType := vogntype3
+                case 4:
+                    trType := vogntype4
+                case 5:
+                    trType := vogntype5
+                case 6:
+                    trType := vogntype6
+                case 7:
+                    trType := vogntype7
+
+            }
+
             {
                 sendinput("!u")
 
@@ -1277,8 +1447,10 @@ class P6 extends class {
             throw P6MsgboxError(this.vognløb.parametre.vognløbsnummer.forventetIndhold " - " this.vognløb.parametre.vognløbsdato.forventetIndhold ": Vognløb kan ikke nå sidste køreordre.")
         if (InStr(pMsgbox, "Forkert tidspunkt"))
             throw P6MsgboxError("Fejl i vognløbstidspunkter.",)
-        if (InStr(pMsgbox, "ikke registreret"))
+        if (InStr(pMsgbox, "kørselsaftalen ikke registreret"))
             throw P6MsgboxError("Kørselsaftalen eksisterer ikke i P6.",)
+        if (InStr(pMsgbox, "vognløbet er allerede"))
+            throw P6MsgboxError("Vognløbet eksisterer allerede på dato.",)
         if InStr(pMsgBox, "Zone ikke registreret")
             throw (P6MsgboxError("Zonen findes ikke i P6"))
         if InStr(pMsgBox, "Zone skal angives")
@@ -1286,7 +1458,7 @@ class P6 extends class {
         if (InStr(pMsgBox, "for langt for modellen"))
             throw P6MsgboxError("Vognløbet er for langt for modellen")
         if InStr(pMsgBox, "samme transporttype")
-            throw (P6MsgboxError("Transporttype findes ikke i P6"))
+            throw (P6MsgboxError("Transporttype er opført to gange"))
         if InStr(pMsgBox, "Transporttypen")
             throw (P6MsgboxError("Transporttype findes ikke i P6"))
         if InStr(pMsgBox, "Vløbsklasen")
@@ -1355,7 +1527,16 @@ class P6 extends class {
         this.ændrVognløbsbilledeAfslut()
         return
     }
-
+    funkIndlægVognløb(){
+        this.navVindueVognløb()
+        this.vognløbsbilledeIndtastVognløbOgDatoTilIndlæg()
+        this.vognløbsbilledeIndtastKørselsaftaleOgStyresystemTilIndlæg()
+        this.vognløbsbilledeIndtastÅbningstiderOgZone()
+        this.vognløbsbilledeIndtastØvrige()
+        this.vognløbsbilledeIndtastTransporttyper()
+        this.vognløbsbilledeIndtastKapaciteter()
+        this.ændrVognløbsbilledeAfslut()
+    }
     funkTjekVognløb()
     {
         this.navAktiverP6Vindue()

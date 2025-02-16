@@ -70,6 +70,7 @@ p6DatabehandlingMenu.Add("Fejlcheck data", (*) =>)
 ændrDataMenu.Add("Ændr hjemzone", (*) => ændrVognløbHjemzone())
 ændrDataMenu.Add("Ændr hjemzone (kun vognløb)", (*) => ændrVognløbHjemzoneKunVognløbsbillede())
 ændrDataMenu.Add("Ændr vognløb", (*) => ændrVognløbAlt())
+ændrDataMenu.Add("Indlæg vognløb", (*) => indlægVognløb())
 
 
 tjekDataMenu.Add("Tjek hjemzone", (*) => indhentOgTjekVognløbHjemzone())
@@ -163,33 +164,168 @@ danExcelSkabelon() {
     MsgBox("Excelskabelon gemt som " excelpath, "Excel", "iconi")
 }
 
-ændrVognløbAlt() {
-    svar := MsgBox("Ændrer data på vognløb og kørselsaftale", , "1")
+indlægVognløb(){
+    svar := MsgBox("Ændrer data på vognløb", , "1")
     if svar != "OK"
         return
+
+
     p6Obj := goo.p6.obj
     tjekEksisterendeVindueHandle()
+    vlKørselaftale := goo.vognløb.vlArray.masterVognløb
+
+    p6obj.setVognløb(vlKørselaftale)
     p6obj.navAktiverP6Vindue()
-    p6Obj.navLukAlleVinduer()
+    p6obj.navLukAlleVinduer()
+    try {
+        ; p6obj.funkKørselsaftaleÆndrHjemzone()
+
+    } catch Error as e {
+        ; kørselsaftalefejl
+    }
+
+    FileAppend(format("Makro startet {1}.`n", FormatTime(, "HH:mm:ss")), goo.indskrivningFilpath)
     for vlSamling in goo.vognløb.vlArray.vognløbsListe
     {
+        loopStartTid := A_Now
+        vlSamlindIndex := A_Index
+        FileAppend("-----------`n", goo.indskrivningFilpath)
         for Vl in vlSamling
         {
             p6Obj.setVognløb(vl)
             try {
+                tjekPauseStatus()
+                vlStartTid := A_Now
                 vl.tjekForbudtVognløbsDato()
-                p6obj.funkÆndrVognløb()
+                p6obj.funkIndlægVognløb()
+
 
             } catch P6MsgboxError as msg {
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.indskrivningFilpath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.fejlLogPath)
+                vlSlutTid := A_Now
                 continue
+            }
+            catch p6ForkertDataError as msg {
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.indskrivningFilpath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.fejlLogPath)
+                vlSlutTid := A_Now
+                continue
+            }
+            catch P6Indtastningsfejl as msg {
+
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl i indtastning: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.indskrivningFilpath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.fejlLogPath)
+                vlSlutTid := A_Now
+                continue
+            }
+            else {
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} OK`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold), goo.indskrivningFilpath)
+                vlSlutTid := A_Now
 
             }
+            ; FileAppend(format("Vognløb fuldført {1}.`n", FormatTime(, "HH:mm:ss")), goo.indskrivningFilpath)
         }
 
     }
-
+    ; fix korrekt tidmåling
+    loopSlutTid := A_Now
+    slutTidDifferenceSec := DateDiff(loopSlutTid, loopStartTid, "Seconds")
+    slutTidTime := Floor(slutTidDifferenceSec / 60 / 60)
+    slutTidMin := Floor(slutTidDifferenceSec / 60)
+    slutTidSec := Mod(slutTidDifferenceSec, 60)
+    FileAppend("-----------`n", goo.indskrivningFilpath)
+    FileAppend(format("Makro færdig {1}`n", FormatTime(, "HH:mm:ss")), goo.indskrivningFilpath)
+    ; FileAppend(Format("Færdig efter {} {1} min, {2} sek", slutTidMin, slutTidSec), goo.indskrivningFilpath)
     MsgBox("Excelark færdigbehandlet.", "Vognløb ændret!", "Iconi")
-    return
+
+
+}
+ændrVognløbAlt() {
+
+    svar := MsgBox("Ændrer data på vognløb", , "1")
+    if svar != "OK"
+        return
+
+
+    p6Obj := goo.p6.obj
+    tjekEksisterendeVindueHandle()
+    vlKørselaftale := goo.vognløb.vlArray.masterVognløb
+
+    p6obj.setVognløb(vlKørselaftale)
+    p6obj.navAktiverP6Vindue()
+    p6obj.navLukAlleVinduer()
+    try {
+        ; p6obj.funkKørselsaftaleÆndrHjemzone()
+
+    } catch Error as e {
+        ; kørselsaftalefejl
+    }
+
+    FileAppend(format("Makro startet {1}.`n", FormatTime(, "HH:mm:ss")), goo.indskrivningFilpath)
+    for vlSamling in goo.vognløb.vlArray.vognløbsListe
+    {
+        loopStartTid := A_Now
+        vlSamlindIndex := A_Index
+        FileAppend("-----------`n", goo.indskrivningFilpath)
+        for Vl in vlSamling
+        {
+            p6Obj.setVognløb(vl)
+            try {
+                tjekPauseStatus()
+                vlStartTid := A_Now
+                vl.tjekForbudtVognløbsDato()
+                p6obj.funkÆndrVognløb()
+
+
+            } catch P6MsgboxError as msg {
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.indskrivningFilpath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.fejlLogPath)
+                vlSlutTid := A_Now
+                continue
+            }
+            catch p6ForkertDataError as msg {
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.indskrivningFilpath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.fejlLogPath)
+                vlSlutTid := A_Now
+                continue
+            }
+            catch P6Indtastningsfejl as msg {
+
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl i indtastning: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.indskrivningFilpath)
+                FileAppend(Format("Vognløb {1} - {2} Fejl: {3}`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold, msg.Message), goo.fejlLogPath)
+                vlSlutTid := A_Now
+                continue
+            }
+            else {
+                ; if FileExist(filPath)
+                FileAppend(Format("Vognløb {1} - {2} OK`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold), goo.indskrivningFilpath)
+                vlSlutTid := A_Now
+
+            }
+            ; FileAppend(format("Vognløb fuldført {1}.`n", FormatTime(, "HH:mm:ss")), goo.indskrivningFilpath)
+        }
+
+    }
+    ; fix korrekt tidmåling
+    loopSlutTid := A_Now
+    slutTidDifferenceSec := DateDiff(loopSlutTid, loopStartTid, "Seconds")
+    slutTidTime := Floor(slutTidDifferenceSec / 60 / 60)
+    slutTidMin := Floor(slutTidDifferenceSec / 60)
+    slutTidSec := Mod(slutTidDifferenceSec, 60)
+    FileAppend("-----------`n", goo.indskrivningFilpath)
+    FileAppend(format("Makro færdig {1}`n", FormatTime(, "HH:mm:ss")), goo.indskrivningFilpath)
+    ; FileAppend(Format("Færdig efter {} {1} min, {2} sek", slutTidMin, slutTidSec), goo.indskrivningFilpath)
+    MsgBox("Excelark færdigbehandlet.", "Vognløb ændret!", "Iconi")
+
+
 }
 
 ændrVognløbHjemzoneKunVognløbsbillede() {
@@ -303,14 +439,6 @@ danExcelSkabelon() {
     {
         loopStartTid := A_Now
         FileAppend("-----------`n", goo.indskrivningFilpath)
-        if (vl.normalHjemzone.forventetIndhold
-            or vl.StatistikgruppeKørselsaftale.forventetIndhold
-            or vl.vognmandLinie1.forventetIndhold
-            or vl.vognmandLinie2.forventetIndhold
-            or vl.vognmandLinie3.forventetIndhold
-            or vl.vognmandLinie4.forventetIndhold
-        )
-            p6Obj.funkKørselsaftaleÆndrHjemzone()
         for Vl in vlSamling
         {
             p6Obj.setVognløb(vl)
@@ -536,7 +664,7 @@ visHjælp() {
 
 }
 
-gemVognløbsdata(){
+gemVognløbsdata() {
 
     ; if !goo.excel.indlæst
     ; {
@@ -559,7 +687,7 @@ gemVognløbsdata(){
     ; MsgBox valgtDatafil
 }
 
-hentVognløbsdata(){
+hentVognløbsdata() {
     valgtDatafil := ""
 
     valgtDatafil := FileSelect()
@@ -569,12 +697,12 @@ hentVognløbsdata(){
 
     jsonInput := FileRead(valgtDatafil)
     try {
-     jsonObj := JSON.Load(jsonInput)
+        jsonObj := JSON.Load(jsonInput)
     } catch Error as e {
         MsgBox e.Message
     }
 
     goo.excel.gyldigeKolonner := jsonObj["excelGyldigeKolonner"]
     goo.vognløb.vlArray := jsonObj["vognløbsArray"]
-    
+
 }

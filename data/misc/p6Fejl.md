@@ -7,6 +7,24 @@ Kørselsaftalen ikke registreret
 ---------------------------
 OK   
 ---------------------------
+### indlæg allerede eksisterende vl
+---------------------------
+
+---------------------------
+Problemer med at gemme vognløb
+
+Vognløbet er allerede registreret
+---------------------------
+OK   
+---------------------------
+### Ugyldig kørselsaftale
+---------------------------
+Vognløb
+---------------------------
+Kørselsaftalen ikke registreret
+---------------------------
+OK   
+---------------------------
 
 ### Ugyldig vognløbskategori
 ---------------------------
@@ -54,6 +72,14 @@ OK
 Vognløb
 ---------------------------
 Transporttypen ikke registreret
+---------------------------
+OK   
+---------------------------
+### Dobbelt transporttype
+---------------------------
+Vognløb
+---------------------------
+Du kan ikke vælge samme transporttype flere gange.
 ---------------------------
 OK   
 ---------------------------
