@@ -650,6 +650,41 @@ class P6 extends class {
         return
     }
 
+    vognløbsbilledeIndtastVognløbOgDatoTilKopiering(){
+        vognløbsnummerTilindlæsning := this.vognløb.parametre.Vognløbsnummer.forventetIndhold
+        vognløbsdatoTilIndlæsning := this.vognløb.parametre.Vognløbsdato.forventetIndhold
+
+        this.navAktiverP6Vindue()
+
+        SendInput("^a")
+        this.navVindueVognløbvognløbsnummer()
+        SendInput(vognløbsnummerTilindlæsning)
+        ; this.kopierVærdi("ctrl", 0, "!l{tab}")
+        this.navVindueVognløbvognløbsdato()
+        SendInput(vognløbsdatoTilIndlæsning)
+        SendInput("^k")
+        sleep 300
+
+        mBoxFejl := this.kopierVærdi("ctrl", 1)
+        this.tjekP6Msgbox(mBoxFejl)
+
+        ; TODO separat funk
+        tjekAfIndtastningVognløbsnummer := this.kopierVærdi("appsKey", 0, "!l")
+        tjekAfIndtastningVognløbsdato := this.kopierVærdi("ctrl", 0, "!l{tab}")
+
+        if (tjekAfIndtastningVognløbsnummer != vognløbsnummerTilindlæsning or tjekAfIndtastningVognløbsdato != vognløbsdatoTilIndlæsning)
+        {
+            indtastningObj := { indtastetVognløbsnummer: tjekAfIndtastningVognløbsnummer, indtastetVognløbsdato: tjekAfIndtastningVognløbsdato, fejlType: "Indtastning af kørselsaftale" }
+            throw (P6Indtastningsfejl("Fejl i indtastning, vognløbsnummer eller dato er ikke det forventede", , indtastningObj))
+
+        }
+
+        ; TODO omskriv når setparameter omskrevet
+        this.vognløb.parametre.Vognløbsnummer.eksisterendeIndhold := tjekAfIndtastningVognløbsnummer
+        this.vognløb.parametre.vognløbsdato.eksisterendeIndhold := tjekAfIndtastningVognløbsdato
+
+        return
+    }
     vognløbsbilledeIndtastVognløbOgDatoTilIndlæg()
     {
 
@@ -1544,6 +1579,15 @@ class P6 extends class {
         this.vognløbsbilledeIndtastØvrige()
         this.vognløbsbilledeIndtastTransporttyper()
         this.vognløbsbilledeIndtastKapaciteter()
+        this.ændrVognløbsbilledeAfslut()
+    }
+    funkKopierVognløb(){
+        this.navVindueVognløb()
+        this.vognløbsbilledeIndtastVognløbOgDatoTilKopiering()
+        this.vognløbsbilledeTjekKørselsaftaleOgStyresystem()
+        ; mBoxFejl := this.enterOgHentMsgboxFejl()
+        ; this.tjekP6Msgbox(mBoxFejl)
+        this.vognløbsbilledeIndtastÅbningstiderOgZone()
         this.ændrVognløbsbilledeAfslut()
     }
     funkTjekVognløb()

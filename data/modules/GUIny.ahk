@@ -188,6 +188,7 @@ indlægVognløb() {
     FileAppend(format("Makro startet {1}.`n", FormatTime(, "HH:mm:ss")), goo.indskrivningFilpath)
     for vlSamling in goo.vognløb.vlArray.vognløbsListe
     {
+        indlagt := 0
         loopStartTid := A_Now
         vlSamlindIndex := A_Index
         FileAppend("-----------`n", goo.indskrivningFilpath)
@@ -196,9 +197,13 @@ indlægVognløb() {
             p6Obj.setVognløb(vl)
             try {
                 tjekPauseStatus()
+                p6obj.navAktiverP6Vindue()
                 vlStartTid := A_Now
                 vl.tjekForbudtVognløbsDato()
-                p6obj.funkIndlægVognløb()
+                if !indlagt
+                    p6obj.funkIndlægVognløb()
+                if indlagt
+                    p6Obj.funkKopierVognløb()
 
 
             } catch P6MsgboxError as msg {
@@ -226,6 +231,7 @@ indlægVognløb() {
             else {
                 ; if FileExist(filPath)
                 FileAppend(Format("Vognløb {1} - {2} OK`n", vl.parametre.vognløbsnummer.forventetIndhold, vl.parametre.vognløbsdato.forventetIndhold), goo.indskrivningFilpath)
+                indlagt := 1
                 vlSlutTid := A_Now
 
             }
@@ -500,13 +506,13 @@ bladrVognløb() {
         for Vl in vlSamling
         {
             try {
-            tjekPauseStatus()
-            p6Obj.setVognløb(vl)
-            p6Obj.vognløbsbilledeIndtastVognløbOgDatoIntetTjek()
-            KeyWait("Esc", "D")
-            sleep 200
+                tjekPauseStatus()
+                p6Obj.setVognløb(vl)
+                p6Obj.vognløbsbilledeIndtastVognløbOgDatoIntetTjek()
+                KeyWait("Esc", "D")
+                sleep 200
             } catch Error as e {
-                
+
             }
         }
     }
